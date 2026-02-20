@@ -2,17 +2,12 @@ package com.educonnect.model.assesment;
 
 import com.educonnect.model.course.Course;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.UUID;
 
 @Entity
 @Data
@@ -22,6 +17,9 @@ public class Assesment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer assesmentId;
+
+    @Column(columnDefinition = "BINARY(16)")
+    private UUID assesmentUuid = UUID.randomUUID();
     
     private Double maxScore;
     private String title;

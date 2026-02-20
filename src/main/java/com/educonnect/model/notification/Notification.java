@@ -2,17 +2,12 @@ package com.educonnect.model.notification;
 
 import com.educonnect.model.user.User;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.UUID;
 
 @Entity
 @Data
@@ -23,6 +18,9 @@ public class Notification {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer notificationId;
+
+    @Column(columnDefinition = "BINARY(16)")
+    private UUID notificationUuid = UUID.randomUUID();
 
     private Integer entityId;
     private String message;

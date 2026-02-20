@@ -15,7 +15,9 @@ import java.util.UUID;
 @PrimaryKeyJoinColumn(name = "student_id")
 public class Student extends User {
 
+    @Column(columnDefinition = "BINARY(16)")
     private UUID studentUuid = UUID.randomUUID();
+
     private LocalDate dateOfBirth;
     private String enrollmentNumber;
 

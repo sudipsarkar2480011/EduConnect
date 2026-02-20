@@ -21,6 +21,7 @@ public class StudentDocument {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long documentId;
 
+    @Column(columnDefinition = "BINARY(16)")
     private UUID documentUuid = UUID.randomUUID();
 
     @ManyToOne

@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import com.educonnect.model.audit.Audit;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrimaryKeyJoinColumn;
@@ -16,6 +17,7 @@ import lombok.EqualsAndHashCode;
 @PrimaryKeyJoinColumn(name="admin_id")
 @Data
 public class Admin extends User{
+    @Column(columnDefinition = "BINARY(16)")
     private UUID adminUuid = UUID.randomUUID();
 
     @OneToMany(mappedBy = "admin")

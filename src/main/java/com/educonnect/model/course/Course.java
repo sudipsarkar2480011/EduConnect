@@ -5,6 +5,7 @@ import com.educonnect.model.user.Teacher;
 import jakarta.persistence.*;
 import lombok.Data;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Data
@@ -13,6 +14,9 @@ public class Course {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long courseId;
+
+    @Column(columnDefinition = "BINARY(16)")
+    private UUID courseUuid = UUID.randomUUID();
 
     private String title;
     private String description;
