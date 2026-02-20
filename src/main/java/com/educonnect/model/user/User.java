@@ -3,6 +3,9 @@ package com.educonnect.model.user;
 import jakarta.persistence.*;
 import lombok.Data;
 import java.time.LocalDateTime;
+import java.util.List;
+
+import com.educonnect.model.notification.Notification;
 
 @Entity
 @Table(name = "users")
@@ -27,4 +30,7 @@ public class User {
 
     private boolean isActive = true;
     private LocalDateTime createdAt = LocalDateTime.now();
+
+    @OneToMany(mappedBy = "user")
+    private List<Notification> notifications;
 }

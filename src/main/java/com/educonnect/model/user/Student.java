@@ -3,7 +3,7 @@ package com.educonnect.model.user;
 import com.educonnect.model.course.Enrollment;
 import com.educonnect.model.document.StudentDocument;
 import jakarta.persistence.*;
-        import lombok.Data;
+import lombok.Data;
 import lombok.EqualsAndHashCode;
 import java.time.LocalDate;
 import java.util.List;

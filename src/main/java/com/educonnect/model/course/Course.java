@@ -1,5 +1,6 @@
 package com.educonnect.model.course;
 
+import com.educonnect.model.assesment.Assesment;
 import com.educonnect.model.user.Teacher;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -27,4 +28,7 @@ public class Course {
 
     @OneToMany(mappedBy = "course")
     private List<Enrollment> enrollments;
+
+    @OneToMany(mappedBy = "course")
+    private List<Assesment> assesments;
 }
