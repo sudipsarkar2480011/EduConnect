@@ -1,5 +1,6 @@
 package com.educonnect.model.user;
 
+import com.educonnect.model.access.ParentAccess;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -24,4 +25,8 @@ public class Parent extends User {
             inverseJoinColumns = @JoinColumn(name = "student_id")
     )
     private List<Student> children;
+
+
+    @OneToMany(mappedBy = "parent")
+    private List<ParentAccess> parentAccessList;
 }

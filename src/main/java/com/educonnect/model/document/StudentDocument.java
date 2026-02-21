@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 
-import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 
@@ -34,7 +34,7 @@ public class StudentDocument {
     private String FileURI;
 
     @CreationTimestamp
-    private Instant UploadedDate;
+    private LocalDateTime UploadedDate;
 
     @Enumerated(EnumType.STRING)
     private VerificationStatus verificationStatus = VerificationStatus.UNVERIFIED;

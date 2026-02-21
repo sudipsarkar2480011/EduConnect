@@ -1,4 +1,4 @@
-package com.educonnect.model.assesment;
+package com.educonnect.model.assessment;
 
 import com.educonnect.model.course.Course;
 
@@ -7,27 +7,31 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
 import java.util.UUID;
 
 @Entity
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Assesment {
+public class Assessment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer assesmentId;
+    private Integer assessmentId;
 
     @Column(columnDefinition = "BINARY(16)")
-    private UUID assesmentUuid = UUID.randomUUID();
+    private UUID assessmentUuid = UUID.randomUUID();
     
     private Double maxScore;
     private String title;
 
     @Enumerated(EnumType.STRING)
-    private AssesmentType type;
+    private AssessmentType type;
 
     @ManyToOne
     @JoinColumn(name = "course_id")
     private Course course;
+
+    @OneToMany(mappedBy = "assessment")
+    private List<Result> resultList;
 }

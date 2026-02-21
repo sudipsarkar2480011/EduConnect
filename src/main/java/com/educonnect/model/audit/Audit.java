@@ -9,6 +9,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 
 @Data
 @Entity
@@ -25,7 +26,10 @@ public class Audit {
     
     private String scope;
     private String findings;
+
+    @CreationTimestamp
     private LocalDate date;
+
     private Boolean status;
 
     @ManyToOne
