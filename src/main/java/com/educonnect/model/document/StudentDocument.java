@@ -24,6 +24,9 @@ public class StudentDocument {
     @Column(columnDefinition = "BINARY(16)")
     private UUID documentUuid = UUID.randomUUID();
 
+    @Column(nullable = false)
+    private String fileName ;
+
     @ManyToOne
     @JoinColumn(name = "student_id", nullable = false)
     private Student student;
@@ -31,7 +34,12 @@ public class StudentDocument {
     @Enumerated(EnumType.STRING)
     private DocType docType;
 
-    private String FileURI;
+
+    @Lob
+    @Basic(fetch = FetchType.LAZY)
+    @Column(nullable = false, columnDefinition = "LONGBLOB")
+    private byte[] fileData;
+
 
     @CreationTimestamp
     private LocalDateTime UploadedDate;

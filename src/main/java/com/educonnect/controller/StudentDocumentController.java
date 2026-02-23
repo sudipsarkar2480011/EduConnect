@@ -30,7 +30,6 @@ public class StudentDocumentController {
             ){
 
         String msg = studentDocumentService.saveStudentDocument(UUID.fromString(studentUuid),docType,file);
-        return ResponseEntity.ok("File saved successfully, file uri: " + msg) ;
-
+        return ResponseEntity.ok(msg) ;
     }
 }

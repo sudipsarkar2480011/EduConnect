@@ -29,68 +29,32 @@ public class StudentDocumentServiceImpl implements StudentDocumentService {
     private final StudentDocumentRepo studentDocumentRepo;
     private final StudentRepo studentRepo;
 
-    @Value("${storage.upload-dir:uploads}")
-    private String uploadDir;
-    private Path uploadPath ;
-
-    @Value("${server.port}")
-    private String port ;
-
-    @PostConstruct
-    public void init(){
-        this.uploadPath =  Paths.get(uploadDir)
-                                .toAbsolutePath()
-                                .normalize();
-        try {
-            Files.createDirectories(uploadPath);
-        }catch (IOException e){
-            throw new RuntimeException("Could not create upload directory");
-        }
-    }
-
-
     @Override
     public String saveStudentDocument(UUID studentUuid, DocType docType, MultipartFile file) {
+
+        if(file == null || file.isEmpty()){
+            throw new RuntimeException("file not found");
+        }
+
         Student student = studentRepo
                 .findByStudentUuid(studentUuid)
                 .orElseThrow(()-> new RuntimeException("Student not found"))
         ;
 
-
-
-        String originalFileName = file.getOriginalFilename();
-        int indexOfDot = originalFileName.lastIndexOf(".");
-        String extension =
-                originalFileName.substring(indexOfDot);
-
-
-        String newFileName = originalFileName.substring(0,indexOfDot)
-                            + UUID.randomUUID()
-                            + extension;
-
-        Path targetLocation = uploadPath.resolve(newFileName);
-
-        try {
-            Files.copy(
-                    file.getInputStream(),
-                    targetLocation,
-                    StandardCopyOption.REPLACE_EXISTING
-            );
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
-        String fileUri = "http://localhost:" + port +"/files/" + newFileName;
-
         StudentDocument document = new StudentDocument();
 
         document.setStudent(student);
         document.setDocType(docType);
-        document.setFileURI(fileUri);
+        document.setFileName(file.getOriginalFilename());
 
+        try {
+            document.setFileData(file.getBytes());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         studentDocumentRepo.save(document);
 
-        return fileUri;
+        return "Uploaded " + document.getFileName() + " successfully";
 
     }
 
