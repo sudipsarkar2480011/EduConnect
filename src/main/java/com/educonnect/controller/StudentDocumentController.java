@@ -19,7 +19,6 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/doc")
 public class StudentDocumentController {
-
     private final StudentDocumentService studentDocumentService;
 
     @PostMapping(path = "/upload", consumes = "multipart/form-data")
