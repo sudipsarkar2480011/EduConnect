@@ -2,6 +2,7 @@ package com.educonnect.model.document;
 
 import com.educonnect.model.user.Student;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -16,12 +17,14 @@ import java.util.UUID;
 
 @Entity
 @Data
+@Builder
 public class StudentDocument {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long documentId;
 
     @Column(columnDefinition = "BINARY(16)")
+    @Builder.Default
     private UUID documentUuid = UUID.randomUUID();
 
     @ManyToOne

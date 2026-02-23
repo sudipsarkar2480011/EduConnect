@@ -8,13 +8,19 @@ import com.educonnect.repo.StudentDocumentRepo;
 import com.educonnect.repo.StudentRepo;
 import com.educonnect.service.contract.StudentDocumentService;
 import jakarta.annotation.PostConstruct;
+import lombok.Data;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -24,6 +30,7 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 @Slf4j
+
 public class StudentDocumentServiceImpl implements StudentDocumentService {
 
     private final StudentDocumentRepo studentDocumentRepo;
@@ -31,6 +38,7 @@ public class StudentDocumentServiceImpl implements StudentDocumentService {
 
     @Value("${storage.upload-dir:uploads}")
     private String uploadDir;
+    
     private Path uploadPath ;
 
     @Value("${server.port}")
@@ -47,6 +55,9 @@ public class StudentDocumentServiceImpl implements StudentDocumentService {
             throw new RuntimeException("Could not create upload directory");
         }
     }
+
+
+
 
 
     @Override
@@ -80,21 +91,30 @@ public class StudentDocumentServiceImpl implements StudentDocumentService {
             throw new RuntimeException(e);
         }
 
-        String fileUri = "http://localhost:" + port +"/files/" + newFileName;
+        
+       
+        studentDocumentRepo.save(StudentDocument.builder()
+        .student(student)
+        .docType(docType)
+        .FileURI(newFileName)
+        .build());
 
-        StudentDocument document = new StudentDocument();
-
-        document.setStudent(student);
-        document.setDocType(docType);
-        document.setFileURI(fileUri);
-
-        studentDocumentRepo.save(document);
-
-        return fileUri;
+        return newFileName;
 
     }
 
 
+    @Override
+    public InputStream getResource(String fileName) throws FileNotFoundException {
+       String fullPath =uploadPath+File.separator+fileName;
+       InputStream file = new FileInputStream(fullPath);
+       return file;
+    }
+
+    @Override
+    public Path getUploadPath() {
+        return uploadPath;
+    }
 
 
 }
