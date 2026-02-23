@@ -1,15 +1,20 @@
 package com.educonnect.model.user;
 
+import com.educonnect.model.access.ParentAccess;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Data
 @EqualsAndHashCode(callSuper = true)
 @PrimaryKeyJoinColumn(name = "parent_id")
 public class Parent extends User {
+
+    @Column(columnDefinition = "BINARY(16)")
+    private UUID parentUuid = UUID.randomUUID();
 
     private String phoneNumber;
 
@@ -20,4 +25,8 @@ public class Parent extends User {
             inverseJoinColumns = @JoinColumn(name = "student_id")
     )
     private List<Student> children;
+
+
+    @OneToMany(mappedBy = "parent")
+    private List<ParentAccess> parentAccessList;
 }

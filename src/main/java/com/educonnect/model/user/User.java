@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import com.educonnect.model.notification.Notification;
+import org.hibernate.annotations.CreationTimestamp;
 
 @Entity
 @Table(name = "users")
@@ -29,7 +30,9 @@ public class User {
     private Role role;
 
     private boolean isActive = true;
-    private LocalDateTime createdAt = LocalDateTime.now();
+
+    @CreationTimestamp
+    private LocalDateTime createdAt ;
 
     @OneToMany(mappedBy = "user")
     private List<Notification> notifications;

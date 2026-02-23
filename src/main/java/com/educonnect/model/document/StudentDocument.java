@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 
-import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 
@@ -21,6 +21,7 @@ public class StudentDocument {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long documentId;
 
+    @Column(columnDefinition = "BINARY(16)")
     private UUID documentUuid = UUID.randomUUID();
 
     @ManyToOne
@@ -33,7 +34,7 @@ public class StudentDocument {
     private String FileURI;
 
     @CreationTimestamp
-    private Instant UploadedDate;
+    private LocalDateTime UploadedDate;
 
     @Enumerated(EnumType.STRING)
     private VerificationStatus verificationStatus = VerificationStatus.UNVERIFIED;

@@ -23,12 +23,12 @@ public class StudentDocumentController {
 
     @PostMapping(path = "/upload", consumes = "multipart/form-data")
     ResponseEntity<String> saveDocument(
-            @RequestParam UUID studentUuid,
+            @RequestParam String studentUuid,
             @RequestParam DocType docType,
             @RequestParam MultipartFile file
             ){
 
-        String msg = studentDocumentService.saveStudentDocument(studentUuid,docType,file);
+        String msg = studentDocumentService.saveStudentDocument(UUID.fromString(studentUuid),docType,file);
         return ResponseEntity.ok("File saved successfully, file uri: " + msg) ;
 
     }
