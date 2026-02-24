@@ -1,5 +1,6 @@
 package com.educonnect.model.user;
 
+
 import com.educonnect.model.access.ParentAccess;
 import com.educonnect.model.assessment.Result;
 import com.educonnect.model.attendance.Attendance;
@@ -10,6 +11,8 @@ import com.educonnect.model.engagement.Engagement;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +20,7 @@ import java.util.UUID;
 
 @Entity
 @Data
+@ToString(onlyExplicitlyIncluded = true)
 @EqualsAndHashCode(callSuper = true)
 @PrimaryKeyJoinColumn(name = "student_id")
 public class Student extends User {
