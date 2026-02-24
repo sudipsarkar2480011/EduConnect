@@ -24,7 +24,7 @@ public class StudentDetailsServiceImpl implements StudentDetailsService {
     public StudentDetailsDTO updateStudentDetails(UUID studentUuid,StudentDetailsDTO studentDetailsDTO) {
 
         Student student = studentRepo
-                          .findByStudentUuid(studentUuid)
+                          .findById(studentUuid)
                           .orElseThrow(() -> new RuntimeException("Student not found"));
 
         if(studentDetailsDTO.getDateOfBirth()!=null){
@@ -38,7 +38,7 @@ public class StudentDetailsServiceImpl implements StudentDetailsService {
 
 
         if (studentDetailsDTO.getParentUuids() != null) {
-            List<Parent> newParents = parentRepo.findByParentUuidIn(studentDetailsDTO.getParentUuids());
+            List<Parent> newParents = parentRepo.findByUserIdIn(studentDetailsDTO.getParentUuids());
 
 
             List<Parent> oldParents = new ArrayList<>(student.getParents());

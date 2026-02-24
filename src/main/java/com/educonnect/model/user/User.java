@@ -4,9 +4,11 @@ import jakarta.persistence.*;
 import lombok.Data;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 import com.educonnect.model.notification.Notification;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UuidGenerator;
 
 @Entity
 @Table(name = "users")
@@ -14,9 +16,11 @@ import org.hibernate.annotations.CreationTimestamp;
 @Data
 public class User {
 
+
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long userId;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(nullable = false,updatable = false)
+    private UUID userId;
 
     @Column(nullable = false, unique = true)
     private String email;

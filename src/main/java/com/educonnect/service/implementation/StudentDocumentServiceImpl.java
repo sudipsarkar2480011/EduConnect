@@ -38,7 +38,7 @@ public class StudentDocumentServiceImpl implements StudentDocumentService {
         }
 
         Student student = studentRepo
-                .findByStudentUuid(studentUuid)
+                .findByUserId(studentUuid)
                 .orElseThrow(()-> new RuntimeException("Student not found"))
         ;
 
@@ -56,7 +56,6 @@ public class StudentDocumentServiceImpl implements StudentDocumentService {
             docType = DocType.builder()
                     .docTypeName(docTypeEnum)
                     .description("LATER.....")
-                    .docTypeUuid(UUID.randomUUID())
                     .build();
 
             docTypeRepo.save(docType);
@@ -72,7 +71,7 @@ public class StudentDocumentServiceImpl implements StudentDocumentService {
         }
         studentDocumentRepo.save(document);
 
-        return document.getDocumentUuid();
+        return document.getStudentDocumentId();
 
     }
 
@@ -96,7 +95,7 @@ public class StudentDocumentServiceImpl implements StudentDocumentService {
     @Override
     public DocStreamDTO getDocument(UUID documentUuid) {
         StudentDocument document = studentDocumentRepo
-                .findByDocumentUuid(documentUuid)
+                .findByStudentDocumentId(documentUuid)
                 .orElseThrow(() -> new RuntimeException("Document not found"));
 
         byte[] fileByteData = document.getFileData();

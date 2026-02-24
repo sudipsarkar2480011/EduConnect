@@ -16,10 +16,9 @@ import java.util.UUID;
 public class Attendance {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long AttendanceID;
-
-    private UUID attendanceUuid = UUID.randomUUID();
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(nullable = false,updatable = false)
+    private UUID AttendanceID;
 
     @ManyToOne
     @JoinColumn(name = "student_id")

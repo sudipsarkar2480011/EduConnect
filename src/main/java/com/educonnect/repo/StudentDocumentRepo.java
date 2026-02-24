@@ -10,5 +10,5 @@ import java.util.UUID;
 @Repository
 public interface StudentDocumentRepo extends JpaRepository<StudentDocument,Long> {
 
-    Optional<StudentDocument> findByDocumentUuid(UUID documentUuid);
+    Optional<StudentDocument> findByStudentDocumentId(UUID documentUuid);
 }

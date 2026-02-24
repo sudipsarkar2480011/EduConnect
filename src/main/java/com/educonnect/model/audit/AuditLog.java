@@ -6,6 +6,7 @@ import com.educonnect.model.user.User;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.CurrentTimestamp;
+import org.hibernate.annotations.UuidGenerator;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -14,11 +15,11 @@ import java.util.UUID;
 @Data
 public class AuditLog {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long auditLogId;
 
-    private UUID auditLogUuid = UUID.randomUUID();
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(nullable = false,updatable = false)
+    private UUID auditLogId;
 
     @ManyToOne
     @JoinColumn(name = "user_id")

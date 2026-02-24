@@ -16,9 +16,6 @@ import java.util.UUID;
 @PrimaryKeyJoinColumn(name = "parent_id")
 public class Parent extends User {
 
-    @Column(columnDefinition = "BINARY(16)")
-    private UUID parentUuid = UUID.randomUUID();
-
     private String phoneNumber;
 
     @ManyToMany

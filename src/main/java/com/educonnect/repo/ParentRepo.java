@@ -10,6 +10,6 @@ import java.util.UUID;
 
 
 @Repository
-public interface ParentRepo extends JpaRepository<Parent,Long> {
-    List<Parent> findByParentUuidIn(List<UUID> uuids);
+public interface ParentRepo extends JpaRepository<Parent,UUID> {
+    List<Parent> findByUserIdIn(List<UUID> parentId);
 }
