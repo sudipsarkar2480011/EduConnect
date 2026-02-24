@@ -31,8 +31,12 @@ public class StudentDocument {
     @JoinColumn(name = "student_id", nullable = false)
     private Student student;
 
-    @Enumerated(EnumType.STRING)
+    @ManyToOne
+    @JoinColumn(name = "doctype_id" , nullable = false)
     private DocType docType;
+
+    @Enumerated(EnumType.STRING)
+    private FileTypeEnum fileType;
 
 
     @Lob

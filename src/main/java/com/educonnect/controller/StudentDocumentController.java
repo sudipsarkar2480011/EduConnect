@@ -2,7 +2,8 @@ package com.educonnect.controller;
 
 
 
-import com.educonnect.model.document.DocType;
+import com.educonnect.model.document.DocTypeEnum;
+import com.educonnect.model.document.FileTypeEnum;
 import com.educonnect.service.contract.StudentDocumentService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +16,6 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.UUID;
 
 
@@ -30,10 +30,11 @@ public class StudentDocumentController {
     @PostMapping(path = "/upload", consumes = "multipart/form-data")
     ResponseEntity<String> saveDocument(
             @RequestParam String studentUuid,
-            @RequestParam MultipartFile file
+            @RequestParam MultipartFile file,
+            @RequestParam DocTypeEnum docType
             ){
         try{
-            UUID documentUuid = studentDocumentService.saveStudentDocument(UUID.fromString(studentUuid),file);
+            UUID documentUuid = studentDocumentService.saveStudentDocument(UUID.fromString(studentUuid),file,docType);
             return ResponseEntity.ok(
                     ServletUriComponentsBuilder.fromCurrentContextPath()
                             .path("api/doc/view")
@@ -56,16 +57,19 @@ public class StudentDocumentController {
         var document = fileData.getStudentDocument();
         var inputStream = fileData.getInputStream();
 
-        response.setHeader("Content-Disposition", "inline; filename=\"" + document.getFileName() + "\"");
+        response.setHeader("Content-Disposition",
+                "inline; filename=\""  + document.getFileName() + "\"");
         response.setHeader("Cache-Control", "public, max-age=86400"); // optional
 
-        if(document.getDocType() == DocType.PDF){
+        var fileType = document.getFileType();
+
+        if(fileType == FileTypeEnum.PDF){
             response.setContentType(MediaType.APPLICATION_PDF_VALUE);
         }
-        else if (document.getDocType() == DocType.JPEG){
+        else if (fileType == FileTypeEnum.JPEG){
             response.setContentType(MediaType.IMAGE_JPEG_VALUE);
         }
-        else if (document.getDocType() == DocType.PNG) {
+        else if (fileType == FileTypeEnum.PNG) {
             response.setContentType(MediaType.IMAGE_PNG_VALUE);
         }else{
             response.setContentType(MediaType.APPLICATION_OCTET_STREAM_VALUE);

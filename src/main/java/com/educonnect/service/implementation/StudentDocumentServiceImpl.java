@@ -3,27 +3,22 @@ package com.educonnect.service.implementation;
 
 import com.educonnect.dto.DocStreamDTO;
 import com.educonnect.model.document.DocType;
+import com.educonnect.model.document.DocTypeEnum;
+import com.educonnect.model.document.FileTypeEnum;
 import com.educonnect.model.document.StudentDocument;
 import com.educonnect.model.user.Student;
+import com.educonnect.repo.DocTypeRepo;
 import com.educonnect.repo.StudentDocumentRepo;
 import com.educonnect.repo.StudentRepo;
 import com.educonnect.service.contract.StudentDocumentService;
-import jakarta.annotation.PostConstruct;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.UUID;
 
 @Service
@@ -33,9 +28,10 @@ public class StudentDocumentServiceImpl implements StudentDocumentService {
 
     private final StudentDocumentRepo studentDocumentRepo;
     private final StudentRepo studentRepo;
+    private final DocTypeRepo docTypeRepo;
 
     @Override
-    public UUID saveStudentDocument(UUID studentUuid, MultipartFile file) {
+    public UUID saveStudentDocument(UUID studentUuid, MultipartFile file, DocTypeEnum docTypeEnum) {
 
         if(file == null || file.isEmpty()){
             throw new RuntimeException("file not found");
@@ -50,7 +46,24 @@ public class StudentDocumentServiceImpl implements StudentDocumentService {
 
         document.setStudent(student);
         document.setFileName(file.getOriginalFilename());
-        document.setDocType(getDocType(file.getOriginalFilename()));
+        FileTypeEnum fileType = getFileType(file.getOriginalFilename());
+
+        DocType docType = null;
+
+        docType = docTypeRepo.findByDocTypeName(docTypeEnum).orElse(null);
+
+        if(docType == null){
+            docType = DocType.builder()
+                    .docTypeName(docTypeEnum)
+                    .description("LATER.....")
+                    .docTypeUuid(UUID.randomUUID())
+                    .build();
+
+            docTypeRepo.save(docType);
+        }
+
+        document.setDocType(docType);
+        document.setFileType(fileType);
 
         try {
             document.setFileData(file.getBytes());
@@ -63,20 +76,20 @@ public class StudentDocumentServiceImpl implements StudentDocumentService {
 
     }
 
-    private DocType getDocType(String filename){
+    private FileTypeEnum getFileType(String filename){
         filename = filename.toLowerCase();
 
         if(filename.endsWith(".pdf")){
-            return DocType.PDF;
+            return FileTypeEnum.PDF;
         }
         else if (filename.endsWith(".jpeg") || filename.endsWith(".jpg")) {
-            return DocType.JPEG;
+            return FileTypeEnum.JPEG;
         }
         else if(filename.endsWith(".png")){
-            return  DocType.PNG;
+            return  FileTypeEnum.PNG;
         }
         else {
-            return DocType.BYTE_STREAM;
+            return FileTypeEnum.BYTE_STREAM;
         }
     }
 
