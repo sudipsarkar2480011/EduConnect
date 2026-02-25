@@ -8,7 +8,7 @@ import java.util.UUID;
 
 import com.educonnect.model.notification.Notification;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UuidGenerator;
+
 
 @Entity
 @Table(name = "users")
