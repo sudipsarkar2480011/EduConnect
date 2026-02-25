@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.UuidGenerator;
 
 import java.util.UUID;
 
@@ -14,15 +15,15 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Notification {
-    
+
+
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer notificationId;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(nullable = false,updatable = false)
+    private UUID notificationId;
 
-    @Column(columnDefinition = "BINARY(16)")
-    private UUID notificationUuid = UUID.randomUUID();
+    private UUID entityId;
 
-    private Integer entityId;
     private String message;
 
     @Enumerated(EnumType.STRING)

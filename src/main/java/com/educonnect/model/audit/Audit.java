@@ -17,13 +17,12 @@ import org.hibernate.annotations.CreationTimestamp;
 @NoArgsConstructor
 public class Audit {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer auditId;
 
-    @Column(columnDefinition = "BINARY(16)")
-    private UUID auditUuid;
-    
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(nullable = false,updatable = false)
+    private UUID auditId;
+
     private String scope;
     private String findings;
 

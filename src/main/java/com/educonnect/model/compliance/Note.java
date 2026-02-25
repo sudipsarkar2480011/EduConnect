@@ -2,6 +2,7 @@ package com.educonnect.model.compliance;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import org.hibernate.annotations.UuidGenerator;
 
 import java.util.UUID;
 
@@ -11,10 +12,9 @@ import java.util.UUID;
 public class Note {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long NoteId;
-
-    private UUID noteUuid = UUID.randomUUID();
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(nullable = false,updatable = false)
+    private UUID NoteId;
 
     private String note;
 

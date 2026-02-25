@@ -13,9 +13,6 @@ import java.util.UUID;
 @PrimaryKeyJoinColumn(name = "teacher_id")
 public class Teacher extends User {
 
-    @Column(columnDefinition = "BINARY(16)")
-    private UUID teacherUuid = UUID.randomUUID();
-
     private String department;
     private String qualification;
 
