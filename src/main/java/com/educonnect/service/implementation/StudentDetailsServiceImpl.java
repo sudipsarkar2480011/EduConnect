@@ -37,22 +37,11 @@ public class StudentDetailsServiceImpl implements StudentDetailsService {
         }
 
 
-        if (studentDetailsDTO.getParentUuids() != null) {
-            List<Parent> newParents = parentRepo.findByUserIdIn(studentDetailsDTO.getParentUuids());
-
-
-            List<Parent> oldParents = new ArrayList<>(student.getParents());
-            for(Parent parent : oldParents ){
-                student.removeParent(parent);
-            }
-
-            for (Parent parent : newParents){
-                student.addParent(parent);
-            }
+        if (studentDetailsDTO.getParentId() != null) {
 
         }
 
-        return null;
+        return null; //YET TO implement
 
     }
 
