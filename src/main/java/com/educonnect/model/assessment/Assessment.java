@@ -21,7 +21,7 @@ public class Assessment {
 
     @Column(columnDefinition = "BINARY(16)")
     private UUID assessmentUuid = UUID.randomUUID();
-    
+
     private Double maxScore;
     private String title;
 
