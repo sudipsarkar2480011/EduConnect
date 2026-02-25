@@ -4,6 +4,7 @@ import com.educonnect.model.user.Student;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UuidGenerator;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -17,21 +18,32 @@ import java.util.UUID;
 @Entity
 @Data
 public class StudentDocument {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long documentId;
 
-    @Column(columnDefinition = "BINARY(16)")
-    private UUID documentUuid = UUID.randomUUID();
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(nullable = false,updatable = false)
+    private UUID studentDocumentId;
+
+    @Column(nullable = false)
+    private String fileName ;
 
     @ManyToOne
     @JoinColumn(name = "student_id", nullable = false)
     private Student student;
 
-    @Enumerated(EnumType.STRING)
+    @ManyToOne
+    @JoinColumn(name = "doctype_id" , nullable = false)
     private DocType docType;
 
-    private String FileURI;
+    @Enumerated(EnumType.STRING)
+    private FileTypeEnum fileType;
+
+
+    @Lob
+    @Basic(fetch = FetchType.LAZY)
+    @Column(nullable = false, columnDefinition = "LONGBLOB")
+    private byte[] fileData;
+
 
     @CreationTimestamp
     private LocalDateTime UploadedDate;

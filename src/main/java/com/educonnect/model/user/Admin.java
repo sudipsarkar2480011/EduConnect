@@ -17,8 +17,6 @@ import lombok.EqualsAndHashCode;
 @PrimaryKeyJoinColumn(name="admin_id")
 @Data
 public class Admin extends User{
-    @Column(columnDefinition = "BINARY(16)")
-    private UUID adminUuid = UUID.randomUUID();
 
     @OneToMany(mappedBy = "admin")
     private List<Audit> audits;

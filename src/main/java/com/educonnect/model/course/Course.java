@@ -6,6 +6,8 @@ import com.educonnect.model.engagement.Engagement;
 import com.educonnect.model.user.Teacher;
 import jakarta.persistence.*;
 import lombok.Data;
+import org.hibernate.annotations.UuidGenerator;
+
 import java.util.List;
 import java.util.UUID;
 
@@ -13,12 +15,12 @@ import java.util.UUID;
 @Data
 public class Course {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long courseId;
 
-    @Column(columnDefinition = "BINARY(16)")
-    private UUID courseUuid = UUID.randomUUID();
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(nullable = false,updatable = false)
+    private UUID courseId;
+
 
     private String title;
     private String description;

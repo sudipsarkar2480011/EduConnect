@@ -1,13 +1,12 @@
 package com.educonnect.model.report;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.CurrentTimestamp;
+import org.hibernate.annotations.UuidGenerator;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 
 //Report(ReportID, Scope, Metrics, GeneratedDate)
@@ -15,9 +14,11 @@ import java.time.LocalDate;
 @Data
 @Entity
 public class Report {
+
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long reportId;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(nullable = false,updatable = false)
+    private UUID reportId;
 
     private String scope;
     private String metrics;
