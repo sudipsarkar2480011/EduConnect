@@ -37,7 +37,7 @@ public class StudentDocumentController {
             UUID documentUuid = studentDocumentService.saveStudentDocument(UUID.fromString(studentUuid),file,docType);
             return ResponseEntity.ok(
                     ServletUriComponentsBuilder.fromCurrentContextPath()
-                            .path("api/doc/view")
+                            .path("api/doc/view/")
                             .path(documentUuid.toString())
                             .toUriString()
             ) ;
