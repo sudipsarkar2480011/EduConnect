@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.CurrentTimestamp;
 
+
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
@@ -16,10 +17,9 @@ import java.util.UUID;
 public class ComplianceRecord {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long complianceID;
-
-    private UUID complianceUuid;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(nullable = false,updatable = false)
+    private UUID complianceRecordID;
 
     @ManyToOne
     @JoinColumn(name = "student_id")

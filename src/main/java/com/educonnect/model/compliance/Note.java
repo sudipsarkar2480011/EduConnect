@@ -11,10 +11,9 @@ import java.util.UUID;
 public class Note {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long NoteId;
-
-    private UUID noteUuid = UUID.randomUUID();
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(nullable = false,updatable = false)
+    private UUID NoteId;
 
     private String note;
 

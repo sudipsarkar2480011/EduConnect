@@ -8,7 +8,9 @@ import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 
+
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 
 @Entity
@@ -16,8 +18,9 @@ import java.time.LocalDateTime;
 public class Engagement {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long engagementId;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(nullable = false,updatable = false)
+    private UUID engagementId;
 
     @ManyToOne
     @JoinColumn(name = "student_id")

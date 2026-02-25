@@ -2,24 +2,24 @@ package com.educonnect.controller;
 
 
 
-import com.educonnect.model.document.DocType;
+import com.educonnect.model.document.DocTypeEnum;
+import com.educonnect.model.document.FileTypeEnum;
 import com.educonnect.service.contract.StudentDocumentService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.UUID;
 
 
+@Slf4j
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/doc")
@@ -30,21 +30,51 @@ public class StudentDocumentController {
     @PostMapping(path = "/upload", consumes = "multipart/form-data")
     ResponseEntity<String> saveDocument(
             @RequestParam String studentUuid,
-            @RequestParam DocType docType,
-            @RequestParam MultipartFile file
+            @RequestParam MultipartFile file,
+            @RequestParam DocTypeEnum docType
             ){
-
-        String msg = studentDocumentService.saveStudentDocument(UUID.fromString(studentUuid),docType,file);
-        return ResponseEntity.ok("File saved successfully, file uri: " + msg) ;
+        try{
+            UUID documentUuid = studentDocumentService.saveStudentDocument(UUID.fromString(studentUuid),file,docType);
+            return ResponseEntity.ok(
+                    ServletUriComponentsBuilder.fromCurrentContextPath()
+                            .path("api/doc/view/")
+                            .path(documentUuid.toString())
+                            .toUriString()
+            ) ;
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            throw new RuntimeException(e);
+        }
     }
 
-    @GetMapping(path = "view/{image}")
-    public void viewImage(@PathVariable(name = "image") String image, HttpServletResponse response) throws IOException {
-         InputStream imageStream = studentDocumentService.getResource(image);
-         response.setContentType(MediaType.IMAGE_JPEG_VALUE);
-         response.setHeader("Content-Disposition", "inline; filename=\"" + image + "\"");
-         response.setHeader("Cache-Control", "public, max-age=86400"); // optional
+    @GetMapping(path = "view/{documentUuid}")
+    public void viewImage(
+            @PathVariable("documentUuid") UUID documentUuid,
+            HttpServletResponse response
+    ) throws IOException {
+        var fileData = studentDocumentService.getDocument(documentUuid);
 
-        StreamUtils.copy(imageStream,response.getOutputStream());
+        var document = fileData.getStudentDocument();
+        var inputStream = fileData.getInputStream();
+
+        response.setHeader("Content-Disposition",
+                "inline; filename=\""  + document.getFileName() + "\"");
+        response.setHeader("Cache-Control", "public, max-age=86400"); // optional
+
+        var fileType = document.getFileType();
+
+        if(fileType == FileTypeEnum.PDF){
+            response.setContentType(MediaType.APPLICATION_PDF_VALUE);
+        }
+        else if (fileType == FileTypeEnum.JPEG){
+            response.setContentType(MediaType.IMAGE_JPEG_VALUE);
+        }
+        else if (fileType == FileTypeEnum.PNG) {
+            response.setContentType(MediaType.IMAGE_PNG_VALUE);
+        }else{
+            response.setContentType(MediaType.APPLICATION_OCTET_STREAM_VALUE);
+        }
+
+        StreamUtils.copy(inputStream,response.getOutputStream());
     }
 }

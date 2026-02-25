@@ -14,11 +14,11 @@ import java.util.UUID;
 @Data
 public class AuditLog {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long auditLogId;
 
-    private UUID auditLogUuid = UUID.randomUUID();
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(nullable = false,updatable = false)
+    private UUID auditLogId;
 
     @ManyToOne
     @JoinColumn(name = "user_id")

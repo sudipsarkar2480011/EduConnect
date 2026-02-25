@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+
 import java.util.List;
 import java.util.UUID;
 
@@ -15,13 +16,12 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Assessment {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer assessmentId;
 
-    @Column(columnDefinition = "BINARY(16)")
-    private UUID assessmentUuid = UUID.randomUUID();
-    
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(nullable = false,updatable = false)
+    private UUID assessmentId;
+
     private Double maxScore;
     private String title;
 

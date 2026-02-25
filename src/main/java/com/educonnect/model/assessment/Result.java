@@ -11,11 +11,11 @@ import java.util.UUID;
 @Entity
 @Data
 public class Result {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long resultId;
 
-    private UUID resultUuid = UUID.randomUUID();
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(nullable = false,updatable = false)
+    private UUID resultId;
 
     @ManyToOne
     @JoinColumn(name = "student_id")

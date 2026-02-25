@@ -6,9 +6,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 import java.util.UUID;
 
-public interface StudentRepo extends JpaRepository<Student, Long> {
+public interface StudentRepo extends JpaRepository<Student, UUID> {
 
-    Optional<Student> findByStudentUuid(UUID studentUuid);
-    boolean existsByStudentUuid(UUID studentUuid);
+    Optional<Student> findByUserId(UUID studentId);
+    boolean existsByUserId(UUID StudentId);
 
 }

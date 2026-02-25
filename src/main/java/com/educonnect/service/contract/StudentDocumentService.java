@@ -1,6 +1,7 @@
 package com.educonnect.service.contract;
 
-import com.educonnect.model.document.DocType;
+import com.educonnect.dto.DocStreamDTO;
+import com.educonnect.model.document.DocTypeEnum;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.FileNotFoundException;
@@ -10,7 +11,6 @@ import java.util.UUID;
 
 public interface StudentDocumentService {
 
-    String saveStudentDocument(UUID studentUuid, DocType docType, MultipartFile file);
-    InputStream getResource(String fileName) throws FileNotFoundException;
-    public Path getUploadPath();
+    UUID saveStudentDocument(UUID studentUuid, MultipartFile file, DocTypeEnum docTypeEnum);
+    DocStreamDTO getDocument(UUID documentUuid);
 }

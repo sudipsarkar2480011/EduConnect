@@ -5,6 +5,7 @@ import com.educonnect.model.user.Student;
 import jakarta.persistence.*;
 import lombok.Data;
 
+
 import java.util.UUID;
 
 
@@ -12,11 +13,12 @@ import java.util.UUID;
 @Entity
 @Data
 public class ParentAccess {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long parentAccessId;
 
-    private UUID parentAccessUuid = UUID.randomUUID();
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(nullable = false,updatable = false)
+    private UUID parentAccessId;
+
 
     @ManyToOne
     @JoinColumn(name = "parent_id")

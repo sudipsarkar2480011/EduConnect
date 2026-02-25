@@ -13,12 +13,11 @@ import java.util.UUID;
 })
 public class Enrollment {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long enrollmentId;
 
-    @Column(columnDefinition = "BINARY(16)")
-    private UUID enrollmentUuid = UUID.randomUUID();
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(nullable = false,updatable = false)
+    private UUID enrollmentId;
 
     @ManyToOne
     @JoinColumn(name = "student_id")
