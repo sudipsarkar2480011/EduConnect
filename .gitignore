@@ -33,3 +33,5 @@ build/
 .vscode/
 
 uploads
+
+application-secret.properties

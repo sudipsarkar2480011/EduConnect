@@ -75,7 +75,7 @@ public class StudentDocumentServiceImpl implements StudentDocumentService {
         document.setStudentDocumentId(UUID.randomUUID());
 
         String uri =  ServletUriComponentsBuilder.fromCurrentContextPath()
-                .path("api/doc/view/")
+                .path("api/v1/doc/view/")
                 .path(document.getStudentDocumentId().toString())
                 .toUriString();
 
