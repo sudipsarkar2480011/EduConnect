@@ -34,12 +34,8 @@ public class StudentDocumentController {
             @RequestParam DocTypeEnum docType
             ){
         try{
-            UUID documentUuid = studentDocumentService.saveStudentDocument(UUID.fromString(studentUuid),file,docType);
             return ResponseEntity.ok(
-                    ServletUriComponentsBuilder.fromCurrentContextPath()
-                            .path("api/doc/view/")
-                            .path(documentUuid.toString())
-                            .toUriString()
+                    studentDocumentService.saveStudentDocument(UUID.fromString(studentUuid),file,docType)
             ) ;
         } catch (Exception e) {
             log.error(e.getMessage());

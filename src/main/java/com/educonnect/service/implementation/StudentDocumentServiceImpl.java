@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -30,8 +31,9 @@ public class StudentDocumentServiceImpl implements StudentDocumentService {
     private final StudentRepo studentRepo;
     private final DocTypeRepo docTypeRepo;
 
+
     @Override
-    public UUID saveStudentDocument(UUID studentUuid, MultipartFile file, DocTypeEnum docTypeEnum) {
+    public String saveStudentDocument(UUID studentUuid, MultipartFile file, DocTypeEnum docTypeEnum) {
 
         if(file == null || file.isEmpty()){
             throw new RuntimeException("file not found");
@@ -69,9 +71,19 @@ public class StudentDocumentServiceImpl implements StudentDocumentService {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+
+        document.setStudentDocumentId(UUID.randomUUID());
+
+        String uri =  ServletUriComponentsBuilder.fromCurrentContextPath()
+                .path("api/doc/view/")
+                .path(document.getStudentDocumentId().toString())
+                .toUriString();
+
+        document.setFileUri(uri);
+
         studentDocumentRepo.save(document);
 
-        return document.getStudentDocumentId();
+        return uri;
 
     }
 
