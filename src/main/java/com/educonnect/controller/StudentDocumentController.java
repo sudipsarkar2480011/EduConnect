@@ -18,10 +18,6 @@ import java.io.IOException;
 import java.util.UUID;
 
 
-@Slf4j
-@RequiredArgsConstructor
-@RestController
-@RequestMapping("/api/v1/doc")
 
 /**
  * REST controller for managing student documents.
@@ -30,6 +26,11 @@ import java.util.UUID;
  *  @version 1.0
  *  @since 1.0
  */
+
+@Slf4j
+@RequiredArgsConstructor
+@RestController
+@RequestMapping("/api/v1/doc")
 
 public class StudentDocumentController {
 
