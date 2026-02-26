@@ -1,9 +1,8 @@
 package com.educonnect.controller;
 
 import com.educonnect.model.course.Course;
-import com.educonnect.service.course.CourseService;
-import com.educonnect.service.course.CourseVideoImpl;
-import com.educonnect.service.course.CourseVideoService;
+import com.educonnect.service.contract.course.CourseService;
+import com.educonnect.service.contract.course.CourseVideoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;

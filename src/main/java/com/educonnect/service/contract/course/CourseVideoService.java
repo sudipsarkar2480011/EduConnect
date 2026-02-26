@@ -1,4 +1,4 @@
-package com.educonnect.service.course;
+package com.educonnect.service.contract.course;
 
 import com.educonnect.model.course.CourseModule;
 import org.springframework.core.io.Resource;

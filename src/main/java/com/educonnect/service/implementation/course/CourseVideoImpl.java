@@ -1,9 +1,10 @@
-package com.educonnect.service.course;
+package com.educonnect.service.implementation.course;
 
 import com.educonnect.model.course.Course;
 import com.educonnect.model.course.CourseModule;
 import com.educonnect.repo.course.CourseModuleRepo;
 import com.educonnect.repo.course.CourseRepo;
+import com.educonnect.service.contract.course.CourseVideoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
@@ -17,12 +18,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.Optional;
 import java.util.UUID;
 
 
 @Service
-public class CourseVideoImpl implements CourseVideoService{
+public class CourseVideoImpl implements CourseVideoService {
 
     @Value("${file.upload-dir}")
     private String uploadDir;
