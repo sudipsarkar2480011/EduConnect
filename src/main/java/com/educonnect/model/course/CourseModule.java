@@ -2,7 +2,7 @@ package com.educonnect.model.course;
 
 import jakarta.persistence.*;
 import lombok.Data;
-
+import org.hibernate.annotations.UuidGenerator;
 
 import java.util.UUID;
 

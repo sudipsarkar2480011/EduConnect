@@ -17,12 +17,7 @@ public class Parent extends User {
 
     private String phoneNumber;
 
-    @ManyToMany
-    @JoinTable(
-            name = "parent_student_mapping",
-            joinColumns = @JoinColumn(name = "parent_id"),
-            inverseJoinColumns = @JoinColumn(name = "student_id")
-    )
+    @OneToMany(mappedBy = "parent")
     private List<Student> children;
 
 

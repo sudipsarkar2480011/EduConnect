@@ -27,12 +27,15 @@ import java.util.UUID;
 public class StudentDocument {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
+//    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(nullable = false,updatable = false)
     private UUID studentDocumentId;
 
     @Column(nullable = false)
     private String fileName ;
+
+    @Column(nullable = false,updatable = false)
+    private String fileUri;
 
     @ManyToOne
     @JoinColumn(name = "student_id", nullable = false)

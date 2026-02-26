@@ -28,9 +28,10 @@ public class Student extends User {
     private LocalDate dateOfBirth;
     private String enrollmentNumber;
 
-    // Links to Parents
-    @ManyToMany(mappedBy = "children")
-    private List<Parent> parents;
+    // Links to Parent
+    @ManyToOne
+    @JoinColumn(name = "parent_id")
+    private Parent parent;
 
     // Links to Academic Records (Cross-package relationship)
     @OneToMany(mappedBy = "student", cascade = CascadeType.ALL)
@@ -55,18 +56,4 @@ public class Student extends User {
     private List<Engagement> engagements;
 
 
-    public void addParent(Parent parent){
-        if(this.parents != null){
-            this.parents = new ArrayList<>();
-        }
-        this.parents.add(parent);
-        parent.getChildren().add(this);
-    }
-
-    public void removeParent(Parent parent){
-        if(this.parents != null){
-            this.parents.remove(parent);
-            parent.getChildren().remove(this);
-        }
-    }
 }
