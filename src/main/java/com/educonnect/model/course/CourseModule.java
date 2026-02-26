@@ -1,10 +1,8 @@
 package com.educonnect.model.course;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.UuidGenerator;
 
 import java.util.UUID;
@@ -14,10 +12,11 @@ import java.util.UUID;
 @Builder
 @Entity
 @Data
+@ToString
 public class CourseModule {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
+//    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(nullable = false,updatable = false)
     private UUID moduleId;
 
@@ -27,5 +26,6 @@ public class CourseModule {
 
     @ManyToOne
     @JoinColumn(name = "course_id")
+    @JsonIgnore
     private Course course;
 }

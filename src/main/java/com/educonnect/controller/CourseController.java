@@ -1,11 +1,13 @@
 package com.educonnect.controller;
 
 import com.educonnect.model.course.Course;
+import com.educonnect.model.course.CourseModule;
 import com.educonnect.service.contract.course.CourseService;
 import com.educonnect.service.contract.course.CourseVideoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -24,25 +26,31 @@ public class CourseController {
     private CourseService courseService;
 
     @PostMapping("/add-video")
-    public ResponseEntity<String> addVideo(
+    public ResponseEntity<CourseModule> addVideo(
             @RequestParam MultipartFile file,
             @RequestParam String title,
             @RequestParam Integer sequenceOrder,
             @RequestParam UUID courseId) throws IOException {
-        courseVideoServiceClass.uploadVideo(file,title,sequenceOrder,courseId);
-        return ResponseEntity.ok("Video uploaded successfully");
+
+        return ResponseEntity.ok( courseVideoServiceClass.uploadVideo(file,title,sequenceOrder,courseId));
     }
-    @GetMapping("/get-video/{videoId}")
-    public ResponseEntity<Resource> getVideo(@PathVariable UUID videoId) throws IOException {
-        Resource resource = courseVideoServiceClass.getVideo(videoId);
+    @GetMapping("/get-video/{id}")
+    public ResponseEntity<String> getVideo(@PathVariable UUID id) throws IOException {
+        String url=courseVideoServiceClass.getVideoUrl(id);
+        return ResponseEntity.ok(url);
+    }
+    @GetMapping("/stream/{filename}")
+    public ResponseEntity<Resource> streamVideo(@PathVariable UUID filename) throws IOException
+    {
+        Resource resource= courseVideoServiceClass.LoadVideoAsResource(filename);
         return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_TYPE, "video/mp4") // Or detect dynamically
+                .contentType(MediaType.parseMediaType("video/mp4"))
                 .body(resource);
+
     }
 
     @PostMapping("/add-course")
     public ResponseEntity<Course> addCourse(@RequestBody Course course) {
-        // Validation logic here
         return ResponseEntity.ok(courseService.addCourse(course));
     }
     @GetMapping("/get-course/{courId}")
