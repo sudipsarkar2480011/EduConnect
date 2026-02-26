@@ -13,7 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.io.IOException;
 import java.util.UUID;
@@ -22,10 +21,32 @@ import java.util.UUID;
 @Slf4j
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/doc")
+@RequestMapping("/api/v1/doc")
+
+/**
+ * REST controller for managing student documents.
+ * *
+ *  @author sudipsarkar
+ *  @version 1.0
+ *  @since 1.0
+ */
+
 public class StudentDocumentController {
 
     private final StudentDocumentService studentDocumentService;
+
+
+    /**
+     * Uploads and saves a student document to the database.
+     * <p>
+     * This method accepts a file and stores it as a BLOB in the DB.
+     * </p>
+     *
+     * @param studentUuid The unique identifier of the student whose document will be uploaded.
+     * @param file The document file
+     * @param docType The type of the document(ADHAAR, PAN...)
+     * @since 1.0
+     */
 
     @PostMapping(path = "/upload", consumes = "multipart/form-data")
     ResponseEntity<String> saveDocument(
@@ -43,6 +64,18 @@ public class StudentDocumentController {
         }
     }
 
+
+    /**
+     *
+     * <p>
+     * This method accepts a file and stores it as a BLOB in the DB.
+     * </p>
+     *
+     * @param documentUuid The unique identifier to fetch the document (BLOB).
+     * @param response The {@link HttpServletResponse} used to set the Content-Type and stream the file data.
+     * @since 1.0
+     *
+     */
     @GetMapping(path = "view/{documentUuid}")
     public void viewImage(
             @PathVariable("documentUuid") UUID documentUuid,
