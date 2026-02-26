@@ -8,7 +8,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public interface StudentDocumentRepo extends JpaRepository<StudentDocument,Long> {
+public interface StudentDocumentRepo extends JpaRepository<StudentDocument, UUID> {
 
     Optional<StudentDocument> findByStudentDocumentId(UUID documentUuid);
 }
