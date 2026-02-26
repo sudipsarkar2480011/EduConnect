@@ -12,8 +12,8 @@ public class StudentDetailsDTO {
     private UUID studentUuid;
     private LocalDate dateOfBirth;
     private String enrollmentNumber;
-    private List<UUID> parentUuids;
-    private List<UUID> enrollmentUuids;
-    private List<UUID> documentUuids;
+    private UUID parentId;
+    private List<UUID> enrollmentIds;
+    private List<UUID> documentIds;
 
 }
