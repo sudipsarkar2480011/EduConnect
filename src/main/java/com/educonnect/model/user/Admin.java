@@ -9,7 +9,10 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrimaryKeyJoinColumn;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.experimental.SuperBuilder;
 
+
+@SuperBuilder
 @Entity
 @EqualsAndHashCode(callSuper = true)
 @PrimaryKeyJoinColumn(name="admin_id")
