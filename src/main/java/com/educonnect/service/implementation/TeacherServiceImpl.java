@@ -41,7 +41,7 @@ public class TeacherServiceImpl implements TeacherService {
 
         //t.setPasswordHash("TEMPORARY_PASSWORD_123");
 
-        t.setPasswordHash(dto.getPasswordHash());
+        t.setPassword(dto.getPasswordHash());
 
         t.setDepartment(dto.getDepartment());
         t.setQualification(dto.getQualification());
