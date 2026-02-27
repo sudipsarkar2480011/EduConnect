@@ -2,8 +2,10 @@ package com.educonnect.model.user;
 
 import com.educonnect.model.course.Course;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 import java.util.List;
@@ -13,6 +15,8 @@ import java.util.List;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @PrimaryKeyJoinColumn(name = "teacher_id")
+@NoArgsConstructor
+@AllArgsConstructor
 public class Teacher extends User {
 
     private String department;
