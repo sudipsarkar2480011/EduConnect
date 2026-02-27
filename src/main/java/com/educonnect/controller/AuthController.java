@@ -9,6 +9,15 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("v1/auth")
 @RequiredArgsConstructor
+
+/**
+ * REST controller for authentication
+ * *
+ *  @author santadiprudra
+ *  @version 1.0
+ *  @since 1.0
+ */
+
 public class AuthController
 {
     private final UserFactory userFactory;
