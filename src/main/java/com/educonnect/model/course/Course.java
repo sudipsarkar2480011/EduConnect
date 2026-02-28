@@ -1,26 +1,18 @@
 package com.educonnect.model.course;
 
-import com.educonnect.model.assessment.Assessment;
-import com.educonnect.model.attendance.Attendance;
-import com.educonnect.model.engagement.Engagement;
+import com.educonnect.model.assesment.Assesment;
 import com.educonnect.model.user.Teacher;
 import jakarta.persistence.*;
 import lombok.Data;
-import org.hibernate.annotations.UuidGenerator;
-
 import java.util.List;
-import java.util.UUID;
 
 @Entity
 @Data
 public class Course {
 
-
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(nullable = false,updatable = false)
-    private UUID courseId;
-
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long courseId;
 
     private String title;
     private String description;
@@ -38,11 +30,5 @@ public class Course {
     private List<Enrollment> enrollments;
 
     @OneToMany(mappedBy = "course")
-    private List<Assessment> assessments;
-
-    @OneToMany(mappedBy = "course")
-    private List<Attendance> attendanceList;
-
-    @OneToMany(mappedBy = "course")
-    private List<Engagement> engagements;
+    private List<Assesment> assesments;
 }
