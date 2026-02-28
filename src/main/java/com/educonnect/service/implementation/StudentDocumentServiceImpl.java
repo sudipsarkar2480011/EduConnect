@@ -1,25 +1,24 @@
 package com.educonnect.service.implementation;
 
 
-import com.educonnect.dto.DocStreamDTO;
 import com.educonnect.model.document.DocType;
-import com.educonnect.model.document.DocTypeEnum;
-import com.educonnect.model.document.FileTypeEnum;
 import com.educonnect.model.document.StudentDocument;
 import com.educonnect.model.user.Student;
-import com.educonnect.repo.DocTypeRepo;
 import com.educonnect.repo.StudentDocumentRepo;
 import com.educonnect.repo.StudentRepo;
 import com.educonnect.service.contract.StudentDocumentService;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.UUID;
 
 @Service
@@ -29,97 +28,72 @@ public class StudentDocumentServiceImpl implements StudentDocumentService {
 
     private final StudentDocumentRepo studentDocumentRepo;
     private final StudentRepo studentRepo;
-    private final DocTypeRepo docTypeRepo;
+
+    @Value("${storage.upload-dir:uploads}")
+    private String uploadDir;
+    private Path uploadPath ;
+
+    @Value("${server.port}")
+    private String port ;
+
+    @PostConstruct
+    public void init(){
+        this.uploadPath =  Paths.get(uploadDir)
+                                .toAbsolutePath()
+                                .normalize();
+        try {
+            Files.createDirectories(uploadPath);
+        }catch (IOException e){
+            throw new RuntimeException("Could not create upload directory");
+        }
+    }
 
 
     @Override
-    public String saveStudentDocument(UUID studentUuid, MultipartFile file, DocTypeEnum docTypeEnum) {
-
-        if(file == null || file.isEmpty()){
-            throw new RuntimeException("file not found");
-        }
-
+    public String saveStudentDocument(UUID studentUuid, DocType docType, MultipartFile file) {
         Student student = studentRepo
-                .findByUserId(studentUuid)
+                .findByStudentUuid(studentUuid)
                 .orElseThrow(()-> new RuntimeException("Student not found"))
         ;
 
-        StudentDocument document = new StudentDocument();
 
-        document.setStudent(student);
-        document.setFileName(file.getOriginalFilename());
-        FileTypeEnum fileType = getFileType(file.getOriginalFilename());
 
-        DocType docType = null;
+        String originalFileName = file.getOriginalFilename();
+        int indexOfDot = originalFileName.lastIndexOf(".");
+        String extension =
+                originalFileName.substring(indexOfDot);
 
-        docType = docTypeRepo.findByDocTypeName(docTypeEnum).orElse(null);
 
-        if(docType == null){
-            docType = DocType.builder()
-                    .docTypeName(docTypeEnum)
-                    .description("LATER.....")
-                    .build();
+        String newFileName = originalFileName.substring(0,indexOfDot)
+                            + UUID.randomUUID()
+                            + extension;
 
-            docTypeRepo.save(docType);
-        }
-
-        document.setDocType(docType);
-        document.setFileType(fileType);
+        Path targetLocation = uploadPath.resolve(newFileName);
 
         try {
-            document.setFileData(file.getBytes());
+            Files.copy(
+                    file.getInputStream(),
+                    targetLocation,
+                    StandardCopyOption.REPLACE_EXISTING
+            );
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
 
-        document.setStudentDocumentId(UUID.randomUUID());
+        String fileUri = "http://localhost:" + port +"/files/" + newFileName;
 
-        String uri =  ServletUriComponentsBuilder.fromCurrentContextPath()
-                .path("api/v1/doc/view/")
-                .path(document.getStudentDocumentId().toString())
-                .toUriString();
+        StudentDocument document = new StudentDocument();
 
-        document.setFileUri(uri);
+        document.setStudent(student);
+        document.setDocType(docType);
+        document.setFileURI(fileUri);
 
         studentDocumentRepo.save(document);
 
-        return uri;
+        return fileUri;
 
     }
 
-    private FileTypeEnum getFileType(String filename){
-        filename = filename.toLowerCase();
-
-        if(filename.endsWith(".pdf")){
-            return FileTypeEnum.PDF;
-        }
-        else if (filename.endsWith(".jpeg") || filename.endsWith(".jpg")) {
-            return FileTypeEnum.JPEG;
-        }
-        else if(filename.endsWith(".png")){
-            return  FileTypeEnum.PNG;
-        }
-        else {
-            return FileTypeEnum.BYTE_STREAM;
-        }
-    }
-
-    @Override
-    public DocStreamDTO getDocument(UUID documentUuid) {
-        StudentDocument document = studentDocumentRepo
-                .findByStudentDocumentId(documentUuid)
-                .orElseThrow(() -> new RuntimeException("Document not found"));
-
-        byte[] fileByteData = document.getFileData();
-
-        if (fileByteData == null) {
-            throw new RuntimeException("Document has no data");
-        }
-
-        InputStream inputStream = new ByteArrayInputStream(fileByteData);
-
-        return new DocStreamDTO(inputStream,document);
-    }
 
 
 

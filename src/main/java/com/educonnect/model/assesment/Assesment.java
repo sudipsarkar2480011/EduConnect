@@ -1,6 +1,6 @@
-package com.educonnect.model.notification;
+package com.educonnect.model.assesment;
 
-import com.educonnect.model.user.User;
+import com.educonnect.model.course.Course;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -18,21 +18,18 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Notification {
-    
+public class Assesment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer notificationId;
-
-    private Integer entityId;
-    private String message;
+    private Integer assesmentId;
+    
+    private Double maxScore;
+    private String title;
 
     @Enumerated(EnumType.STRING)
-    private NotificationType category;
-
-    private Boolean status;
+    private AssesmentType type;
 
     @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    @JoinColumn(name = "course_id")
+    private Course course;
 }

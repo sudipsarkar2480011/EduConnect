@@ -1,38 +1,27 @@
 package com.educonnect.model.user;
 
-
-import com.educonnect.model.access.ParentAccess;
-import com.educonnect.model.assessment.Result;
-import com.educonnect.model.attendance.Attendance;
-import com.educonnect.model.compliance.ComplianceRecord;
 import com.educonnect.model.course.Enrollment;
 import com.educonnect.model.document.StudentDocument;
-import com.educonnect.model.engagement.Engagement;
 import jakarta.persistence.*;
-import lombok.*;
-import lombok.experimental.SuperBuilder;
-
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
-@SuperBuilder
+import java.util.UUID;
+
 @Entity
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
-@ToString(onlyExplicitlyIncluded = true)
 @EqualsAndHashCode(callSuper = true)
 @PrimaryKeyJoinColumn(name = "student_id")
 public class Student extends User {
 
-
+    private UUID studentUuid = UUID.randomUUID();
     private LocalDate dateOfBirth;
     private String enrollmentNumber;
 
-    // Links to Parent
-    @ManyToOne
-    @JoinColumn(name = "parent_id")
-    private Parent parent;
+    // Links to Parents
+    @ManyToMany(mappedBy = "children")
+    private List<Parent> parents;
 
     // Links to Academic Records (Cross-package relationship)
     @OneToMany(mappedBy = "student", cascade = CascadeType.ALL)
@@ -40,21 +29,4 @@ public class Student extends User {
 
     @OneToMany(mappedBy = "student")
     private List<StudentDocument> documents;
-
-    @OneToMany(mappedBy = "student")
-    private List<ParentAccess> parentAccessList;
-
-    @OneToMany(mappedBy = "student")
-    private List<Result> resultList;
-
-    @OneToMany(mappedBy = "student")
-    private List<Attendance> attendanceList;
-
-    @OneToMany(mappedBy = "student")
-    private List<ComplianceRecord> complianceRecords;
-
-    @OneToMany(mappedBy = "student")
-    private List<Engagement> engagements;
-
-
 }
