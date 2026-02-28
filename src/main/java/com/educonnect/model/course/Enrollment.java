@@ -4,6 +4,8 @@ import com.educonnect.model.user.Student;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.util.UUID;
+
 @Entity
 @Data
 @Table(uniqueConstraints = {
@@ -11,9 +13,11 @@ import lombok.Data;
 })
 public class Enrollment {
 
+
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long enrollmentId;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(nullable = false,updatable = false)
+    private UUID enrollmentId;
 
     @ManyToOne
     @JoinColumn(name = "student_id")

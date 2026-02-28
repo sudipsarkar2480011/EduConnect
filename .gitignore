@@ -33,3 +33,7 @@ build/
 .vscode/
 
 uploads
+
+# Ignore secret config
+src/main/resources/application-secret.properties
+
