@@ -25,7 +25,7 @@ public class StudentAuthStrategy implements UserAuthStrategy {
         return studentRepo.save(Student.builder()
                         .fullName(u.getFullName())
                         .email(u.getEmail())
-                        .password(u.getPassword())
+                        .password(encoder.encode(u.getPassword()))
                         .role(Role.STUDENT)
                 .build());
     }

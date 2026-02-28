@@ -23,7 +23,7 @@ public class TeacherAuthStategy implements UserAuthStrategy {
         return teacherRepo.save(Teacher.builder()
                         .fullName(u.getFullName())
                         .email(u.getEmail())
-                        .password(u.getPassword())
+                        .password(encoder.encode(u.getPassword()))
                         .role(Role.TEACHER)
                 .build());
     }

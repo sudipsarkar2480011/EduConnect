@@ -1,6 +1,13 @@
 package com.educonnect.service.strategy;
 
+import com.educonnect.config.JWTService;
+import com.educonnect.config.UserRepo;
+import com.educonnect.dto.LoginResponseDTO;
 import com.educonnect.model.user.User;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 /**
  * Strategy interface for handling user authentication and persistence
@@ -29,4 +36,22 @@ public interface UserAuthStrategy {
      * @return The persisted {@link User} object, often including a generated ID.
      */
     User save(User u);
+
+    BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
+    default LoginResponseDTO verify(User u, AuthenticationManager authManager, JWTService jwtService, UserRepo userRepo) {
+        Authentication authentication = authManager.authenticate(
+                new UsernamePasswordAuthenticationToken(u.getEmail(), u.getPassword())
+        );
+
+        if (authentication.isAuthenticated()) {
+            User entity = userRepo.findByEmail(u.getEmail())
+                    .orElseThrow(() -> new RuntimeException("User not found after auth"));
+            String token = jwtService.generateToken(entity.getEmail());
+            LoginResponseDTO response = new LoginResponseDTO();
+            return response.builder().token(token).name(entity.getFullName())
+                    .role(String.valueOf(entity.getRole())).email(entity.getEmail())
+                    .build();
+        }
+        throw new RuntimeException("Authentication Failed");
+    }
 }
