@@ -3,7 +3,7 @@ package com.educonnect.model.report;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.CurrentTimestamp;
-import org.hibernate.annotations.UuidGenerator;
+
 
 import java.time.LocalDate;
 import java.util.UUID;

@@ -7,7 +7,7 @@ import com.educonnect.model.user.Student;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UuidGenerator;
+
 
 import java.time.LocalDateTime;
 import java.util.UUID;

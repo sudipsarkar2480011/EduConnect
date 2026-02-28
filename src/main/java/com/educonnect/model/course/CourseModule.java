@@ -3,7 +3,7 @@ package com.educonnect.model.course;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.UuidGenerator;
+
 
 import java.util.UUID;
 
