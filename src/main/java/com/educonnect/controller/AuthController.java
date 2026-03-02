@@ -1,5 +1,7 @@
 package com.educonnect.controller;
 
+import com.educonnect.dto.LoginRequestDTO;
+import com.educonnect.dto.LoginResponseDTO;
 import com.educonnect.factory.UserFactory;
 import com.educonnect.model.user.User;
 import lombok.RequiredArgsConstructor;
@@ -25,5 +27,11 @@ public class AuthController
     @PostMapping("register")
     public ResponseEntity<User> register(@RequestBody User user){
        return ResponseEntity.ok(userFactory.executeSave(user));
+    }
+
+    @PostMapping("login")
+    public ResponseEntity<LoginResponseDTO> login(@RequestBody LoginRequestDTO requestDTO)
+    {
+        return ResponseEntity.ok(userFactory.verify(requestDTO));
     }
 }
