@@ -92,5 +92,5 @@ public class UserFactory
                     return s.verify(u, authManager, jwtService, userRepo);
                 })
                 .orElseThrow(() -> new RuntimeException("Unsupported Role"));
-}
+    }
 }
