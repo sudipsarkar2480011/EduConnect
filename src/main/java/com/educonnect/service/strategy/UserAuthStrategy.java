@@ -37,7 +37,6 @@ public interface UserAuthStrategy {
      */
     User save(User u);
 
-    BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
     default LoginResponseDTO verify(User u, AuthenticationManager authManager, JWTService jwtService, UserRepo userRepo) {
         Authentication authentication = authManager.authenticate(
                 new UsernamePasswordAuthenticationToken(u.getEmail(), u.getPassword())
@@ -47,8 +46,7 @@ public interface UserAuthStrategy {
             User entity = userRepo.findByEmail(u.getEmail())
                     .orElseThrow(() -> new RuntimeException("User not found after auth"));
             String token = jwtService.generateToken(entity.getEmail());
-            LoginResponseDTO response = new LoginResponseDTO();
-            return response.builder().token(token).name(entity.getFullName())
+            return LoginResponseDTO.builder().token(token).name(entity.getFullName())
                     .role(String.valueOf(entity.getRole())).email(entity.getEmail())
                     .build();
         }
