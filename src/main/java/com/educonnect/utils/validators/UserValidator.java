@@ -9,7 +9,7 @@ public interface UserValidator<T> extends Function<T, Optional<String>> {
     default  UserValidator<T> and(UserValidator<T> other){
         return dto->{
             Optional<String> res = this.apply(dto);
-            return  res.isPresent()?res:other.apply(dto);
+            return  res.isPresent()?res : other.apply(dto);
         };
     }
 

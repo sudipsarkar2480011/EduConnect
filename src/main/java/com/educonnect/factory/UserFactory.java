@@ -2,14 +2,12 @@ package com.educonnect.factory;
 
 import com.educonnect.config.JWTService;
 import com.educonnect.config.UserRepo;
-import com.educonnect.dto.LoginRequestDTO;
-import com.educonnect.dto.LoginResponseDTO;
+import com.educonnect.dto.user.UserRequestDTO;
+import com.educonnect.dto.user.UserResponseDTO;
 import com.educonnect.model.user.Role;
 import com.educonnect.model.user.User;
 import com.educonnect.service.strategy.UserAuthStrategy;
 import com.educonnect.utils.UserValidation;
-import lombok.RequiredArgsConstructor;
-import org.jspecify.annotations.Nullable;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.stereotype.Component;
 
@@ -81,20 +79,18 @@ public class UserFactory
      * </ul>
      *
      * @param requestDTO Data transfer object containing the user's email, password, and role.
-     * @return A {@link LoginResponseDTO} containing the generated JWT and user metadata.
+     * @return A {@link UserResponseDTO} containing the generated JWT and user metadata.
      */
-    public LoginResponseDTO verify(LoginRequestDTO requestDTO) {
-        System.out.println("2");
+    public UserResponseDTO verify(UserRequestDTO requestDTO) {
       return strategyList.stream()
                 .filter(s -> s.supports(requestDTO.getRole().toUpperCase()))
                 .findFirst()
                 .map(s -> {
-                    User u = new User();
-                    u.setEmail(requestDTO.getEmail());
-                    u.setPassword(requestDTO.getPassword());
-                    u.setRole(Role.valueOf(requestDTO.getRole()));
-                    return s.verify(u, authManager, jwtService, userRepo);
+                    return s.verify( User.builder()
+                            .email(requestDTO.getEmail())
+                            .password(requestDTO.getPassword())
+                            .role(Role.valueOf(requestDTO.getRole())).build(), authManager, jwtService, userRepo);
                 })
                 .orElseThrow(() -> new RuntimeException("Unsupported Role"));
-}
+    }
 }

@@ -1,6 +1,6 @@
 package com.educonnect.config;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -17,17 +17,12 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
-
-
-    @Autowired
-    private EduconnectUserDetailsService educonnectUserDetailsService;
-
+    private final EduconnectUserDetailsService educonnectUserDetailsService;
     private final JwtFilter jwtfilter;
 
-    public SecurityConfig(JwtFilter jwtfilter) {
-        this.jwtfilter = jwtfilter;
-    }
+
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -35,6 +30,10 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/v1/auth/register","/v1/auth/login").permitAll()
+                        .requestMatchers("/v1/api/teachers/**").hasRole("TEACHER")
+                        .requestMatchers("/v1/api/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/v1/api/parent/**").hasRole("PARENT")
+                        .requestMatchers("/v1/api/student/**").hasRole("STUDENT")
                         .anyRequest().authenticated())
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

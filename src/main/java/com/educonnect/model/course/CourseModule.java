@@ -3,8 +3,6 @@ package com.educonnect.model.course;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
-
-
 import java.util.UUID;
 
 @AllArgsConstructor
@@ -16,7 +14,6 @@ import java.util.UUID;
 public class CourseModule {
 
     @Id
-//    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(nullable = false,updatable = false)
     private UUID moduleId;
 
