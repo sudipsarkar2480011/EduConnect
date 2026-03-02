@@ -1,0 +1,63 @@
+package com.educonnect.config;
+
+import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+@Configuration
+@EnableWebSecurity(debug = true)
+@RequiredArgsConstructor
+public class SecurityConfig {
+    private final EduconnectUserDetailsService educonnectUserDetailsService;
+    private final JwtFilter jwtfilter;
+
+
+
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http)  {
+        return http
+                .csrf(AbstractHttpConfigurer::disable)
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/v1/auth/register","/v1/auth/login").permitAll()
+                        .requestMatchers("/v1/api/teachers/**").hasRole("TEACHER")
+                        .requestMatchers("/v1/api/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/v1/api/parent/**").hasRole("PARENT")
+                        .requestMatchers("/v1/api/student/**").hasRole("STUDENT")
+                        .anyRequest().authenticated())
+                .sessionManagement(session ->
+                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .formLogin(AbstractHttpConfigurer::disable)
+                .addFilterBefore(jwtfilter, UsernamePasswordAuthenticationFilter.class)
+                .build();
+    }
+
+    @Bean
+    public BCryptPasswordEncoder passwordEncoder()
+    {
+        return new BCryptPasswordEncoder(12);
+    }
+
+    @Bean
+    public AuthenticationProvider authenticationProvider() {
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider(educonnectUserDetailsService);
+        provider.setPasswordEncoder(passwordEncoder());
+        return provider;
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception
+    {
+        return config.getAuthenticationManager();
+    }
+}

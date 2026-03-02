@@ -1,19 +1,26 @@
 package com.educonnect.model.user;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
 import com.educonnect.model.notification.Notification;
+import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UuidGenerator;
+
 
 @Entity
 @Table(name = "users")
 @Inheritance(strategy = InheritanceType.JOINED)
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
+@SuperBuilder
 public class User {
 
 

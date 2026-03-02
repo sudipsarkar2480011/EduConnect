@@ -1,14 +1,12 @@
 package com.educonnect.service.implementation;
 
-import com.educonnect.dto.TeacherCreateDTO;
-import com.educonnect.dto.TeacherResponseDTO;
-import com.educonnect.dto.TeacherUpdateDTO;
+import com.educonnect.dto.teacher.TeacherCreateDTO;
+import com.educonnect.dto.teacher.TeacherResponseDTO;
+import com.educonnect.dto.teacher.TeacherUpdateDTO;
 import com.educonnect.model.user.Teacher;
 import com.educonnect.repo.TeacherRepo;
 import com.educonnect.service.contract.TeacherService;
-import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -39,9 +37,7 @@ public class TeacherServiceImpl implements TeacherService {
         t.setFullName(dto.getFullName());
         t.setEmail(dto.getEmail());
 
-        //t.setPasswordHash("TEMPORARY_PASSWORD_123");
-
-        t.setPasswordHash(dto.getPasswordHash());
+        t.setPassword(dto.getPasswordHash());
 
         t.setDepartment(dto.getDepartment());
         t.setQualification(dto.getQualification());

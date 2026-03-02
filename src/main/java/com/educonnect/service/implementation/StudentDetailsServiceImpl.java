@@ -1,7 +1,6 @@
 package com.educonnect.service.implementation;
 
-import com.educonnect.dto.StudentDetailsDTO;
-import com.educonnect.model.user.Parent;
+import com.educonnect.dto.studentdetails.StudentDetailsDTO;
 import com.educonnect.model.user.Student;
 import com.educonnect.repo.ParentRepo;
 import com.educonnect.repo.StudentRepo;
@@ -9,8 +8,6 @@ import com.educonnect.service.contract.StudentDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 @RequiredArgsConstructor

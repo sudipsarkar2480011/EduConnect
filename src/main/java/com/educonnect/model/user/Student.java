@@ -9,16 +9,17 @@ import com.educonnect.model.course.Enrollment;
 import com.educonnect.model.document.StudentDocument;
 import com.educonnect.model.engagement.Engagement;
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-
+@SuperBuilder
 @Entity
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 @ToString(onlyExplicitlyIncluded = true)
 @EqualsAndHashCode(callSuper = true)
 @PrimaryKeyJoinColumn(name = "student_id")

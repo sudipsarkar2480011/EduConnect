@@ -4,9 +4,8 @@ import com.educonnect.model.course.Course;
 import com.educonnect.model.course.CourseModule;
 import com.educonnect.service.contract.course.CourseService;
 import com.educonnect.service.contract.course.CourseVideoService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,14 +15,11 @@ import java.io.IOException;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/course")
+@RequestMapping("v1/api/course")
+@RequiredArgsConstructor
 public class CourseController {
-
-    @Autowired
-    private CourseVideoService courseVideoServiceClass;
-
-    @Autowired
-    private CourseService courseService;
+    private final CourseVideoService courseVideoServiceClass;
+    private final CourseService courseService;
 
     @PostMapping("/add-video")
     public ResponseEntity<CourseModule> addVideo(
@@ -46,14 +42,14 @@ public class CourseController {
         return ResponseEntity.ok()
                 .contentType(MediaType.parseMediaType("video/mp4"))
                 .body(resource);
-
     }
 
     @PostMapping("/add-course")
     public ResponseEntity<Course> addCourse(@RequestBody Course course) {
         return ResponseEntity.ok(courseService.addCourse(course));
     }
-    @GetMapping("/get-course/{courId}")
+
+    @GetMapping("/get-course/{courseId}")
     public Course getcourse( @PathVariable UUID courseId ) throws Exception {
         return courseService.getByIdCourse(courseId);
     }
