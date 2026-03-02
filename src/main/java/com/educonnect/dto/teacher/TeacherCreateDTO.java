@@ -1,10 +1,11 @@
-package com.educonnect.dto;
+package com.educonnect.dto.teacher;
 
-public class TeacherUpdateDTO {
+
+public class TeacherCreateDTO {
 
     private String fullName;
     private String email;
-
+    private String passwordHash;
     private String department;
     private String qualification;
 
@@ -38,5 +39,13 @@ public class TeacherUpdateDTO {
 
     public void setQualification(String qualification) {
         this.qualification = qualification;
+    }
+
+    public String getPasswordHash() {
+        return passwordHash;
+    }
+
+    public void setPasswordHash(String passwordHash) {
+        this.passwordHash = passwordHash;
     }
 }

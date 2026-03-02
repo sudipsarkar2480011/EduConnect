@@ -1,4 +1,4 @@
-package com.educonnect.dto;
+package com.educonnect.dto.doctype;
 
 import com.educonnect.model.document.StudentDocument;
 import lombok.AllArgsConstructor;
