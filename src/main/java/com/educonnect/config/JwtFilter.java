@@ -22,8 +22,7 @@ public class JwtFilter extends OncePerRequestFilter {
     private JWTService jwtService;
 
     @Autowired
-    ApplicationContext context;
-
+    private EduconnectUserDetailsService educonnectUserDetailsService;
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
@@ -37,7 +36,7 @@ public class JwtFilter extends OncePerRequestFilter {
         }
         if(username!=null && SecurityContextHolder.getContext().getAuthentication()==null)
         {
-            UserDetails userDetails=context.getBean(EduconnectUserDetailsService.class).loadUserByUsername(username);
+            UserDetails userDetails=educonnectUserDetailsService.loadUserByUsername(username);
             if(jwtService.validateToken(token,userDetails))
             {
                 UsernamePasswordAuthenticationToken authToken=new UsernamePasswordAuthenticationToken(userDetails,null,userDetails.getAuthorities());
