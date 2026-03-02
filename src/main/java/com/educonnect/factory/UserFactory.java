@@ -4,9 +4,11 @@ import com.educonnect.config.JWTService;
 import com.educonnect.config.UserRepo;
 import com.educonnect.dto.LoginRequestDTO;
 import com.educonnect.dto.LoginResponseDTO;
+import com.educonnect.model.user.Role;
 import com.educonnect.model.user.User;
 import com.educonnect.service.strategy.UserAuthStrategy;
 import com.educonnect.utils.UserValidation;
+import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.Nullable;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.stereotype.Component;
@@ -82,13 +84,15 @@ public class UserFactory
      * @return A {@link LoginResponseDTO} containing the generated JWT and user metadata.
      */
     public LoginResponseDTO verify(LoginRequestDTO requestDTO) {
+        System.out.println("2");
       return strategyList.stream()
-                .filter(s -> s.supports(requestDTO.getRole()))
+                .filter(s -> s.supports(requestDTO.getRole().toUpperCase()))
                 .findFirst()
                 .map(s -> {
                     User u = new User();
                     u.setEmail(requestDTO.getEmail());
                     u.setPassword(requestDTO.getPassword());
+                    u.setRole(Role.valueOf(requestDTO.getRole()));
                     return s.verify(u, authManager, jwtService, userRepo);
                 })
                 .orElseThrow(() -> new RuntimeException("Unsupported Role"));

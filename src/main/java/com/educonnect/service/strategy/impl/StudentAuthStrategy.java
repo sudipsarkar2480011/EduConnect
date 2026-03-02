@@ -6,6 +6,7 @@ import com.educonnect.model.user.User;
 import com.educonnect.repo.StudentRepo;
 import com.educonnect.service.strategy.UserAuthStrategy;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -14,6 +15,7 @@ public class StudentAuthStrategy implements UserAuthStrategy {
 
 
     private final StudentRepo studentRepo;
+    private final BCryptPasswordEncoder encoder;
 
     @Override
     public boolean supports(String role) {
