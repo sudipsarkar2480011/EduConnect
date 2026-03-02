@@ -3,7 +3,10 @@ package com.educonnect.service.strategy;
 import com.educonnect.config.JWTService;
 import com.educonnect.config.UserRepo;
 import com.educonnect.dto.user.UserResponseDTO;
+import com.educonnect.model.token.RefreshToken;
 import com.educonnect.model.user.User;
+import com.educonnect.service.contract.RefreshTokenService;
+import com.educonnect.service.implementation.RefreshTokenServiceImpl;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -16,7 +19,6 @@ import org.springframework.security.core.Authentication;
  * how that user's data is uniquely persisted to the data store.
  */
 public interface UserAuthStrategy {
-
     /**
      * Determines if this strategy implementation can handle the given user role.
      *
@@ -36,7 +38,7 @@ public interface UserAuthStrategy {
      */
     User save(User u);
 
-    default UserResponseDTO verify(User u, AuthenticationManager authManager, JWTService jwtService, UserRepo userRepo) {
+    default UserResponseDTO verify(User u, AuthenticationManager authManager, JWTService jwtService, UserRepo userRepo, RefreshTokenService refreshTokenService) throws Exception {
         Authentication authentication = authManager.authenticate(
                 new UsernamePasswordAuthenticationToken(u.getEmail(), u.getPassword())
         );
@@ -44,9 +46,13 @@ public interface UserAuthStrategy {
         if (authentication.isAuthenticated()) {
             User entity = userRepo.findByEmail(u.getEmail())
                     .orElseThrow(() -> new RuntimeException("User not found after auth"));
-            String token = jwtService.generateToken(entity.getEmail());
+            String accessToken = jwtService.generateToken(entity.getEmail());
+            String refreshToken = refreshTokenService.createToken(entity.getUserId())
+                    .getToken();
+
             return UserResponseDTO.builder()
-                    .token(token)
+                    .accessToken(accessToken)
+                    .refreshToken(refreshToken)
                     .name(entity.getFullName())
                     .role(String.valueOf(entity.getRole()))
                     .email(entity.getEmail())
