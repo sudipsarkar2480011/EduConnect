@@ -1,11 +1,10 @@
 package com.educonnect.service.contract;
 
-import com.educonnect.dto.TeacherCreateDTO;
-import com.educonnect.dto.TeacherResponseDTO;
-import com.educonnect.dto.TeacherUpdateDTO;
+import com.educonnect.dto.teacher.TeacherCreateDTO;
+import com.educonnect.dto.teacher.TeacherResponseDTO;
+import com.educonnect.dto.teacher.TeacherUpdateDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
 
 import java.util.UUID;
 

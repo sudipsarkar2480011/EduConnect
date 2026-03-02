@@ -1,4 +1,4 @@
-package com.educonnect.dto;
+package com.educonnect.dto.studentdetails;
 
 import lombok.Data;
 

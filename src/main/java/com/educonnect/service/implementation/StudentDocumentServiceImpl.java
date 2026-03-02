@@ -1,7 +1,7 @@
 package com.educonnect.service.implementation;
 
 
-import com.educonnect.dto.DocStreamDTO;
+import com.educonnect.dto.doctype.DocStreamDTO;
 import com.educonnect.model.document.DocType;
 import com.educonnect.model.document.DocTypeEnum;
 import com.educonnect.model.document.FileTypeEnum;
@@ -49,17 +49,13 @@ public class StudentDocumentServiceImpl implements StudentDocumentService {
         document.setStudent(student);
         document.setFileName(file.getOriginalFilename());
         FileTypeEnum fileType = getFileType(file.getOriginalFilename());
-
-        DocType docType = null;
-
-        docType = docTypeRepo.findByDocTypeName(docTypeEnum).orElse(null);
+        DocType docType = docTypeRepo.findByDocTypeName(docTypeEnum).orElse(null);
 
         if(docType == null){
             docType = DocType.builder()
                     .docTypeName(docTypeEnum)
                     .description("LATER.....")
                     .build();
-
             docTypeRepo.save(docType);
         }
 
@@ -71,18 +67,13 @@ public class StudentDocumentServiceImpl implements StudentDocumentService {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
         document.setStudentDocumentId(UUID.randomUUID());
-
         String uri =  ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path("api/v1/doc/view/")
                 .path(document.getStudentDocumentId().toString())
                 .toUriString();
-
         document.setFileUri(uri);
-
         studentDocumentRepo.save(document);
-
         return uri;
 
     }
