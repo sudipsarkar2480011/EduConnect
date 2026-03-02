@@ -27,7 +27,7 @@ public class AuditLog {
     @Enumerated(EnumType.STRING)
     private Action action;
 
-    private String resource;
+    private String resource; //entity name and entity id , entity type
 
     @CurrentTimestamp
     private LocalDateTime timestamp ;

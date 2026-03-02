@@ -92,5 +92,5 @@ public class UserFactory
                             .role(Role.valueOf(requestDTO.getRole())).build(), authManager, jwtService, userRepo);
                 })
                 .orElseThrow(() -> new RuntimeException("Unsupported Role"));
-}
+    }
 }
