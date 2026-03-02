@@ -20,6 +20,7 @@ public class CourseModule {
     private String title;
     private String contentUrl; // S3 Link or File Path
     private Integer sequenceOrder; // 1, 2, 3...
+    private Double duration ;
 
     @ManyToOne
     @JoinColumn(name = "course_id")

@@ -31,6 +31,8 @@ public class Course {
     @JoinColumn(name = "teacher_id", nullable = false)
     private Teacher teacher;
 
+    private Double duration;
+
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL)
     private List<CourseModule> modules;
 

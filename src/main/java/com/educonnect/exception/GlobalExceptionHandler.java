@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import ws.schild.jave.EncoderException;
 
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.time.LocalDateTime;
@@ -41,9 +42,9 @@ public class GlobalExceptionHandler {
     }
 
 
-    @ExceptionHandler(Exception.class)
+    @ExceptionHandler(EncoderException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ResponseEntity<ErrorResponseDTO> handleSQLGeneralException(Exception ex) {
+    public ResponseEntity<ErrorResponseDTO> handleEncoderException(EncoderException ex) {
         ErrorResponseDTO errorResponse = new ErrorResponseDTO(
                 LocalDateTime.now(),
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),

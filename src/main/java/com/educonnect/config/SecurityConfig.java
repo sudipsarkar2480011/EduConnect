@@ -29,17 +29,23 @@ public class SecurityConfig {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/v1/auth/register","/v1/auth/login").permitAll()
+                        .requestMatchers(
+                                "/v1/auth/register",
+                                "/v1/auth/login",
+                                "/v1/api/course/**").permitAll()
                         .requestMatchers("/v1/api/teachers/**").hasRole("TEACHER")
                         .requestMatchers("/v1/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/v1/api/parent/**").hasRole("PARENT")
-                        .requestMatchers("/v1/api/student/**","/v1/api/doc/**").hasRole("STUDENT")
+                        .requestMatchers(
+                                "/v1/api/student/**",
+                                "/v1/api/doc/**").hasRole("STUDENT")
                         .anyRequest().authenticated())
-                .sessionManagement(session ->
-                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .formLogin(AbstractHttpConfigurer::disable)
-                .addFilterBefore(jwtfilter, UsernamePasswordAuthenticationFilter.class)
-                .build();
+                        .sessionManagement(
+                                session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                        )
+                        .formLogin(AbstractHttpConfigurer::disable)
+                        .addFilterBefore(jwtfilter, UsernamePasswordAuthenticationFilter.class)
+                        .build();
     }
 
     @Bean

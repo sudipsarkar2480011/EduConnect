@@ -109,7 +109,23 @@
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt-jackson</artifactId>
-            <version>0.12.3</version> <scope>runtime</scope>
+            <version>0.12.3</version>
+            <scope>runtime</scope>
+        </dependency>
+
+        <!-- Source: https://mvnrepository.com/artifact/com.googlecode.mp4parser/isoparser -->
+        <dependency>
+            <groupId>com.googlecode.mp4parser</groupId>
+            <artifactId>isoparser</artifactId>
+            <version>1.1.22</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>ws.schild</groupId>
+            <artifactId>jave-all-deps</artifactId>
+            <version>3.5.0</version>
+            <scope>compile</scope>
         </dependency>
 
     </dependencies>
