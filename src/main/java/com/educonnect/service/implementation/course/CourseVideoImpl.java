@@ -43,7 +43,7 @@ public class CourseVideoImpl implements CourseVideoService {
 
         Optional.ofNullable(file).orElseThrow(()->new RuntimeException("File not found : "));
 
-       Optional.of(file).filter(f-> f.getContentType().startsWith("video/"))
+        Optional.of(file).filter(f-> f.getContentType().startsWith("video/"))
                .orElseThrow(()->new RuntimeException("file is not a video : "));
 
         String extension = file.getOriginalFilename()

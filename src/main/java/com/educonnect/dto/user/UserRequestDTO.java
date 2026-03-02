@@ -1,4 +1,4 @@
-package com.educonnect.dto;
+package com.educonnect.dto.user;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,7 +9,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @Builder
-public class LoginRequestDTO {
+public class UserRequestDTO {
     private String email;
     private String password;
     private String role;

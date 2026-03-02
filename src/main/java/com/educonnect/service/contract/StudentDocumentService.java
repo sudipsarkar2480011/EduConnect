@@ -1,6 +1,6 @@
 package com.educonnect.service.contract;
 
-import com.educonnect.dto.DocStreamDTO;
+import com.educonnect.dto.doctype.DocStreamDTO;
 import com.educonnect.model.document.DocTypeEnum;
 import org.springframework.web.multipart.MultipartFile;
 
