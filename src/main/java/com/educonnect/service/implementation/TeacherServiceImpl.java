@@ -39,8 +39,6 @@ public class TeacherServiceImpl implements TeacherService {
         t.setFullName(dto.getFullName());
         t.setEmail(dto.getEmail());
 
-        //t.setPasswordHash("TEMPORARY_PASSWORD_123");
-
         t.setPassword(dto.getPasswordHash());
 
         t.setDepartment(dto.getDepartment());
