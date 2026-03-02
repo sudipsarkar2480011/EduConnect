@@ -30,7 +30,7 @@ import java.util.UUID;
 @Slf4j
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/v1/doc")
+@RequestMapping("/v1/api/doc")
 
 public class StudentDocumentController {
     private final StudentDocumentService studentDocumentService;
