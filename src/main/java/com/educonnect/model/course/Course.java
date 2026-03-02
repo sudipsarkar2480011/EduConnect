@@ -6,7 +6,7 @@ import com.educonnect.model.engagement.Engagement;
 import com.educonnect.model.user.Teacher;
 import jakarta.persistence.*;
 import lombok.Data;
-import org.hibernate.annotations.UuidGenerator;
+
 
 import java.util.List;
 import java.util.UUID;
