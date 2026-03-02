@@ -1,5 +1,6 @@
 package com.educonnect.config;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,18 +17,14 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
-@EnableWebSecurity
+@EnableWebSecurity(debug = true)
+@RequiredArgsConstructor
 public class SecurityConfig {
 
 
-    @Autowired
-    private EduconnectUserDetailsService educonnectUserDetailsService;
-
+    private final EduconnectUserDetailsService educonnectUserDetailsService;
     private final JwtFilter jwtfilter;
 
-    public SecurityConfig(JwtFilter jwtfilter) {
-        this.jwtfilter = jwtfilter;
-    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
