@@ -1,6 +1,5 @@
 package com.educonnect.controller;
 
-import com.educonnect.dto.auth.AuthResponse;
 import com.educonnect.dto.user.UserRequestDTO;
 import com.educonnect.dto.user.UserResponseDTO;
 import com.educonnect.factory.UserFactory;
@@ -25,23 +24,16 @@ public class AuthController
     private final UserFactory userFactory;
 
     @PostMapping("register")
-    public ResponseEntity<AuthResponse> register(@RequestBody User user){
-       User u = userFactory.executeSave(user);
-       return ResponseEntity.ok(AuthResponse.builder()
-                       .message("success")
-                       .data(u.getEmail())
-                       .status(true)
+    public ResponseEntity<UserResponseDTO> register(@RequestBody User user){
+        User u =userFactory.executeSave(user);
+       return ResponseEntity.ok(UserResponseDTO.builder()
+               .email(u.getEmail())
                .build());
     }
 
     @PostMapping("login")
-    public ResponseEntity<AuthResponse> login(@RequestBody UserRequestDTO requestDTO)
+    public ResponseEntity<UserResponseDTO> login(@RequestBody UserRequestDTO requestDTO)
     {
-        var u = userFactory.verify(requestDTO);
-        return ResponseEntity.ok( AuthResponse.builder()
-                        .token(u.getToken())
-                        .message("success")
-                        .status(true)
-                        .build());
+        return ResponseEntity.ok(userFactory.verify(requestDTO));
     }
 }
