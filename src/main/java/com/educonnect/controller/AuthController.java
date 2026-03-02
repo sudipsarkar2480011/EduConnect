@@ -34,7 +34,6 @@ public class AuthController
     @PostMapping("login")
     public ResponseEntity<UserResponseDTO> login(@RequestBody UserRequestDTO requestDTO)
     {
-
         return ResponseEntity.ok(userFactory.verify(requestDTO));
     }
 }
