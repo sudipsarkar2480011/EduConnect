@@ -6,6 +6,7 @@ import com.educonnect.model.user.User;
 import com.educonnect.repo.ParentRepo;
 import com.educonnect.service.strategy.UserAuthStrategy;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 public class ParentAuthStrategy  implements UserAuthStrategy {
 
     private final ParentRepo parentRepo;
+    private final BCryptPasswordEncoder encoder;
 
     @Override
     public boolean supports(String role) {
@@ -24,7 +26,7 @@ public class ParentAuthStrategy  implements UserAuthStrategy {
         return parentRepo.save(Parent.builder()
                 .fullName(u.getFullName())
                 .email(u.getEmail())
-                .password(u.getPassword())
+                .password(encoder.encode(u.getPassword()))
                 .role(Role.PARENT)
                 .build());
     }

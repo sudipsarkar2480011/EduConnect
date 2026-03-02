@@ -1,8 +1,16 @@
 package com.educonnect.factory;
 
+import com.educonnect.config.JWTService;
+import com.educonnect.config.UserRepo;
+import com.educonnect.dto.LoginRequestDTO;
+import com.educonnect.dto.LoginResponseDTO;
+import com.educonnect.model.user.Role;
 import com.educonnect.model.user.User;
 import com.educonnect.service.strategy.UserAuthStrategy;
 import com.educonnect.utils.UserValidation;
+import lombok.RequiredArgsConstructor;
+import org.jspecify.annotations.Nullable;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -20,15 +28,20 @@ import java.util.List;
 public class UserFactory
 {
     private final List<UserAuthStrategy> strategyList;
-
+    private final AuthenticationManager authManager;
+    private final JWTService jwtService;
+    private final UserRepo userRepo;
     /**
      * Constructs a new UserFactory with the provided list of strategies.
      * Spring automatically injects all beans implementing {@link UserAuthStrategy}.
      *
      * @param strategyList A list of all available user authentication strategies.
      */
-    public  UserFactory(List<UserAuthStrategy>  strategyList){
+    public  UserFactory(List<UserAuthStrategy>  strategyList, AuthenticationManager authManager, JWTService jwtService,UserRepo userRepo){
         this.strategyList=strategyList;
+        this.authManager = authManager;
+        this.jwtService = jwtService;
+        this.userRepo=userRepo;
     }
 
 
@@ -59,4 +72,29 @@ public class UserFactory
                 .orElseThrow(()-> new RuntimeException("Role not supported"))
                 .save(u);
     }
+    /**
+     * <p>
+     * This method executes the following pipeline:
+     * <ul>
+     * <li>Maps the request data to a transient {@link User} entity.</li>
+     * <li>Delegates authentication and token generation </li>
+     * </ul>
+     *
+     * @param requestDTO Data transfer object containing the user's email, password, and role.
+     * @return A {@link LoginResponseDTO} containing the generated JWT and user metadata.
+     */
+    public LoginResponseDTO verify(LoginRequestDTO requestDTO) {
+        System.out.println("2");
+      return strategyList.stream()
+                .filter(s -> s.supports(requestDTO.getRole().toUpperCase()))
+                .findFirst()
+                .map(s -> {
+                    User u = new User();
+                    u.setEmail(requestDTO.getEmail());
+                    u.setPassword(requestDTO.getPassword());
+                    u.setRole(Role.valueOf(requestDTO.getRole()));
+                    return s.verify(u, authManager, jwtService, userRepo);
+                })
+                .orElseThrow(() -> new RuntimeException("Unsupported Role"));
+}
 }
