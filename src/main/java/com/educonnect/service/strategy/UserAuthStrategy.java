@@ -37,7 +37,6 @@ public interface UserAuthStrategy {
      */
     User save(User u);
 
-    BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
     default LoginResponseDTO verify(User u, AuthenticationManager authManager, JWTService jwtService, UserRepo userRepo) {
         Authentication authentication = authManager.authenticate(
                 new UsernamePasswordAuthenticationToken(u.getEmail(), u.getPassword())
