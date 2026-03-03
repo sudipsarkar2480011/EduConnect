@@ -4,6 +4,10 @@ import com.educonnect.config.JWTService;
 import com.educonnect.config.UserRepo;
 import com.educonnect.dto.LoginResponseDTO;
 import com.educonnect.model.user.User;
+<<<<<<< Updated upstream
+=======
+import com.educonnect.service.contract.RefreshTokenService;
+>>>>>>> Stashed changes
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -45,9 +49,23 @@ public interface UserAuthStrategy {
         if (authentication.isAuthenticated()) {
             User entity = userRepo.findByEmail(u.getEmail())
                     .orElseThrow(() -> new RuntimeException("User not found after auth"));
+<<<<<<< Updated upstream
             String token = jwtService.generateToken(entity.getEmail());
             return LoginResponseDTO.builder().token(token).name(entity.getFullName())
                     .role(String.valueOf(entity.getRole())).email(entity.getEmail())
+=======
+            String accessToken = jwtService.generateToken(entity.getEmail());
+            String refreshToken = refreshTokenService.createToken(entity.getUserId())
+                    .getToken();
+
+            return UserResponseDTO.builder()
+                    .uuid(entity.getUserId())
+                    .accessToken(accessToken)
+                    .refreshToken(refreshToken)
+                    .name(entity.getFullName())
+                    .role(String.valueOf(entity.getRole()))
+                    .email(entity.getEmail())
+>>>>>>> Stashed changes
                     .build();
         }
         throw new RuntimeException("Authentication Failed");

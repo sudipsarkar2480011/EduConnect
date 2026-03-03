@@ -20,8 +20,14 @@ public class TeacherController {
     @Autowired
     private final TeacherService teacherService;
 
+<<<<<<< Updated upstream
     public TeacherController(TeacherService teacherService) {
         this.teacherService = teacherService;
+=======
+    @GetMapping("test")
+    public  String test(){
+        return "working";
+>>>>>>> Stashed changes
     }
 
     @PostMapping
