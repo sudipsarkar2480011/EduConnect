@@ -50,6 +50,7 @@ public interface UserAuthStrategy {
                     .getToken();
 
             return UserResponseDTO.builder()
+                    .uuid(entity.getUserId())
                     .accessToken(accessToken)
                     .refreshToken(refreshToken)
                     .name(entity.getFullName())

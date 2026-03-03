@@ -24,7 +24,6 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
 
     @Transactional
     public RefreshToken createToken(UUID userId) throws Exception {
-
         Optional<RefreshToken> optionalToken = refreshTokenRepo.findByUserUserId(userId);
         if(optionalToken.isPresent()){
            RefreshToken token = optionalToken.get();
