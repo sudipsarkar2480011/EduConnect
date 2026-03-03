@@ -1,8 +1,8 @@
 package com.educonnect.service.contract;
 
-import com.educonnect.service.dto.StudentRegisterRequest;
-import com.educonnect.service.dto.StudentResponse;
-import com.educonnect.service.dto.StudentUpdateRequest;
+import com.educonnect.dto.student.StudentRegisterRequest;
+import com.educonnect.dto.student.StudentResponse;
+import com.educonnect.dto.student.StudentUpdateRequest;
 
 import java.util.List;
 import java.util.UUID;

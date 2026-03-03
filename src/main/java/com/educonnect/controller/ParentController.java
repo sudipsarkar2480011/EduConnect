@@ -17,32 +17,32 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class ParentController {
 
-    private final ParentService parentService;
-
-    @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public ParentResponseDTO create(@RequestBody ParentCreateDTO dto) {
-        return parentService.create(dto);
-    }
-
-    @GetMapping("/{id}")
-    public ParentResponseDTO getById(@PathVariable UUID id) {
-        return parentService.getById(id);
-    }
-
-    @GetMapping
-    public Page<ParentResponseDTO> getAll(Pageable pageable) {
-        return parentService.getAll(pageable);
-    }
-
-    @PatchMapping("/{id}")
-    public ParentResponseDTO update(@PathVariable UUID id, @RequestBody ParentUpdateDTO dto) {
-        return parentService.update(id, dto);
-    }
-
-    @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable UUID id) {
-        parentService.delete(id);
-    }
+//    private final ParentService parentService;
+//
+//    @PostMapping
+//    @ResponseStatus(HttpStatus.CREATED)
+//    public ParentResponseDTO create(@RequestBody ParentCreateDTO dto) {
+//        return parentService.create(dto);
+//    }
+//
+//    @GetMapping("/{id}")
+//    public ParentResponseDTO getById(@PathVariable UUID id) {
+//        return parentService.getById(id);
+//    }
+//
+//    @GetMapping
+//    public Page<ParentResponseDTO> getAll(Pageable pageable) {
+//        return parentService.getAll(pageable);
+//    }
+//
+//    @PatchMapping("/{id}")
+//    public ParentResponseDTO update(@PathVariable UUID id, @RequestBody ParentUpdateDTO dto) {
+//        return parentService.update(id, dto);
+//    }
+//
+//    @DeleteMapping("/{id}")
+//    @ResponseStatus(HttpStatus.NO_CONTENT)
+//    public void delete(@PathVariable UUID id) {
+//        parentService.delete(id);
+//    }
 }

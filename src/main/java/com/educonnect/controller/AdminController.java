@@ -2,7 +2,7 @@ package com.educonnect.controller;
 
 import com.educonnect.model.user.Admin;
 import com.educonnect.model.user.Role;
-import com.educonnect.service.admin.AdminService;
+import com.educonnect.service.contract.ParentService;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -79,7 +79,7 @@ import java.util.UUID;
 @RequestMapping("/v1/api/admin")
 public class AdminController {
 
-    private final AdminService adminService;
+    private final ParentService.AdminService adminService;
 
     // CREATE
     @PostMapping
