@@ -1,5 +1,7 @@
 package com.educonnect.config;
 
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,7 +18,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
-@EnableWebSecurity(debug = true)
+@EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
     private final EduconnectUserDetailsService educonnectUserDetailsService;
@@ -32,13 +34,14 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/v1/auth/register",
                                 "/v1/auth/login",
-                                "/v1/api/course/**").permitAll()
+                                "/v1/api/course/**",
+                                "/v1/api/student/**"
+                                ).permitAll()
                         .requestMatchers("/v1/api/teachers/**").hasRole("TEACHER")
                         .requestMatchers("/v1/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/v1/api/parent/**").hasRole("PARENT")
                         .requestMatchers(
-                                "/v1/api/student/**",
-                                "/v1/api/doc/**").hasRole("STUDENT")
+                                "/v1/api/doc/**").hasRole("ADMIN")
                         .anyRequest().authenticated())
                         .sessionManagement(
                                 session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
