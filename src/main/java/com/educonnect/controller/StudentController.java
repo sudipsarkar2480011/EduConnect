@@ -22,7 +22,6 @@ public class StudentController {
         this.studentService = studentService;
     }
 
-    // --- READ ---
     @GetMapping("{id}")
     public ResponseEntity<StudentResponse> findById(@PathVariable("id") UUID studentId) {
         return ResponseEntity.ok(studentService.getById(studentId));
@@ -30,18 +29,11 @@ public class StudentController {
 
     @GetMapping
     public ResponseEntity<List<StudentResponse>> findAll() {
+
         return ResponseEntity.ok(studentService.getAll());
     }
 
-    // --- CREATE (POST) — registration via strategy (hash password + role=STUDENT) ---
-    @PostMapping("register")
-    public ResponseEntity<StudentResponse> register(@Valid @RequestBody StudentRegisterRequest request) {
-        StudentResponse created = studentService.register(request);
-        return ResponseEntity.created(URI.create("/v1/api/student/" + created.userId())).body(created);
-    }
-
-    // --- UPDATE (POST) ---
-    @PostMapping("{id}/update")
+    @PostMapping("update/{id}")
     public ResponseEntity<StudentResponse> update(
             @PathVariable("id") UUID studentId,
             @Valid @RequestBody StudentUpdateRequest request
@@ -49,10 +41,9 @@ public class StudentController {
         return ResponseEntity.ok(studentService.update(studentId, request));
     }
 
-    // --- DELETE (POST) ---
-    @PostMapping("{id}/delete")
-    public ResponseEntity<Void> delete(@PathVariable("id") UUID studentId) {
+    @PostMapping("delete/{id}")
+    public ResponseEntity<String> delete(@PathVariable("id") UUID studentId) {
         studentService.delete(studentId);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok("student deleted : ");
     }
 }

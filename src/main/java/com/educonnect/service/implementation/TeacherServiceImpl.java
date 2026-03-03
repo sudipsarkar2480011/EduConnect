@@ -24,28 +24,6 @@ public class TeacherServiceImpl implements TeacherService {
     }
 
 
-
-    @Override
-    public TeacherResponseDTO create(TeacherCreateDTO dto) {
-        // Example uniqueness check
-        if (dto.getEmail() != null && teacherRepo.existsByEmail(dto.getEmail())) {
-            throw new IllegalArgumentException("Email already in use");
-        }
-
-        Teacher t = new Teacher();
-        // fullName & email likely come from User superclass
-        t.setFullName(dto.getFullName());
-        t.setEmail(dto.getEmail());
-
-        t.setPassword(dto.getPasswordHash());
-
-        t.setDepartment(dto.getDepartment());
-        t.setQualification(dto.getQualification());
-
-        Teacher saved = teacherRepo.save(t);
-        return toResponse(saved);
-    }
-
     @Override
     public TeacherResponseDTO getById(UUID id) {
         Teacher t = teacherRepo.findById(id)

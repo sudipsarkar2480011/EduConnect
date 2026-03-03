@@ -1,36 +1,21 @@
 package com.educonnect.service.contract;
 
-import com.educonnect.dto.parent.ParentCreateDTO;
 import com.educonnect.dto.parent.ParentResponseDTO;
 import com.educonnect.dto.parent.ParentUpdateDTO;
-import com.educonnect.model.user.Admin;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import com.educonnect.model.user.Parent;
 
 import java.util.List;
 import java.util.UUID;
 
 public interface ParentService {
 
-    ParentResponseDTO create(ParentCreateDTO dto);
+    public Parent getById(UUID id);
 
-    ParentResponseDTO getById(UUID id);
+    public List<Parent> getAll();
 
-    Page<ParentResponseDTO> getAll(Pageable pageable);
+    public ParentResponseDTO update(UUID id, ParentUpdateDTO dto);
 
-    ParentResponseDTO update(UUID id, ParentUpdateDTO dto);
+    public void delete(UUID id);
 
-    void delete(UUID id);
-
-    // Supports linking a Parent to a Student as used in ParentController
-    ParentResponseDTO linkStudent(UUID parentId, UUID studentId);
-
-    interface AdminService {
-        Admin create(Admin admin);
-        Admin getById(UUID id);
-        List<Admin> getAll();
-        Admin update(UUID id, Admin admin);
-        void changePassword(UUID id, String newRawPassword);
-        void delete(UUID id);
-    }
+    public ParentResponseDTO linkStudent(UUID parentId, UUID studentId);
 }

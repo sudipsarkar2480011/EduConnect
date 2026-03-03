@@ -10,7 +10,6 @@ import java.util.UUID;
 
 
 public interface TeacherService {
-    TeacherResponseDTO create(TeacherCreateDTO dto);
     TeacherResponseDTO getById(UUID id);
     Page<TeacherResponseDTO> getAll(Pageable pageable);
     TeacherResponseDTO update(UUID id, TeacherUpdateDTO dto);

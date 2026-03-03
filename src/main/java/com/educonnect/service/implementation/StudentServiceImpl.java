@@ -63,21 +63,6 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public StudentResponse register(StudentRegisterRequest request) {
-        // Build a lightweight User to pass into StudentAuthStrategy
-        User u = User.builder()
-                .fullName(request.fullName())
-                .email(request.email())
-                .password(request.password()) // will be encoded in strategy
-                .build();
-
-        User saved = studentAuthStrategy.save(u); // returns a Student as User
-        // Map to response
-        Student student = (Student) saved;
-        return mapper.toResponse(student);
-    }
-
-    @Override
     public StudentResponse update(UUID id, StudentUpdateRequest request) {
         Student student = studentRepo.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Student not found: " + id));

@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -21,12 +22,6 @@ public class TeacherController {
     @GetMapping("test")
     public  String test(){
         return "working";
-    }
-
-    @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public TeacherResponseDTO create(@RequestBody TeacherCreateDTO dto) {
-        return teacherService.create(dto);
     }
 
     @GetMapping("/{id}")
@@ -45,8 +40,9 @@ public class TeacherController {
     }
 
     @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable UUID id) {
+    public ResponseEntity<String> deleteTeacher(@PathVariable UUID id)
+    {
         teacherService.delete(id);
+        return ResponseEntity.ok("teacher Deleted : ");
     }
 }

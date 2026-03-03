@@ -13,9 +13,6 @@ public interface StudentService {
     StudentResponse getByUserId(UUID userId);
     boolean existsByUserId(UUID userId);
 
-    // Create via registration pipeline (hash password, set role)
-    StudentResponse register(StudentRegisterRequest request);
-
     StudentResponse update(UUID id, StudentUpdateRequest request);
     void delete(UUID id);
 }

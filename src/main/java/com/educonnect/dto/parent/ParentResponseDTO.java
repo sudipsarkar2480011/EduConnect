@@ -1,9 +1,7 @@
 package com.educonnect.dto.parent;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.educonnect.model.user.Parent;
+import lombok.*;
 
 import java.util.List;
 import java.util.UUID;
