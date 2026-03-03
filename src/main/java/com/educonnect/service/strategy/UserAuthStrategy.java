@@ -6,7 +6,6 @@ import com.educonnect.dto.user.UserResponseDTO;
 import com.educonnect.model.token.RefreshToken;
 import com.educonnect.model.user.User;
 import com.educonnect.service.contract.RefreshTokenService;
-import com.educonnect.service.implementation.RefreshTokenServiceImpl;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;

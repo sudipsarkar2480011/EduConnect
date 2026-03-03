@@ -44,9 +44,8 @@ public class AuthController {
     @SneakyThrows
     @PostMapping("refresh")
     public ResponseEntity<UserResponseDTO> refresh(@RequestBody RefreshToken request) { // Use a DTO for input
-
         RefreshToken tokenEntity = refreshTokenService.findByToken(request)
-                .orElseThrow(() -> new RuntimeException("Refresh token not found in database"));
+                .orElseThrow(() -> new Exception("Refresh token not found in database"));
         refreshTokenService.verifyToken(tokenEntity);
         User user = tokenEntity.getUser();
         String accessToken = jwtService.generateToken(user.getEmail());
