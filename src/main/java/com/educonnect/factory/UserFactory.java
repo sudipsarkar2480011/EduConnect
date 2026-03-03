@@ -2,14 +2,13 @@ package com.educonnect.factory;
 
 import com.educonnect.config.JWTService;
 import com.educonnect.config.UserRepo;
-import com.educonnect.dto.LoginRequestDTO;
-import com.educonnect.dto.LoginResponseDTO;
+import com.educonnect.dto.user.UserRequestDTO;
+import com.educonnect.dto.user.UserResponseDTO;
 import com.educonnect.model.user.Role;
 import com.educonnect.model.user.User;
+import com.educonnect.service.contract.RefreshTokenService;
 import com.educonnect.service.strategy.UserAuthStrategy;
 import com.educonnect.utils.UserValidation;
-import lombok.RequiredArgsConstructor;
-import org.jspecify.annotations.Nullable;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.stereotype.Component;
 
@@ -31,16 +30,18 @@ public class UserFactory
     private final AuthenticationManager authManager;
     private final JWTService jwtService;
     private final UserRepo userRepo;
+    private final RefreshTokenService refreshTokenService;
     /**
      * Constructs a new UserFactory with the provided list of strategies.
      * Spring automatically injects all beans implementing {@link UserAuthStrategy}.
      *
      * @param strategyList A list of all available user authentication strategies.
      */
-    public  UserFactory(List<UserAuthStrategy>  strategyList, AuthenticationManager authManager, JWTService jwtService,UserRepo userRepo){
+    public  UserFactory(List<UserAuthStrategy>  strategyList, AuthenticationManager authManager, JWTService jwtService,UserRepo userRepo,RefreshTokenService refreshTokenService){
         this.strategyList=strategyList;
         this.authManager = authManager;
         this.jwtService = jwtService;
+        this.refreshTokenService=refreshTokenService;
         this.userRepo=userRepo;
     }
 
@@ -81,20 +82,27 @@ public class UserFactory
      * </ul>
      *
      * @param requestDTO Data transfer object containing the user's email, password, and role.
-     * @return A {@link LoginResponseDTO} containing the generated JWT and user metadata.
+     * @return A {@link UserResponseDTO} containing the generated JWT and user metadata.
      */
-    public LoginResponseDTO verify(LoginRequestDTO requestDTO) {
-        System.out.println("2");
+    public UserResponseDTO verify(UserRequestDTO requestDTO) {
       return strategyList.stream()
                 .filter(s -> s.supports(requestDTO.getRole().toUpperCase()))
                 .findFirst()
                 .map(s -> {
-                    User u = new User();
-                    u.setEmail(requestDTO.getEmail());
-                    u.setPassword(requestDTO.getPassword());
-                    u.setRole(Role.valueOf(requestDTO.getRole()));
-                    return s.verify(u, authManager, jwtService, userRepo);
+                    try {
+                        User u = User.builder()
+                                .email(requestDTO.getEmail())
+                                .password(requestDTO.getPassword())
+                                .role(Role.valueOf(requestDTO.getRole())).build();
+                        return s.verify(u, authManager,
+                                jwtService, userRepo,
+                                refreshTokenService);
+
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
                 })
+
                 .orElseThrow(() -> new RuntimeException("Unsupported Role"));
-}
+    }
 }

@@ -1,14 +1,23 @@
-package com.educonnect.dto;
+package com.educonnect.dto.teacher;
 
-import org.antlr.v4.runtime.misc.NotNull;
+import java.util.UUID;
 
-public class TeacherCreateDTO {
+public class TeacherResponseDTO {
 
+    private UUID id;
     private String fullName;
     private String email;
-    private String passwordHash;
+
     private String department;
     private String qualification;
+
+    public UUID getId() {
+        return id;
+    }
+
+    public void setId(UUID id) {
+        this.id = id;
+    }
 
     public String getFullName() {
         return fullName;
@@ -40,13 +49,5 @@ public class TeacherCreateDTO {
 
     public void setQualification(String qualification) {
         this.qualification = qualification;
-    }
-
-    public String getPasswordHash() {
-        return passwordHash;
-    }
-
-    public void setPasswordHash(String passwordHash) {
-        this.passwordHash = passwordHash;
     }
 }

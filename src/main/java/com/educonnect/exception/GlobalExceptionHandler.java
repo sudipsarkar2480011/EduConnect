@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 public class GlobalExceptionHandler {
 
 
-    @ExceptionHandler({DocumentProcessingException.class})
+    @ExceptionHandler(DocumentProcessingException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<ErrorResponseDTO> handleDocumentProcessingException(DocumentProcessingException ex) {
         ErrorResponseDTO errorResponse = new ErrorResponseDTO(
@@ -52,17 +52,5 @@ public class GlobalExceptionHandler {
                 ex.getMessage()
         );
         return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-
-    @ExceptionHandler(Exception.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public  ResponseEntity<ErrorResponseDTO> handleException(Exception ex){
-        ErrorResponseDTO dto = new ErrorResponseDTO(
-                LocalDateTime.now(),
-                HttpStatus.BAD_REQUEST.value(),
-                ex.getLocalizedMessage(),
-                ex.getMessage()
-        );
-        return new ResponseEntity<>(dto,HttpStatus.BAD_REQUEST);
     }
 }

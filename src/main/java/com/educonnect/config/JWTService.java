@@ -20,15 +20,14 @@ import java.util.function.Function;
 public class JWTService {
 
     private String secretKey = "4aaf7daf79c1510e29234073";
-    private final Long expiry=1000*60L * 10; // 10 minutes
 
-    public JWTService() throws Exception {
+    public JWTService() {
         try {
             KeyGenerator keyGen = KeyGenerator.getInstance("HmacSHA256");
             SecretKey sk = keyGen.generateKey();
             secretKey = Base64.getEncoder().encodeToString(sk.getEncoded());
         } catch (NoSuchAlgorithmException e) {
-            throw new Exception(e);
+            throw new RuntimeException(e);
         }
     }
 
@@ -39,11 +38,12 @@ public class JWTService {
 
 
     public String generateToken(String username) {
+
         return Jwts.builder()
                 .claims()
                 .subject(username)
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + expiry))
+                .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 30))
                 .and()
                 .signWith(getKey())
                 .compact();

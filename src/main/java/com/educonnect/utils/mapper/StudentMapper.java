@@ -1,7 +1,7 @@
-package com.educonnect.service.mapper;
+package com.educonnect.utils.mapper;
 
 import com.educonnect.model.user.Student;
-import com.educonnect.service.dto.StudentResponse;
+import com.educonnect.dto.student.StudentResponse;
 import org.springframework.stereotype.Component;
 
 @Component

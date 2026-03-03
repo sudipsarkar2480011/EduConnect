@@ -1,4 +1,4 @@
-package com.educonnect.service.dto;
+package com.educonnect.dto.student;
 
 import jakarta.validation.constraints.Email;
 

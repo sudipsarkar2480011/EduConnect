@@ -1,9 +1,9 @@
 package com.educonnect.controller;
 
 import com.educonnect.service.contract.StudentService;
-import com.educonnect.service.dto.StudentRegisterRequest;
-import com.educonnect.service.dto.StudentResponse;
-import com.educonnect.service.dto.StudentUpdateRequest;
+import com.educonnect.dto.student.StudentRegisterRequest;
+import com.educonnect.dto.student.StudentResponse;
+import com.educonnect.dto.student.StudentUpdateRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
