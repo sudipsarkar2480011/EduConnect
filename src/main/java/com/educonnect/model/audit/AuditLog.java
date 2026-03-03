@@ -6,7 +6,6 @@ import com.educonnect.model.user.User;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.CurrentTimestamp;
-import org.hibernate.annotations.UuidGenerator;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -28,7 +27,7 @@ public class AuditLog {
     @Enumerated(EnumType.STRING)
     private Action action;
 
-    private String resource;
+    private String resource; //entity name and entity id , entity type
 
     @CurrentTimestamp
     private LocalDateTime timestamp ;

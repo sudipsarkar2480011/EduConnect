@@ -5,17 +5,12 @@ import com.educonnect.model.attendance.Attendance;
 import com.educonnect.model.engagement.Engagement;
 import com.educonnect.model.user.Teacher;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.hibernate.annotations.UuidGenerator;
+
 
 import java.util.List;
 import java.util.UUID;
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
+
 @Entity
 @Data
 public class Course {
@@ -35,6 +30,8 @@ public class Course {
     @ManyToOne
     @JoinColumn(name = "teacher_id", nullable = false)
     private Teacher teacher;
+
+    private Double duration;
 
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL)
     private List<CourseModule> modules;
