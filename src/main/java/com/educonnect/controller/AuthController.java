@@ -4,9 +4,11 @@ import com.educonnect.config.JWTService;
 import com.educonnect.dto.user.UserRequestDTO;
 import com.educonnect.dto.user.UserResponseDTO;
 import com.educonnect.factory.UserFactory;
+import com.educonnect.model.audit.Action;
 import com.educonnect.model.token.RefreshToken;
 import com.educonnect.model.user.User;
 import com.educonnect.service.contract.RefreshTokenService;
+import com.educonnect.service.contract.audit.AuditLogService;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +29,7 @@ public class AuthController {
     private final UserFactory userFactory;
     private final RefreshTokenService refreshTokenService;
     private final JWTService jwtService;
+    private final AuditLogService auditLogService;
 
     @PostMapping("register")
     public ResponseEntity<UserResponseDTO> register(@RequestBody User user) {
@@ -37,8 +40,14 @@ public class AuthController {
     }
 
     @PostMapping("login")
-    public ResponseEntity<UserResponseDTO> login(@RequestBody UserRequestDTO requestDTO) {
-        return ResponseEntity.ok(userFactory.verify(requestDTO));
+    public ResponseEntity<UserResponseDTO> login(@RequestBody UserRequestDTO requestDTO) throws Exception {
+        try{
+            UserResponseDTO verified = userFactory.verify(requestDTO);
+            auditLogService.createAudit(verified.getUuid(), Action.LOGIN,requestDTO.getRole());
+            return ResponseEntity.ok(verified);
+        }catch (RuntimeException re){
+            throw new Exception(re.getMessage());
+        }
     }
 
     @SneakyThrows
