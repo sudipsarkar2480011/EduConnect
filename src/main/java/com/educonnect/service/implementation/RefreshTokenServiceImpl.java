@@ -44,7 +44,6 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
         );
     }
 
-
     private String generateToken(){
         byte[] bytes = new byte[32];
         random.nextBytes(bytes);
