@@ -7,6 +7,9 @@ import com.educonnect.model.user.User;
 import com.educonnect.repo.audit.AuditLogRepo;
 import com.educonnect.service.contract.audit.AuditLogService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -35,4 +38,16 @@ public class AuditLogServiceImpl implements AuditLogService {
     public List<AuditLog> findAuditLogByUserId(UUID userID) throws Exception {
         return auditLogRepo.findByUserUserId(userID);
     }
+
+    @Override
+    public List<AuditLog> findAuditLogByUserId(UUID userID, Integer from, Integer pageSize) throws Exception {
+        Pageable pageable = PageRequest.of(from,pageSize);
+        return auditLogRepo.findAllByUserUserId(userID,pageable).stream().toList();
+    }
+
+    @Override
+    public List<AuditLog> findAuditByResource(String resource, Integer from, Integer pageSize) throws Exception {
+        return  auditLogRepo.findAllByResource(resource,PageRequest.of(from,pageSize)).stream().toList();
+    }
+
 }
