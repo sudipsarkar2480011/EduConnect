@@ -18,6 +18,11 @@ import java.util.UUID;
 public class TeacherController {
     private final TeacherService teacherService;
 
+    @GetMapping("test")
+    public  String test(){
+        return "working";
+    }
+
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public TeacherResponseDTO create(@RequestBody TeacherCreateDTO dto) {
