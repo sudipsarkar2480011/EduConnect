@@ -1,10 +1,10 @@
 package com.educonnect.controller;
 
-import com.educonnect.dto.TeacherCreateDTO;
-import com.educonnect.dto.TeacherResponseDTO;
-import com.educonnect.dto.TeacherUpdateDTO;
+import com.educonnect.dto.teacher.TeacherCreateDTO;
+import com.educonnect.dto.teacher.TeacherResponseDTO;
+import com.educonnect.dto.teacher.TeacherUpdateDTO;
 import com.educonnect.service.contract.TeacherService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -13,15 +13,14 @@ import org.springframework.web.bind.annotation.*;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/teachers")
+@RequestMapping("v1/api/teachers")
+@RequiredArgsConstructor
 public class TeacherController {
-
-
-    @Autowired
     private final TeacherService teacherService;
 
-    public TeacherController(TeacherService teacherService) {
-        this.teacherService = teacherService;
+    @GetMapping("test")
+    public  String test(){
+        return "working";
     }
 
     @PostMapping
@@ -50,5 +49,4 @@ public class TeacherController {
     public void delete(@PathVariable UUID id) {
         teacherService.delete(id);
     }
-
 }

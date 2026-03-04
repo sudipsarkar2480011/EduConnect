@@ -3,8 +3,12 @@ package com.educonnect.model.audit;
 //AuditLog(AuditID, UserID, Action, Resource, Timestamp)
 
 import com.educonnect.model.user.User;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CurrentTimestamp;
 
 import java.time.LocalDateTime;
@@ -12,6 +16,9 @@ import java.util.UUID;
 
 @Entity
 @Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class AuditLog {
 
 
@@ -22,12 +29,13 @@ public class AuditLog {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
+    @JsonIgnore
     private User user;
 
     @Enumerated(EnumType.STRING)
     private Action action;
 
-    private String resource;
+    private String resource; //entity name and entity id , entity type
 
     @CurrentTimestamp
     private LocalDateTime timestamp ;

@@ -1,6 +1,6 @@
 package com.educonnect.config;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -16,31 +16,33 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
-@EnableWebSecurity
+@EnableWebSecurity(debug = true)
+@RequiredArgsConstructor
 public class SecurityConfig {
-
-
-    @Autowired
-    private EduconnectUserDetailsService educonnectUserDetailsService;
-
+    private final EduconnectUserDetailsService educonnectUserDetailsService;
     private final JwtFilter jwtfilter;
 
-    public SecurityConfig(JwtFilter jwtfilter) {
-        this.jwtfilter = jwtfilter;
-    }
+
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http)  {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/v1/auth/register","/v1/auth/login").permitAll()
+                        .requestMatchers("/v1/auth/**", "/v1/api/course/**").permitAll()
+                        .requestMatchers("/v1/api/**").hasRole("ADMIN")
+                        .requestMatchers("/v1/api/teachers/**").hasRole("TEACHER")
+                        .requestMatchers("/v1/api/parent/**").hasRole("PARENT")
+                        .requestMatchers(
+                                "/v1/api/student/**",
+                                "/v1/api/doc/**").hasRole("STUDENT")
                         .anyRequest().authenticated())
-                .sessionManagement(session ->
-                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .formLogin(AbstractHttpConfigurer::disable)
-                .addFilterBefore(jwtfilter, UsernamePasswordAuthenticationFilter.class)
-                .build();
+                        .sessionManagement(
+                                session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                        )
+                        .formLogin(AbstractHttpConfigurer::disable)
+                        .addFilterBefore(jwtfilter, UsernamePasswordAuthenticationFilter.class)
+                        .build();
     }
 
     @Bean
