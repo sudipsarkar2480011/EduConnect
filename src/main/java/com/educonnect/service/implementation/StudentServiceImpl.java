@@ -97,4 +97,22 @@ public class StudentServiceImpl implements StudentService {
         }
         studentRepo.deleteById(id);
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public StudentResponse getByEmail(String email) {
+        Student s = studentRepo.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("Student not found for email: " + email));
+        return mapper.toResponse(s);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<StudentResponse> findByFullName(String fullName) {
+        return studentRepo.findByFullNameIgnoreCase(fullName)
+                .stream()
+                .map(mapper::toResponse)
+                .toList();
+    }
+
 }

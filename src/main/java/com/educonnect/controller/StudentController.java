@@ -5,8 +5,10 @@ import com.educonnect.dto.student.StudentRegisterRequest;
 import com.educonnect.dto.student.StudentResponse;
 import com.educonnect.dto.student.StudentUpdateRequest;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Email;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -16,6 +18,7 @@ import java.util.UUID;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/v1/api/student")
+@Validated
 public class StudentController {
 
     private final StudentService studentService;
@@ -32,6 +35,20 @@ public class StudentController {
     public ResponseEntity<List<StudentResponse>> findAll() {
         return ResponseEntity.ok(studentService.getAll());
     }
+
+
+    @GetMapping("/by-email")
+    public ResponseEntity<StudentResponse> findByEmail(@RequestParam @Email String email) {
+        StudentResponse resp = studentService.getByEmail(email);
+        return ResponseEntity.ok(resp);
+    }
+
+    @GetMapping("/by-fullname")
+    public ResponseEntity<List<StudentResponse>> findByFullName(@RequestParam String fullName) {
+        List<StudentResponse> resp = studentService.findByFullName(fullName);
+        return ResponseEntity.ok(resp);
+    }
+
 
     // --- UPDATE (POST) ---
     @PostMapping("{id}/update")

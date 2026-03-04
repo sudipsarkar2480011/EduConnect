@@ -18,4 +18,8 @@ public interface StudentService {
 
     StudentResponse update(UUID id, StudentUpdateRequest request);
     void delete(UUID id);
+
+    StudentResponse getByEmail(String email);
+    List<StudentResponse> findByFullName(String fullName);
+
 }
