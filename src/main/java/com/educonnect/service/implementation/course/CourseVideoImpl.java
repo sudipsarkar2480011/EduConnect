@@ -1,5 +1,6 @@
 package com.educonnect.service.implementation.course;
 
+import com.educonnect.exception.custom_exceptions.ResourceNotFoundException;
 import com.educonnect.model.course.Course;
 import com.educonnect.model.course.CourseModule;
 import com.educonnect.repo.course.CourseModuleRepo;
@@ -18,6 +19,7 @@ import ws.schild.jave.EncoderException;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InvalidObjectException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -140,4 +142,134 @@ public class CourseVideoImpl implements CourseVideoService {
 
         return new UrlResource(path.toUri());
     }
+
+    @Override
+    public String deleteVideoResourceWithids(UUID videoId, UUID courseId) throws IOException {
+        CourseModule video = courseModuleRepo.findById(videoId)
+                .orElseThrow(() -> new ResourceNotFoundException("Video record not found"));
+
+        Course course = courseRepo.findById(courseId)
+                .orElseThrow(() -> new ResourceNotFoundException("Course not found"));
+
+
+        return deleteVideoResource(video,course);
+    }
+
+    @Override
+    public String deleteVideoResource(CourseModule video, Course course) throws IOException {
+
+        Path path = Paths.get(uploadDir).resolve(video.getContentUrl()).normalize();
+
+        if(!Files.exists(path)){
+            throw new ResourceNotFoundException("Video not found [on disk]");
+        }
+
+        video.setCourse(null);
+
+
+        course.getModules().remove(video);
+
+        course.setDuration(
+                course.getDuration() != null? course.getDuration() - video.getDuration() : 0
+        );
+
+        courseRepo.save(course);
+
+        log.info("video deleted successfully course table");
+        System.out.println("video deleted successfully from course table");
+
+        try {
+            Files.deleteIfExists(path);
+        } catch (IOException e) {
+            log.error(e.getMessage());
+            System.out.println(e.getMessage());
+            throw new IOException(e);
+        }
+
+        courseModuleRepo.deleteById(video.getModuleId());
+        return "Successfully deleted the video with title " + video.getTitle() + " of course with title " + course.getTitle();
+    }
+
+    @Override
+    public CourseModule updateVideoResource(MultipartFile file, String title, UUID videoId, UUID courseId) throws IOException, EncoderException {
+
+        Path tempFilePath = null;
+        try{
+
+            CourseModule video = courseModuleRepo.findById(videoId)
+                    .orElseThrow(() -> new ResourceNotFoundException("Video record not found"));
+
+            Course course = courseRepo.findById(courseId)
+                    .orElseThrow(() -> new ResourceNotFoundException("Course not found"));
+
+
+            Path path = Paths.get(uploadDir).resolve(video.getContentUrl()).normalize();
+
+            Files.deleteIfExists(path);
+
+            File directory = new File(uploadDir);
+            File tempDirectory = new File(tempUploadDir);
+
+            if(!directory.exists()) {
+                directory.mkdirs();
+            }
+            if(!tempDirectory.exists()) {
+                tempDirectory.mkdirs();
+            }
+
+            String extension = file.getOriginalFilename()
+                    .substring(file.getOriginalFilename()
+                            .lastIndexOf("."));
+
+            String filename = video.getModuleId() + extension;
+
+            Path filePath = Paths.get(uploadDir).resolve(filename);
+            tempFilePath = Files.createTempFile(tempDirectory.toPath(),"temp-video-" + video.getModuleId() ,extension);
+
+            Files.copy(file.getInputStream(), tempFilePath , StandardCopyOption.REPLACE_EXISTING);
+            File tempFile = tempFilePath.toFile();
+            if (!tempFile.exists() || tempFile.length() == 0) {
+                throw new IOException("File was not written correctly to disk!");
+            }
+
+            var duration = VideoUtil.getVideoDuration(tempFile);
+
+            Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+
+
+
+            System.out.println();
+            System.out.println();
+            System.out.println();
+            System.out.println("duration "+ duration);
+            System.out.println("video.getDuration() "+ video.getDuration());
+            System.out.println("course.getDuration() "+ course.getDuration());
+            System.out.println();
+            System.out.println();;
+
+            course.setDuration(
+                    course.getDuration() != null?
+                            course.getDuration() - video.getDuration() + duration : 0
+            );
+
+            course.getModules().remove(video);
+
+            video.setDuration(duration);
+            video.setTitle(title);
+            courseModuleRepo.save(video);
+
+            courseRepo.save(course);
+
+            log.info("video deleted successfully course table");
+            System.out.println("video deleted successfully from course table");
+            return video;
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }finally {
+            if(tempFilePath != null)
+                Files.deleteIfExists(tempFilePath);
+        }
+    }
+
 }
