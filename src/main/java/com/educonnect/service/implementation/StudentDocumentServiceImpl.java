@@ -25,9 +25,12 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -38,6 +41,13 @@ public class StudentDocumentServiceImpl implements StudentDocumentService {
     private final StudentDocumentRepo studentDocumentRepo;
     private final StudentRepo studentRepo;
     private final DocTypeRepo docTypeRepo;
+
+    private final Map<String,FileTypeEnum> allowedTypes =
+            new HashMap<>(Map.of(
+                    ".pdf",FileTypeEnum.PDF,
+                    "jpeg",FileTypeEnum.JPEG,
+                    "jpg",FileTypeEnum.JPEG
+            ));
 
 
     @Override
@@ -88,19 +98,21 @@ public class StudentDocumentServiceImpl implements StudentDocumentService {
 
     private FileTypeEnum getFileType(String filename){
         filename = filename.toLowerCase();
+        String extension= filename.substring(filename.lastIndexOf("."));
+        return allowedTypes.getOrDefault(extension,FileTypeEnum.BYTE_STREAM);
 
-        if(filename.endsWith(".pdf")){
-            return FileTypeEnum.PDF;
-        }
-        else if (filename.endsWith(".jpeg") || filename.endsWith(".jpg")) {
-            return FileTypeEnum.JPEG;
-        }
-        else if(filename.endsWith(".png")){
-            return  FileTypeEnum.PNG;
-        }
-        else {
-            return FileTypeEnum.BYTE_STREAM;
-        }
+//        if(filename.endsWith(".pdf")){
+//            return FileTypeEnum.PDF;
+//        }
+//        else if (filename.endsWith(".jpeg") || filename.endsWith(".jpg")) {
+//            return FileTypeEnum.JPEG;
+//        }
+//        else if(filename.endsWith(".png")){
+//            return  FileTypeEnum.PNG;
+//        }
+//        else {
+//            return FileTypeEnum.BYTE_STREAM;
+//        }
     }
 
     @Override

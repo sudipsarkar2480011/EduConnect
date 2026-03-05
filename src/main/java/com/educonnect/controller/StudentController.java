@@ -19,9 +19,6 @@ import java.util.UUID;
 public class StudentController {
 
     private final StudentService studentService;
-
-
-
     // --- READ ---
     @GetMapping("{id}")
     public ResponseEntity<StudentResponse> findById(@PathVariable("id") UUID studentId) {
