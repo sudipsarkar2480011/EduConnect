@@ -82,9 +82,15 @@ public class StudentServiceImpl implements StudentService {
         Student student = studentRepo.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Student not found: " + id));
 
-        if (request.fullName() != null) student.setFullName(request.fullName());
-        if (request.email() != null)    student.setEmail(request.email());
-        if (request.active() != null)   student.setActive(request.active());
+        if (request.getFullName() != null) {
+            student.setFullName(request.getFullName());
+        }
+        if (request.getEmail() != null)  {
+            student.setEmail(request.getEmail());
+        }
+        if (request.getActive() != null)  {
+            student.setActive(request.getActive());
+        }
 
         Student saved = studentRepo.save(student);
         return mapper.toResponse(saved);

@@ -6,6 +6,7 @@ import com.educonnect.repo.RefreshTokenRepo;
 import com.educonnect.service.contract.RefreshTokenService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
@@ -14,6 +15,7 @@ import java.util.Base64;
 import java.util.Optional;
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class RefreshTokenServiceImpl implements RefreshTokenService {
@@ -41,6 +43,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
                         .token(generateToken())
                         .build()
         );
+
     }
 
     private String generateToken(){

@@ -28,13 +28,48 @@ public class CourseController {
             @RequestParam String title,
             @RequestParam Integer sequenceOrder,
             @RequestParam UUID courseId) throws IOException, EncoderException {
-        return ResponseEntity.ok( courseVideoServiceClass.uploadVideo(file,title,sequenceOrder,courseId));
+        return ResponseEntity.ok(courseVideoServiceClass.uploadVideo(file,title,sequenceOrder,courseId));
+    }
+
+    @PostMapping("/{courseId}/video/{videoId}/update-video")
+    public ResponseEntity<CourseModule> updateVideo(
+            @RequestParam MultipartFile file,
+            @PathVariable UUID courseId,
+            @RequestParam String title,
+            @PathVariable UUID videoId) throws IOException, EncoderException {
+
+        return ResponseEntity.ok(
+                courseVideoServiceClass.updateVideoResource(file,title,videoId,courseId)
+        );
+    }
+
+    @DeleteMapping("/{courseId}/video/{videoId}/delete-video")
+    public ResponseEntity<String> deleteVideo(
+            @PathVariable UUID courseId,
+            @PathVariable UUID videoId) throws IOException, EncoderException {
+
+        return ResponseEntity.ok(
+                courseVideoServiceClass.deleteVideoResourceWithids(videoId,courseId)
+        );
     }
 
 
     @GetMapping("/get-video/{id}")
     public ResponseEntity<String> getVideo(@PathVariable UUID id) throws IOException {
         String url=courseVideoServiceClass.getVideoUrl(id);
+        return ResponseEntity.ok(url);
+    }
+
+    @PostMapping("/{id}/update")
+    public ResponseEntity<String> updateVideo(
+            @PathVariable UUID id,
+            @RequestParam MultipartFile file,
+            @RequestParam String title,
+            @RequestParam Integer sequenceOrder,
+            @RequestParam UUID courseId
+    ) throws IOException {
+        String url=courseVideoServiceClass.getVideoUrl(id);
+
         return ResponseEntity.ok(url);
     }
 
@@ -57,6 +92,8 @@ public class CourseController {
     public Course getcourse( @PathVariable UUID courseId ) throws Exception {
         return courseService.getByIdCourse(courseId);
     }
+
+
 
     @GetMapping("test")
     public String test(){
