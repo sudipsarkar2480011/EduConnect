@@ -1,9 +1,19 @@
 package com.educonnect.dto.student;
 
 import jakarta.validation.constraints.Email;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-public record StudentUpdateRequest(
-        String fullName,
-        @Email String email,
-        Boolean active
-) {}
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class StudentUpdateRequest {
+
+    private String fullName;
+
+    @Email
+    private String email;
+
+    private Boolean active;
+}
