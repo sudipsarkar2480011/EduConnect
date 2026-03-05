@@ -11,6 +11,14 @@ import java.util.UUID;
 @Entity
 @Data
 @ToString
+@Table(
+        uniqueConstraints = {
+                @UniqueConstraint(
+                        name = "uk_course_sequence",
+                        columnNames = {"course_id","sequence_order"}
+                )
+        }
+)
 public class CourseModule {
 
     @Id
@@ -19,7 +27,10 @@ public class CourseModule {
 
     private String title;
     private String contentUrl; // S3 Link or File Path
+
+    @Column(name = "sequence_order")
     private Integer sequenceOrder; // 1, 2, 3...
+
     private Double duration ;
 
     @ManyToOne
