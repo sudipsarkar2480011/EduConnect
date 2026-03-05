@@ -15,6 +15,7 @@ import java.util.UUID;
 @RequestMapping("/v1/api/audits")
 @RequiredArgsConstructor
 //a minor change
+//NEW CHANGES
 public class AuditController {
 
     private final AuditLogService auditLogService;
