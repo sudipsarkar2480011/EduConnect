@@ -6,6 +6,7 @@ import com.educonnect.dto.student.StudentRegisterRequest;
 import com.educonnect.dto.student.StudentResponse;
 import com.educonnect.dto.student.StudentUpdateRequest;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -15,15 +16,11 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/v1/api/student")
 public class StudentController {
 
     private final StudentService studentService;
-
-    public StudentController(StudentService studentService) {
-        this.studentService = studentService;
-    }
-
     // --- READ ---
     @GetMapping("{id}")
     public ResponseEntity<StudentResponse> findById(@PathVariable("id") UUID studentId) {
@@ -33,13 +30,6 @@ public class StudentController {
     @GetMapping
     public ResponseEntity<List<StudentResponse>> findAll() {
         return ResponseEntity.ok(studentService.getAll());
-    }
-
-    // --- CREATE (POST) — registration via strategy (hash password + role=STUDENT) ---
-    @PostMapping("register")
-    public ResponseEntity<StudentResponse> register(@Valid @RequestBody StudentRegisterRequest request) {
-        StudentResponse created = studentService.register(request);
-        return ResponseEntity.created(URI.create("/v1/api/student/" + created.userId())).body(created);
     }
 
     // --- UPDATE (POST) ---

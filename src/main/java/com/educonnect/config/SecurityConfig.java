@@ -1,7 +1,5 @@
 package com.educonnect.config;
 
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,7 +16,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
-@EnableWebSecurity
+@EnableWebSecurity(debug = true)
 @RequiredArgsConstructor
 public class SecurityConfig {
     private final EduconnectUserDetailsService educonnectUserDetailsService;
@@ -31,17 +29,13 @@ public class SecurityConfig {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(
-                                "/v1/auth/register",
-                                "/v1/auth/login",
-                                "/v1/api/course/**",
-                                "/v1/api/student/**"
-                                ).permitAll()
+                        .requestMatchers("/v1/auth/**", "/v1/api/course/**").permitAll()
+                        .requestMatchers("/v1/api/**").hasRole("ADMIN")
                         .requestMatchers("/v1/api/teachers/**").hasRole("TEACHER")
-                        .requestMatchers("/v1/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/v1/api/parent/**").hasRole("PARENT")
                         .requestMatchers(
-                                "/v1/api/doc/**").hasRole("ADMIN")
+                                "/v1/api/student/**",
+                                "/v1/api/doc/**").hasRole("STUDENT")
                         .anyRequest().authenticated())
                         .sessionManagement(
                                 session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
