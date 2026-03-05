@@ -5,11 +5,12 @@ import com.educonnect.model.user.Admin;
 import com.educonnect.repo.AdminRepo;
 import com.educonnect.service.contract.AdminService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.UUID;
 
-
+@Service
 public class AdminServiceImpl implements AdminService {
 
     @Autowired
