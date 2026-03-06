@@ -9,6 +9,7 @@ import com.educonnect.service.contract.TeacherService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -24,32 +25,10 @@ public class TeacherServiceImpl implements TeacherService {
     }
 
 
-
-    @Override
-    public TeacherResponseDTO create(TeacherCreateDTO dto) {
-        // Example uniqueness check
-        if (dto.getEmail() != null && teacherRepo.existsByEmail(dto.getEmail())) {
-            throw new IllegalArgumentException("Email already in use");
-        }
-
-        Teacher t = new Teacher();
-        // fullName & email likely come from User superclass
-        t.setFullName(dto.getFullName());
-        t.setEmail(dto.getEmail());
-
-        t.setPassword(dto.getPasswordHash());
-
-        t.setDepartment(dto.getDepartment());
-        t.setQualification(dto.getQualification());
-
-        Teacher saved = teacherRepo.save(t);
-        return toResponse(saved);
-    }
-
     @Override
     public TeacherResponseDTO getById(UUID id) {
         Teacher t = teacherRepo.findById(id)
-                .orElseThrow(() -> new RuntimeException("Teacher not found: " + id));
+                .orElseThrow(() -> new UsernameNotFoundException("Teacher not found: " + id));
         return toResponse(t);
     }
 
@@ -61,7 +40,7 @@ public class TeacherServiceImpl implements TeacherService {
     @Override
     public TeacherResponseDTO update(UUID id, TeacherUpdateDTO dto) {
         Teacher t = teacherRepo.findById(id)
-                .orElseThrow(() -> new RuntimeException("Teacher not found: " + id));
+                .orElseThrow(() -> new UsernameNotFoundException("Teacher not found: " + id));
 
         if (dto.getFullName() != null)      t.setFullName(dto.getFullName());
         if (dto.getEmail() != null)         t.setEmail(dto.getEmail());
@@ -75,7 +54,7 @@ public class TeacherServiceImpl implements TeacherService {
     @Override
     public void delete(UUID id) {
         if (!teacherRepo.existsById(id)) {
-            throw new RuntimeException("Teacher not found: " + id);
+            throw new UsernameNotFoundException("Teacher not found: " + id);
         }
         teacherRepo.deleteById(id);
     }
