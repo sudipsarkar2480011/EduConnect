@@ -15,7 +15,13 @@ public class EduconnectUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        User user = repo.findByEmail(email).orElseThrow();
-        return new UserPrinciples(user);
+        User user = repo.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        return org.springframework.security.core.userdetails.User.builder()
+                .username(user.getEmail())
+                .password(user.getPassword())
+                .authorities(user.getRole().name()) // maps "STUDENT" to a GrantedAuthority
+                .build();
     }
 }
