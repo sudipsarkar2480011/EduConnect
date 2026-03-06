@@ -2,6 +2,7 @@ package com.educonnect.model.assessment;
 
 import com.educonnect.model.course.Course;
 
+import com.educonnect.model.user.Teacher;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -27,6 +28,16 @@ public class Assessment {
 
     @Enumerated(EnumType.STRING)
     private AssessmentType type;
+
+    @OneToOne(mappedBy = "assessment")
+    private Assignment assignment;
+
+    @OneToOne(mappedBy = "assessment")
+    private Quiz quiz;
+
+    @OneToMany(mappedBy = "assessment")
+    private List<Submission> submissionList;
+
 
     @ManyToOne
     @JoinColumn(name = "course_id")

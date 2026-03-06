@@ -13,7 +13,5 @@ import org.slf4j.LoggerFactory;
 public class EdupointBackendApplication {
 	public static void main(String[] args) {
         SpringApplication.run(EdupointBackendApplication.class, args);
-        String name = "santadip";
-        log.error("hello {}",name);
     }
 }
