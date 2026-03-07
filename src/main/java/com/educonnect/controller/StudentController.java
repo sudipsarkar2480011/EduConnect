@@ -4,13 +4,13 @@ import com.educonnect.exception.custom_exceptions.UserNotFoundException;
 import com.educonnect.service.contract.StudentService;
 import com.educonnect.dto.student.StudentResponse;
 import com.educonnect.dto.student.StudentUpdateRequest;
+import com.educonnect.service.contract.course.CourseService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.net.URI;
 import java.util.List;
 import java.util.UUID;
 
@@ -20,6 +20,7 @@ import java.util.UUID;
 public class StudentController {
 
     private final StudentService studentService;
+    private final CourseService courseService;
 
     @GetMapping("{id}")
     public ResponseEntity<StudentResponse> findById(@PathVariable("id") UUID studentId) throws UserNotFoundException {
@@ -44,4 +45,11 @@ public class StudentController {
         studentService.delete(studentId);
         return new ResponseEntity<>("Deleted Successfully ", HttpStatus.OK);
     }
+
+    @PostMapping("/add-student")
+    public ResponseEntity<StudentResponse> studentEnrollToCourse(@RequestParam UUID studentId, @RequestParam UUID courseId)
+    {
+        return new ResponseEntity<>(courseService.addStudentToCourse(studentId,courseId), HttpStatus.OK);
+    }
+
 }
