@@ -1,9 +1,6 @@
 package com.educonnect.dto.assessment;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -14,6 +11,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
+@ToString(callSuper = true)
 public class AssignmentRequestDTO extends AssessmentRequestDTO{
     private UUID assignment_id;
     private List<MultipartFile> files;

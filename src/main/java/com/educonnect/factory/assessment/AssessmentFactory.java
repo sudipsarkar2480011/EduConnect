@@ -1,9 +1,14 @@
 package com.educonnect.factory.assessment;
 
+import com.educonnect.dto.assessment.AssessmentRequestDTO;
 import com.educonnect.dto.assessment.CreateAssessmentRequestDTO;
+import com.educonnect.dto.assessment.CreateQuizRequestDTO;
+import com.educonnect.exception.custom_exceptions.DocumentProcessingException;
 import com.educonnect.model.user.Teacher;
+import com.educonnect.model.user.User;
 import com.educonnect.service.strategy.assignment.AssessmentStrategy;
 import lombok.RequiredArgsConstructor;
+import org.apache.coyote.BadRequestException;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -20,5 +25,13 @@ public class AssessmentFactory {
                 .map(assessmentStrategy -> assessmentStrategy.createAssessment(teacher,assessmentRequestDTO))
                 .toList().getFirst();
 
+    }
+
+    public String submitAssessment(User user, AssessmentRequestDTO assessmentRequestDTO){
+
+        return assessmentStrategyList.stream()
+                .filter(assessmentStrategy -> assessmentStrategy.supports(assessmentRequestDTO.getAssessmentType()))
+                .map(assessmentStrategy -> assessmentStrategy.submitAssessment(user,assessmentRequestDTO))
+                .toList().getFirst();
     }
 }

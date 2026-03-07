@@ -1,19 +1,17 @@
 package com.educonnect.dto.assessment;
 
 import com.educonnect.model.assessment.Assessment;
+import com.educonnect.model.assessment.AssessmentType;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDate;
 import java.util.UUID;
 
 
-@JsonTypeInfo(use=JsonTypeInfo.Id.NAME,property = "type")
+@JsonTypeInfo(use=JsonTypeInfo.Id.NAME,property = "assessmentType", visible = true)
 @JsonSubTypes(
         {
                 @JsonSubTypes.Type(
@@ -30,9 +28,11 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @SuperBuilder
+@ToString
 public class AssessmentRequestDTO {
 
     private String description;
     private LocalDate dueDate;
     private UUID assessment_id;
+    private AssessmentType assessmentType;
 }

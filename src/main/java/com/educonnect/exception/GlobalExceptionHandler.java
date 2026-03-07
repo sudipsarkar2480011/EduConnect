@@ -4,6 +4,7 @@ import com.educonnect.dto.error.ErrorResponseDTO;
 import com.educonnect.exception.custom_exceptions.DocumentProcessingException;
 import com.educonnect.exception.custom_exceptions.NoChildFoundException;
 import com.educonnect.exception.custom_exceptions.UserNotFoundException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -14,6 +15,7 @@ import ws.schild.jave.EncoderException;
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.time.LocalDateTime;
 
+@Slf4j
 @ControllerAdvice
 public class GlobalExceptionHandler {
 

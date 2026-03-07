@@ -26,12 +26,11 @@ public class Assignment {
     @JoinColumn(name = "assessment_id")
     private Assessment assessment ;
 
-
-    @OneToMany(mappedBy = "assignment")
-    private List<AssignmentAttachment> assignmentAttachmentList;
-
     private LocalDate dueDate;
 
-    private Integer noOfAssignmentDone ;
+    private Integer noOfDocumentsToBeUploaded ;
+
+    @OneToMany(mappedBy = "assignment")
+    List<AssignmentAttachment> assignmentAttachmentList;
 
 }

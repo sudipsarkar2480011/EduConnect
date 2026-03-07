@@ -38,11 +38,12 @@ public class Assessment {
     @OneToMany(mappedBy = "assessment")
     private List<Submission> submissionList;
 
-
     @ManyToOne
     @JoinColumn(name = "course_id")
     private Course course;
 
     @OneToMany(mappedBy = "assessment")
     private List<Result> resultList;
+
+    private Integer noOfStudentSubmitted;
 }

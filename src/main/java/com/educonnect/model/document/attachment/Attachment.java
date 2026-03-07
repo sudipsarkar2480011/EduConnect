@@ -15,10 +15,11 @@ import java.util.UUID;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Inheritance(strategy = InheritanceType.JOINED)
 public class Attachment {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
+//    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID attachmentId;
 
     @Lob
@@ -31,5 +32,7 @@ public class Attachment {
     private String fileName ;
 
     private FileTypeEnum fileTypeEnum;
+
+    private String uri;
 
 }

@@ -1,25 +1,24 @@
 package com.educonnect.model.assessment;
 
 import jakarta.persistence.*;
-import lombok.Builder;
-import lombok.Data;
 
-import java.util.List;
 import java.util.UUID;
 
 @Entity
-@Data
-@Builder
-public class Question {
+public class StudentQuizResponse {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID questionId;
-
-    @OneToMany(mappedBy = "question")
-    private List<QuestionOption> questionOptionList;
+    private UUID studentQuizResponseId;
 
     @ManyToOne
     @JoinColumn(name = "quiz_id")
     private Quiz quiz;
 
+    @ManyToOne
+    @JoinColumn(name = "submission_id")
+    private Submission submission;
+
+    private Integer score;
+
+    private QuizStatus quizStatus;
 }

@@ -3,8 +3,10 @@ package com.educonnect.dto.assessment;
 import com.educonnect.model.assessment.AssessmentType;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDate;
@@ -12,7 +14,9 @@ import java.util.UUID;
 
 @Data
 @SuperBuilder
-@JsonTypeInfo(use=JsonTypeInfo.Id.NAME,property = "type")
+@NoArgsConstructor
+@AllArgsConstructor
+@JsonTypeInfo(use=JsonTypeInfo.Id.NAME,property = "assessmentType" , visible = true)
 @JsonSubTypes(
         {
                 @JsonSubTypes.Type(

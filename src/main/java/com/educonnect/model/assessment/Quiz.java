@@ -24,6 +24,6 @@ public class Quiz {
     private List<Question> questionList;
 
 
-    private QuizStatus status ;
-    
+    @OneToMany(mappedBy = "quiz")
+    private List<StudentQuizResponse> studentQuizResponseList;
 }

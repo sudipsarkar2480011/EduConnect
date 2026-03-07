@@ -32,11 +32,14 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/v1/auth/**",
                                 "/v1/api/course/**",
-                                "/v1/api/assessment/**"
+                                "/v1/api/attachment/view/**"
+
                         ).permitAll()
-                        .requestMatchers("/v1/api/**").hasRole("ADMIN")
+                        //.requestMatchers("/v1/api/**").hasRole("ADMIN")
                         .requestMatchers("/v1/api/teachers/**").hasRole("TEACHER")
                         .requestMatchers("/v1/api/parent/**").hasRole("PARENT")
+                        .requestMatchers("/v1/api/assessment/create").hasRole("TEACHER")
+                        .requestMatchers("/v1/api/assessment/submit").hasRole("STUDENT")
                         .requestMatchers(
                                 "/v1/api/student/**",
                                 "/v1/api/doc/**").hasRole("STUDENT")

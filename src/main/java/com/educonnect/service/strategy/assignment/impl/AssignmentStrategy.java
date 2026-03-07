@@ -3,6 +3,8 @@ package com.educonnect.service.strategy.assignment.impl;
 import com.educonnect.dto.assessment.AssessmentRequestDTO;
 import com.educonnect.dto.assessment.AssignmentRequestDTO;
 import com.educonnect.dto.assessment.CreateAssessmentRequestDTO;
+import com.educonnect.dto.assessment.CreateAssignmentRequestDTO;
+import com.educonnect.exception.custom_exceptions.DocumentProcessingException;
 import com.educonnect.exception.custom_exceptions.ResourceNotFoundException;
 import com.educonnect.model.assessment.*;
 import com.educonnect.model.course.Course;
@@ -16,17 +18,17 @@ import com.educonnect.repo.assessment.AssignmentRepo;
 import com.educonnect.repo.assessment.SubmissionRepo;
 import com.educonnect.repo.course.CourseRepo;
 import com.educonnect.service.strategy.assignment.AssessmentStrategy;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.coyote.BadRequestException;
 import org.apache.logging.log4j.util.InternalException;
-import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -59,94 +61,142 @@ public class AssignmentStrategy implements AssessmentStrategy {
     }
 
     @Override
-    public String submitAssessment(User user,
-                                 AssessmentRequestDTO dto
-    ) {
+    @Transactional
+    public String submitAssessment(User user, AssessmentRequestDTO dto)  {
 
-        try {
-
-            Assessment assessment = assessmentRepo.findById(dto.getAssessment_id())
-                    .orElseThrow(() -> new ResourceNotFoundException("Assessment not found"));
-
-
-            List<MultipartFile> files = ((AssignmentRequestDTO)dto).getFiles();
-
-            Assignment assignment = assignmentRepo.findById(((AssignmentRequestDTO)dto).getAssignment_id())
-                    .orElseThrow(()-> new ResourceNotFoundException("Assignment not found"));
-
-            List<AssignmentAttachment> assignmentAttachmentList =
-
-                    files.stream().map(
-                            file -> {
-                                AssignmentAttachment assignmentAttachment = new AssignmentAttachment();
-
-                                assignmentAttachment.setAssignment(assignment);
-                                try {
-                                    assignmentAttachment.setFileData(file.getBytes());
-                                } catch (IOException e) {
-                                    log.error("Error : {}", e.getMessage());
-                                }
-                                assignmentAttachment.setDescription(dto.getDescription());
-
-                                assignmentAttachment.setFileName(file.getOriginalFilename());
-
-                                assignmentAttachment.setFileTypeEnum(getFileType(file.getOriginalFilename()));
-
-                                return assignmentAttachment;
-                            }
-                    ).toList();
-
-            assignmentAttachmentRepo.saveAll(assignmentAttachmentList);
-
-            //Syncing
-            assignment.setAssignmentAttachmentList(assignmentAttachmentList);
-            assessment.setAssignment(assignment);
-
-            if(!user.getRole().toString().equals("STUDENT")){
-                throw new InternalException("ERROR !!!");
+        if (!(user instanceof Student student)) {
+            try {
+                throw new BadRequestException("Only students can submit assessments.");
+            } catch (BadRequestException e) {
+                log.error(e.getMessage());
+                throw new RuntimeException(e);
             }
-            Submission submission =
-                    Submission.builder()
-                            .assessment(assessment)
-                            .student((Student) user)
-                            .teacher(assessment.getCourse().getTeacher())
-                            .build();
-
-            submissionRepo.save(submission);
-
-        } catch (Exception e) {
-            log.error("Error submit assessment : {}",e.getMessage());
-            throw new RuntimeException(e);
         }
+
+
+        List<MultipartFile> files = ((AssignmentRequestDTO)dto).getFiles();
+
+        if (files == null || files.isEmpty()) {
+            try {
+                throw new DocumentProcessingException("No files were attached to the submission.");
+            } catch (DocumentProcessingException e) {
+                log.error(e.getMessage());
+                throw new RuntimeException(e);
+            }
+        }
+
+        Assignment assignment = assignmentRepo.findById(((AssignmentRequestDTO)dto).getAssignment_id())
+                .orElseThrow(() -> new ResourceNotFoundException("Assignment not found"));
+
+        Assessment assessment = assessmentRepo.findById(dto.getAssessment_id())
+                .orElseThrow(() -> new ResourceNotFoundException("Assessment not found"));
+
+        int uploadedCount = files.size();
+        int requiredCount = assignment.getNoOfDocumentsToBeUploaded();
+
+        if (uploadedCount != requiredCount) {
+            if (uploadedCount > requiredCount) {
+                try {
+                    throw new DocumentProcessingException("Maximum of " + requiredCount + " attachments allowed.");
+                } catch (DocumentProcessingException e) {
+                    log.error(e.getMessage());
+                    throw new RuntimeException(e);
+                }
+            } else {
+                try {
+                    throw new DocumentProcessingException("Please upload " + (requiredCount - uploadedCount) + " more attachments.");
+                } catch (DocumentProcessingException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+
+        if (submissionRepo.existsByStudentAndAssessment((Student) user, assessment)) {
+            try {
+                throw new BadRequestException("You have already submitted this assignment.");
+            } catch (BadRequestException e) {
+                log.error(e.getMessage());
+                throw new RuntimeException(e);
+            }
+        }
+
+        Submission submission = Submission.builder()
+                .assessment(assessment)
+                .student((Student) user)
+                .submissionStatus(SubmissionStatus.SUBMITTED)
+                .build();
+
+
+        submission = submissionRepo.save(submission);
+
+        List<AssignmentAttachment> attachmentList = new ArrayList<>();
+
+        for (MultipartFile file : files) {
+            try {
+
+                AssignmentAttachment attachment = new AssignmentAttachment();
+
+                UUID attachmentId = UUID.randomUUID();
+                attachment.setAttachmentId(attachmentId);
+
+                attachment.setAssignment(assignment);
+                attachment.setSubmission(submission);
+                attachment.setFileData(file.getBytes());
+                attachment.setDescription(dto.getDescription());
+                attachment.setFileName(file.getOriginalFilename());
+                attachment.setFileTypeEnum(getFileType(file.getOriginalFilename()));
+
+                String uri = ServletUriComponentsBuilder.fromCurrentContextPath()
+                        .path("/v1/api/attachment/view/")
+                        .path(attachmentId.toString())
+                        .toUriString();
+
+                attachment.setUri(uri);
+
+                attachmentList.add(attachment);
+
+            } catch (Exception e) {
+                log.error("Failed to read file: {}", file.getOriginalFilename(), e);
+                throw new RuntimeException(e);
+            }
+        }
+
+        assignmentAttachmentRepo.saveAll(attachmentList);
 
         return "Assessment submitted successfully";
     }
 
+
     @Override
+    @Transactional
     public String createAssessment(Teacher teacher, CreateAssessmentRequestDTO dto) {
-        Course course = courseRepo.findById(dto.getCourseId())
-                .orElseThrow(() -> new ResourceNotFoundException("Course not found"));
 
-        //Assignment
+            Course course = courseRepo.findById(dto.getCourseId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Course not found"));
 
-        Assessment assessment = new Assessment();
+            //Assignment
 
-        assessment.setCourse(course);
-        assessment.setTitle(dto.getTitle());
-        assessment.setType(dto.getAssessmentType());
-        assessment.setMaxScore(dto.getMaxScore());
+            Assessment assessment = new Assessment();
 
-        Assignment assignment = new Assignment();
+            assessment.setCourse(course);
+            assessment.setTitle(dto.getTitle());
+            assessment.setType(dto.getAssessmentType());
+            assessment.setMaxScore(dto.getMaxScore());
 
-        assignment.setDueDate(dto.getDueDate());
-        assignment.setNoOfAssignmentDone(0);
+            Assignment assignment = new Assignment();
 
-        assignment.setAssessment(assessment);
-        assessment.setAssignment(assignment);
+            assignment.setDueDate(dto.getDueDate());
+            assignment.setNoOfDocumentsToBeUploaded(
+                    ((CreateAssignmentRequestDTO)dto).getNoOfDocumentsToBeUploaded() == null?
+                            10 : ((CreateAssignmentRequestDTO)dto).getNoOfDocumentsToBeUploaded()
+            );
 
-        assessmentRepo.save(assessment);
-        assignmentRepo.save(assignment);
+            assignment.setAssessment(assessment);
+            assessment.setAssignment(assignment);
 
-        return "Created Assessment of type " + dto.getAssessmentType().toString();
+            assessmentRepo.save(assessment);
+            assignmentRepo.save(assignment);
+
+            return "Created Assessment of type " + dto.getAssessmentType().toString();
     }
 }

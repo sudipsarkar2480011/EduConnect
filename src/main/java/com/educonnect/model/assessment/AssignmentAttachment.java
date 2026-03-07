@@ -13,6 +13,10 @@ import lombok.*;
 public class AssignmentAttachment extends Attachment {
 
     @ManyToOne
+    @JoinColumn(name = "submission_id")
+    private Submission submission;
+
+    @ManyToOne
     @JoinColumn(name = "assignment_id")
     private Assignment assignment;
 
