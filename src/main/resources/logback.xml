@@ -3,10 +3,10 @@
     <property name="LOG_PATH" value="./logs" />
 
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
-        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-            <level>INFO</level>
-<!--            <onMatch>ACCEPT</onMatch>-->
-<!--            <OnMismatch>DENY</OnMismatch>-->
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level></level>
+            <onMatch>ACCEPT</onMatch>
+            <OnMismatch>DENY</OnMismatch>
         </filter>
         <encoder>
             <pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n</pattern>

@@ -1,14 +1,19 @@
 package com.educonnect.service.contract.course;
 
+import com.educonnect.dto.course.CourseRequestDTO;
+import com.educonnect.dto.course.CourseResponseDTO;
+import com.educonnect.dto.course.ModuleResponseDTO;
+import com.educonnect.dto.student.StudentResponse;
 import com.educonnect.model.course.Course;
 
 import java.util.List;
 import java.util.UUID;
 
 public interface CourseService{
-    Course addCourse(Course course);
-    public List<Course> getAllCourse();
-    public Course getByIdCourse(UUID id) throws Exception;
+    CourseResponseDTO addCourse(CourseRequestDTO request);
+    public List<CourseResponseDTO> getAllCourse();
+    public CourseResponseDTO getByIdCourse(UUID id) throws Exception;
     public String deleteById(UUID id);
-
+    StudentResponse addStudentToCourse(UUID userId, UUID courseId);
+List<ModuleResponseDTO> getAllModulesOfACourse(UUID courseId );
 }
