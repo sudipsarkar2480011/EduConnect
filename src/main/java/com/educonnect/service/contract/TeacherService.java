@@ -15,6 +15,4 @@ public interface TeacherService {
     Page<TeacherResponseDTO> getAll(Pageable pageable);
     TeacherResponseDTO update(UUID id, TeacherUpdateDTO dto);
     void delete(UUID id);
-
-
 }

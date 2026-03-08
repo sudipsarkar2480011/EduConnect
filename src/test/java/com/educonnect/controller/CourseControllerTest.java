@@ -19,8 +19,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(CourseController.class)
 @AutoConfigureMockMvc(addFilters = false)
@@ -41,17 +40,19 @@ public class CourseControllerTest {
     @MockitoBean
     private CourseVideoService courseVideoService;
 
+    private final String BASE_URL = "/v1/api/course";
+
     @Test
     void shouldAddCourseSuccessfully() throws Exception {
-        // Arrange
         Course course = new Course();
         course.setTitle("Java Masterclass");
 
         when(courseService.addCourse(any(Course.class))).thenReturn(course);
 
-        mockMvc.perform(post("/course/add-course")
+        // Corrected URL path
+        mockMvc.perform(post(BASE_URL + "/add-course")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"courseName\": \"Java Masterclass\"}"))
+                        .content("{\"title\": \"Java Masterclass\"}")) // Ensure field name matches Course.java
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.title").value("Java Masterclass"));
     }
@@ -63,8 +64,9 @@ public class CourseControllerTest {
 
         when(courseVideoService.getVideoUrl(videoId)).thenReturn(mockUrl);
 
-        mockMvc.perform(get("/course/get-video/" + videoId))
+        // Corrected URL path
+        mockMvc.perform(get(BASE_URL + "/get-video/" + videoId))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$").value(mockUrl));
+                .andExpect(content().string(mockUrl)); // Use content().string() if it's a raw String return
     }
 }
