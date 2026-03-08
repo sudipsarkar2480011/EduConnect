@@ -1,8 +1,10 @@
 package com.educonnect.model.assessment;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 import java.util.UUID;
@@ -10,6 +12,8 @@ import java.util.UUID;
 @Entity
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Quiz {
 
     @Id
@@ -25,5 +29,5 @@ public class Quiz {
 
 
     @OneToMany(mappedBy = "quiz")
-    private List<StudentQuizResponse> studentQuizResponseList;
+    private List<StudentQuizQuestionResponse> studentQuizResponseList;
 }

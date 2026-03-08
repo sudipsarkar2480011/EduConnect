@@ -1,18 +1,19 @@
 package com.educonnect.dto.assessment;
 
-import com.educonnect.model.assessment.Question;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import java.util.List;
+import java.util.UUID;
+
 
 @EqualsAndHashCode(callSuper = true)
-@SuperBuilder
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
+@SuperBuilder
 @ToString(callSuper = true)
-@Data
-public class QuizRequestDTO extends AssessmentRequestDTO {
-
-    private List<Question> questionList;
+public class StudentQuizQuestionResponseDTO extends AssessmentRequestDTO {
+    private UUID quizId;
+    List<StudentQuestionAndAnswerDTO> studentQuestionAndAnswerDTOList;
 }

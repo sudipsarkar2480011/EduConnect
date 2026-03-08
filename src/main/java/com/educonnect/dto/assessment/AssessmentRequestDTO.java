@@ -21,6 +21,11 @@ import java.util.UUID;
                 @JsonSubTypes.Type(
                         value = QuizRequestDTO.class,
                         name = "QUIZ"
+                ),
+
+                @JsonSubTypes.Type(
+                        value = StudentQuizQuestionResponseDTO.class,
+                        name = "QUIZ_SUBMISSION"
                 )
         }
 )
@@ -33,6 +38,6 @@ public class AssessmentRequestDTO {
 
     private String description;
     private LocalDate dueDate;
-    private UUID assessment_id;
+    private UUID assessmentId;
     private AssessmentType assessmentType;
 }

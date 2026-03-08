@@ -7,6 +7,7 @@ import com.educonnect.dto.assessment.CreateAssessmentRequestDTO;
 import com.educonnect.factory.assessment.AssessmentFactory;
 import com.educonnect.model.user.Student;
 import com.educonnect.model.user.Teacher;
+import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
@@ -43,25 +44,16 @@ public class AssessmentController {
     public ResponseEntity<String> submitAssignment(
             @RequestPart("request") AssessmentRequestDTO dto ,
             @AuthenticationPrincipal UserPrinciples userPrinciple,
-            @RequestPart("files") MultipartFile[] files
+            @RequestPart("files") @Nullable  MultipartFile[] files
     ) throws BadRequestException {
 
        System.out.println("=======================098");
 
-       for(var f : files){
-           System.out.println("-----------------");
-           System.out.println(f.getOriginalFilename());
-           System.out.println("------------------");
-       }
 
-
-
-        if(files.length != 0){
+        if(files != null && files.length != 0){
             System.out.println("+++++++++++++++++++++++++++++++  -> " + files.length);
-            if(dto != null)
+            if(dto != null){
                 ((AssignmentRequestDTO) dto).setFiles(Arrays.asList(files));
-            else{
-                throw new BadRequestException("No requests body");
             }
         }
 

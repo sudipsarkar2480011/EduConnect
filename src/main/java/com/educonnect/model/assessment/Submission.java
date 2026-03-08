@@ -47,7 +47,7 @@ public class Submission {
 
 
     @OneToMany(mappedBy = "submission")
-    private List<StudentQuizResponse> studentQuizResponses;
+    private List<StudentQuizQuestionResponse> studentQuizQuestionResponseList;
 
 
 }

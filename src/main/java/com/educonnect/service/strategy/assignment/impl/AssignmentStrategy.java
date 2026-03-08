@@ -13,8 +13,8 @@ import com.educonnect.model.user.Student;
 import com.educonnect.model.user.Teacher;
 import com.educonnect.model.user.User;
 import com.educonnect.repo.assessment.AssessmentRepo;
-import com.educonnect.repo.assessment.AssignmentAttachmentRepo;
-import com.educonnect.repo.assessment.AssignmentRepo;
+import com.educonnect.repo.assessment.assignment.AssignmentAttachmentRepo;
+import com.educonnect.repo.assessment.assignment.AssignmentRepo;
 import com.educonnect.repo.assessment.SubmissionRepo;
 import com.educonnect.repo.course.CourseRepo;
 import com.educonnect.service.strategy.assignment.AssessmentStrategy;
@@ -22,12 +22,10 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.BadRequestException;
-import org.apache.logging.log4j.util.InternalException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.io.IOException;
 import java.util.*;
 
 @Slf4j
@@ -88,7 +86,7 @@ public class AssignmentStrategy implements AssessmentStrategy {
         Assignment assignment = assignmentRepo.findById(((AssignmentRequestDTO)dto).getAssignment_id())
                 .orElseThrow(() -> new ResourceNotFoundException("Assignment not found"));
 
-        Assessment assessment = assessmentRepo.findById(dto.getAssessment_id())
+        Assessment assessment = assessmentRepo.findById(dto.getAssessmentId())
                 .orElseThrow(() -> new ResourceNotFoundException("Assessment not found"));
 
         int uploadedCount = files.size();
@@ -123,7 +121,7 @@ public class AssignmentStrategy implements AssessmentStrategy {
         Submission submission = Submission.builder()
                 .assessment(assessment)
                 .student((Student) user)
-                .submissionStatus(SubmissionStatus.SUBMITTED)
+                .submissionStatus(SubmissionStatus.NOT_SUBMITTED)
                 .build();
 
 
@@ -160,6 +158,8 @@ public class AssignmentStrategy implements AssessmentStrategy {
                 throw new RuntimeException(e);
             }
         }
+
+        submission.setSubmissionStatus(SubmissionStatus.SUBMITTED);
 
         assignmentAttachmentRepo.saveAll(attachmentList);
 

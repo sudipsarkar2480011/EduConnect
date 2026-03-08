@@ -1,4 +1,4 @@
-package com.educonnect.repo.assessment;
+package com.educonnect.repo.assessment.assignment;
 
 import com.educonnect.model.assessment.Assignment;
 import org.springframework.data.jpa.repository.JpaRepository;
