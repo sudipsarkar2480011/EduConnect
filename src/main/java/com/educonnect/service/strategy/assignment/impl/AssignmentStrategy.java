@@ -13,9 +13,9 @@ import com.educonnect.model.user.Student;
 import com.educonnect.model.user.Teacher;
 import com.educonnect.model.user.User;
 import com.educonnect.repo.assessment.AssessmentRepo;
-import com.educonnect.repo.assessment.assignment.AssignmentAttachmentRepo;
 import com.educonnect.repo.assessment.assignment.AssignmentRepo;
 import com.educonnect.repo.assessment.SubmissionRepo;
+import com.educonnect.repo.attachment.AssignmentAttachmentRepo;
 import com.educonnect.repo.course.CourseRepo;
 import com.educonnect.service.strategy.assignment.AssessmentStrategy;
 import jakarta.transaction.Transactional;
@@ -83,7 +83,7 @@ public class AssignmentStrategy implements AssessmentStrategy {
             }
         }
 
-        Assignment assignment = assignmentRepo.findById(((AssignmentRequestDTO)dto).getAssignment_id())
+        Assignment assignment = assignmentRepo.findById(((AssignmentRequestDTO)dto).getAssignmentId())
                 .orElseThrow(() -> new ResourceNotFoundException("Assignment not found"));
 
         Assessment assessment = assessmentRepo.findById(dto.getAssessmentId())

@@ -1,9 +1,12 @@
 package com.educonnect.controller;
 
+import com.educonnect.config.UserPrinciples;
+import com.educonnect.dto.course.CourseRequestDTO;
 import com.educonnect.dto.course.CourseResponseDTO;
 import com.educonnect.dto.course.ModuleRequestDTO;
 import com.educonnect.dto.course.ModuleResponseDTO;
 import com.educonnect.model.course.CourseModule;
+import com.educonnect.model.user.Teacher;
 import com.educonnect.service.contract.course.CourseService;
 import com.educonnect.service.contract.course.CourseVideoService;
 import lombok.RequiredArgsConstructor;
@@ -11,6 +14,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ws.schild.jave.EncoderException;
@@ -20,11 +24,19 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("v1/api/course")
+@RequestMapping("/v1/api/course")
 @RequiredArgsConstructor
 public class CourseController {
     private final CourseVideoService courseVideoServiceClass;
     private final CourseService courseService;
+
+    @PostMapping("/add-course")
+    public ResponseEntity<CourseResponseDTO> addCourse(
+            @RequestBody CourseRequestDTO courseRequest,
+            @AuthenticationPrincipal UserPrinciples userPrinciple
+    ) {
+        return ResponseEntity.ok(courseService.addCourse(courseRequest, (Teacher) userPrinciple.getUser()));
+    }
 
     @PostMapping("/add-video")
     public ResponseEntity<CourseModule> addVideo(
