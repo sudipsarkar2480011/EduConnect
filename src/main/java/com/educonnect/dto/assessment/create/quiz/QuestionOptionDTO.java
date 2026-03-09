@@ -1,4 +1,4 @@
-package com.educonnect.dto.assessment;
+package com.educonnect.dto.assessment.create.quiz;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;

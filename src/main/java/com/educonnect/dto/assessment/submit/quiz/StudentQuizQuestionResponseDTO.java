@@ -1,5 +1,6 @@
-package com.educonnect.dto.assessment;
+package com.educonnect.dto.assessment.submit.quiz;
 
+import com.educonnect.dto.assessment.submit.AssessmentRequestDTO;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 

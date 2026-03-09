@@ -1,8 +1,15 @@
 package com.educonnect.service.strategy.assignment.impl;
 
-import com.educonnect.dto.assessment.*;
+import com.educonnect.dto.assessment.create.CreateAssessmentRequestDTO;
+import com.educonnect.dto.assessment.create.quiz.CreateQuizRequestDTO;
+import com.educonnect.dto.assessment.create.quiz.QuestionOptionDTO;
+import com.educonnect.dto.assessment.submit.AssessmentRequestDTO;
+import com.educonnect.dto.assessment.create.quiz.QuizQuestionDTO;
+import com.educonnect.dto.assessment.submit.quiz.StudentQuestionAndAnswerDTO;
+import com.educonnect.dto.assessment.submit.quiz.StudentQuizQuestionResponseDTO;
 import com.educonnect.exception.custom_exceptions.ResourceNotFoundException;
 import com.educonnect.model.assessment.*;
+import com.educonnect.model.assessment.StudentQuizQuestionResponse;
 import com.educonnect.model.course.Course;
 import com.educonnect.model.user.Student;
 import com.educonnect.model.user.Teacher;
@@ -106,11 +113,6 @@ public class QuizStrategy implements AssessmentStrategy {
     @Override
     @Transactional
     public String submitAssessment(User user, AssessmentRequestDTO assessmentRequestDTO) {
-
-        System.out.println("++++++++++++++++");
-
-        System.out.println(assessmentRequestDTO);
-        System.out.println("++++++++++++++++");
 
         StudentQuizQuestionResponseDTO dto = (StudentQuizQuestionResponseDTO) assessmentRequestDTO;
 
