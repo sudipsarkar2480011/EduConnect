@@ -1,7 +1,11 @@
 package com.educonnect.exception;
 
 import com.educonnect.dto.error.ErrorResponseDTO;
+import com.educonnect.exception.custom_exceptions.CourseNotFoundException;
 import com.educonnect.exception.custom_exceptions.DocumentProcessingException;
+import com.educonnect.exception.custom_exceptions.NoChildFoundException;
+import com.educonnect.exception.custom_exceptions.UserNotFoundException;
+import com.educonnect.repo.course.CourseRepo;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -64,5 +68,44 @@ public class GlobalExceptionHandler {
                 ex.getMessage()
         );
         return new ResponseEntity<>(dto,HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(UserNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ResponseEntity<ErrorResponseDTO> handleStudentNotFoundException(UserNotFoundException ex)
+    {
+        ErrorResponseDTO dto=new ErrorResponseDTO(
+                LocalDateTime.now(),
+                HttpStatus.NOT_FOUND.value(),
+                ex.getLocalizedMessage(),
+                ex.getMessage()
+        );
+        return new ResponseEntity<>(dto,HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(NoChildFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ResponseEntity<ErrorResponseDTO> handleChildNotFoundException(NoChildFoundException ex)
+    {
+        ErrorResponseDTO dto=new ErrorResponseDTO(
+                LocalDateTime.now(),
+                HttpStatus.NOT_FOUND.value(),
+                ex.getLocalizedMessage(),
+                ex.getMessage()
+        );
+        return new ResponseEntity<>(dto,HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(CourseNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ResponseEntity<ErrorResponseDTO> handleChildNotFoundException(CourseNotFoundException ex)
+    {
+        ErrorResponseDTO dto=new ErrorResponseDTO(
+                LocalDateTime.now(),
+                HttpStatus.NOT_FOUND.value(),
+                ex.getLocalizedMessage(),
+                ex.getMessage()
+        );
+        return new ResponseEntity<>(dto,HttpStatus.NOT_FOUND);
     }
 }

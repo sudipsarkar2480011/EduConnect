@@ -1,13 +1,18 @@
 package com.educonnect.controller;
 
+import com.educonnect.dto.course.CourseRequestDTO;
+import com.educonnect.dto.course.CourseResponseDTO;
 import com.educonnect.dto.teacher.TeacherCreateDTO;
 import com.educonnect.dto.teacher.TeacherResponseDTO;
 import com.educonnect.dto.teacher.TeacherUpdateDTO;
+import com.educonnect.exception.custom_exceptions.UserNotFoundException;
 import com.educonnect.service.contract.TeacherService;
+import com.educonnect.service.contract.course.CourseService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -17,20 +22,15 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class TeacherController {
     private final TeacherService teacherService;
-
+    private final CourseService courseService;
     @GetMapping("test")
     public  String test(){
         return "working";
     }
 
-    @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public TeacherResponseDTO create(@RequestBody TeacherCreateDTO dto) {
-        return teacherService.create(dto);
-    }
 
     @GetMapping("/{id}")
-    public TeacherResponseDTO getById(@PathVariable UUID id) {
+    public TeacherResponseDTO getById(@PathVariable UUID id) throws UserNotFoundException {
         return teacherService.getById(id);
     }
 
@@ -40,13 +40,19 @@ public class TeacherController {
     }
 
     @PatchMapping("/{id}")
-    public TeacherResponseDTO update(@PathVariable UUID id, @RequestBody TeacherUpdateDTO dto) {
+    public TeacherResponseDTO update(@PathVariable UUID id, @RequestBody TeacherUpdateDTO dto) throws UserNotFoundException {
         return teacherService.update(id, dto);
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable UUID id) {
+    public void delete(@PathVariable UUID id) throws UserNotFoundException {
         teacherService.delete(id);
     }
+
+    @PostMapping("/add-course")
+    public ResponseEntity<CourseResponseDTO> addCourse(@RequestBody CourseRequestDTO courseRequest) {
+        return ResponseEntity.ok(courseService.addCourse(courseRequest));
+    }
+
 }
