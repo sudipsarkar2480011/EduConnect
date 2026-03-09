@@ -6,6 +6,7 @@ import com.educonnect.dto.course.CourseResponseDTO;
 import com.educonnect.dto.course.ModuleRequestDTO;
 import com.educonnect.dto.course.ModuleResponseDTO;
 import com.educonnect.dto.student.StudentResponse;
+import com.educonnect.exception.custom_exceptions.UserNotFoundException;
 import com.educonnect.model.course.CourseModule;
 import com.educonnect.model.user.Student;
 import com.educonnect.model.user.Teacher;
@@ -36,7 +37,7 @@ public class CourseController {
     public ResponseEntity<StudentResponse> enrollStudent(
             @PathVariable("courseId") UUID courseId,
             @PathVariable("studentId") UUID studentId
-    ){
+    ) throws UserNotFoundException {
         return new ResponseEntity<>(
                 courseService.addStudentToCourse(studentId,courseId),
                 HttpStatus.OK
