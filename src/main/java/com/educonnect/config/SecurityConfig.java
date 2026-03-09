@@ -47,6 +47,7 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/v1/api/student/**",
                                 "/v1/api/doc/**").hasRole("STUDENT")
+                        .requestMatchers("/v1/api/student/**", "/v1/api/doc/**").hasRole("STUDENT")
 
                         .anyRequest().authenticated())
                         .sessionManagement(
