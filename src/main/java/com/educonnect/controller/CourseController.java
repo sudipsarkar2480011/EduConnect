@@ -1,11 +1,14 @@
 package com.educonnect.controller;
 
-import com.educonnect.model.course.Course;
+import com.educonnect.dto.course.CourseResponseDTO;
+import com.educonnect.dto.course.ModuleRequestDTO;
+import com.educonnect.dto.course.ModuleResponseDTO;
 import com.educonnect.model.course.CourseModule;
 import com.educonnect.service.contract.course.CourseService;
 import com.educonnect.service.contract.course.CourseVideoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 import ws.schild.jave.EncoderException;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -83,17 +87,19 @@ public class CourseController {
                 .body(resource);
     }
 
-    @PostMapping("/add-course")
-    public ResponseEntity<Course> addCourse(@RequestBody Course course) {
-        return ResponseEntity.ok(courseService.addCourse(course));
-    }
 
     @GetMapping("/get-course/{courseId}")
-    public Course getcourse( @PathVariable UUID courseId ) throws Exception {
+    public CourseResponseDTO getcourse( @PathVariable UUID courseId ) throws Exception {
         return courseService.getByIdCourse(courseId);
     }
 
 
+
+    @GetMapping("all-course")
+    public ResponseEntity<List<ModuleResponseDTO>> getAllModulesOfaCourse(@RequestBody ModuleRequestDTO requestDTO)
+    {
+        return new ResponseEntity<>(courseService.getAllModulesOfACourse(requestDTO.courseId()),HttpStatus.OK);
+    }
 
     @GetMapping("test")
     public String test(){

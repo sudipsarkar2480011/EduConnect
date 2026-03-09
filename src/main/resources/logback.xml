@@ -4,7 +4,7 @@
 
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <filter class="ch.qos.logback.classic.filter.LevelFilter">
-            <level>INFO</level>
+            <level></level>
             <onMatch>ACCEPT</onMatch>
             <OnMismatch>DENY</OnMismatch>
         </filter>

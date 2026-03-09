@@ -14,7 +14,8 @@ public class StudentMapper {
                 s.getFullName(),
                 s.getEmail(),
                 s.getRole(),
-                s.isActive()
+                s.isActive(),
+                s.getEnrollments()
         );
     }
 }

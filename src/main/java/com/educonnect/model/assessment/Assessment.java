@@ -2,8 +2,10 @@ package com.educonnect.model.assessment;
 
 import com.educonnect.model.course.Course;
 
+import com.educonnect.model.user.Teacher;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -15,6 +17,7 @@ import java.util.UUID;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class Assessment {
 
     @Id
@@ -32,6 +35,18 @@ public class Assessment {
     @JoinColumn(name = "course_id")
     private Course course;
 
+    @OneToOne(mappedBy = "assessment")
+    private Assignment assignment;
+
+    private Integer noOfStudentSubmitted;
+
+    @OneToOne(mappedBy = "assessment")
+    private Quiz quiz;
+
+    @OneToMany(mappedBy = "assessment")
+    private List<Submission> submissionList;
+
     @OneToMany(mappedBy = "assessment")
     private List<Result> resultList;
+
 }

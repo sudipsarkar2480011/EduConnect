@@ -25,7 +25,7 @@ public class Result {
     @JoinColumn(name = "assessment_id")
     private Assessment assessment;
 
-    private int score ;
+    private Integer score ;
 
     @Enumerated(EnumType.STRING)
     private ResultStatus status;
