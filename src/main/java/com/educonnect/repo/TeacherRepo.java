@@ -10,7 +10,6 @@ public interface TeacherRepo extends JpaRepository<Teacher, UUID> {
 
     Optional<Teacher> findByEmail(String email);
     boolean existsByEmail(String email);
-
     Optional<Teacher> findByFullName(String fullName);
 
 
