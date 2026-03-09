@@ -10,6 +10,7 @@ import java.util.UUID;
 @Table(name = "compliance_notes")
 public class Note {
 
+    // primary key
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(nullable = false,updatable = false)
