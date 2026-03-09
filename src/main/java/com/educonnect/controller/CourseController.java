@@ -5,7 +5,9 @@ import com.educonnect.dto.course.CourseRequestDTO;
 import com.educonnect.dto.course.CourseResponseDTO;
 import com.educonnect.dto.course.ModuleRequestDTO;
 import com.educonnect.dto.course.ModuleResponseDTO;
+import com.educonnect.dto.student.StudentResponse;
 import com.educonnect.model.course.CourseModule;
+import com.educonnect.model.user.Student;
 import com.educonnect.model.user.Teacher;
 import com.educonnect.service.contract.course.CourseService;
 import com.educonnect.service.contract.course.CourseVideoService;
@@ -30,12 +32,25 @@ public class CourseController {
     private final CourseVideoService courseVideoServiceClass;
     private final CourseService courseService;
 
+    @PostMapping("/enrollment/{courseId}/student/{studentId}")
+    public ResponseEntity<StudentResponse> enrollStudent(
+            @PathVariable("courseId") UUID courseId,
+            @PathVariable("studentId") UUID studentId
+    ){
+        return new ResponseEntity<>(
+                courseService.addStudentToCourse(studentId,courseId),
+                HttpStatus.OK
+        );
+    }
+
     @PostMapping("/add-course")
     public ResponseEntity<CourseResponseDTO> addCourse(
             @RequestBody CourseRequestDTO courseRequest,
             @AuthenticationPrincipal UserPrinciples userPrinciple
     ) {
-        return ResponseEntity.ok(courseService.addCourse(courseRequest, (Teacher) userPrinciple.getUser()));
+        return ResponseEntity.ok(
+                courseService.addCourse(courseRequest, (Teacher) userPrinciple.getUser())
+        );
     }
 
     @PostMapping("/add-video")
@@ -111,6 +126,21 @@ public class CourseController {
     public ResponseEntity<List<ModuleResponseDTO>> getAllModulesOfaCourse(@RequestBody ModuleRequestDTO requestDTO)
     {
         return new ResponseEntity<>(courseService.getAllModulesOfACourse(requestDTO.courseId()),HttpStatus.OK);
+    }
+
+    @PostMapping("/{courseId}/module/{moduleId}/mark-as-complete")
+    public ResponseEntity<Object> markModuleAsCompleted(
+            @PathVariable("moduleId") UUID moduleId,
+            @PathVariable("courseId") UUID courseId,
+            @AuthenticationPrincipal UserPrinciples userPrinciple
+    ){
+        return new ResponseEntity<>(
+                courseVideoServiceClass.markModuleAsCompleted(
+                        moduleId,
+                        courseId,
+                        (Student) userPrinciple.getUser()),
+                HttpStatus.OK
+        );
     }
 
     @GetMapping("test")
