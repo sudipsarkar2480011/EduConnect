@@ -1,6 +1,5 @@
 package com.educonnect.service.implementation;
 
-import com.educonnect.dto.teacher.TeacherCreateDTO;
 import com.educonnect.dto.teacher.TeacherResponseDTO;
 import com.educonnect.dto.teacher.TeacherUpdateDTO;
 import com.educonnect.model.user.Teacher;
@@ -68,8 +67,6 @@ public class TeacherServiceImpl implements TeacherService {
         dto.setQualification(t.getQualification());
         return dto;
     }
-
-
 }
 
 

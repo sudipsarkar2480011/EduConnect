@@ -42,7 +42,6 @@ public class ParentServiceImpl implements ParentService {
         // Update scalar fields (aligns with your typical User/Teacher patterns)
         if (dto.getName() != null)     parent.setFullName(dto.getName());
         if (dto.getContactInfo() != null)  parent.setPhoneNumber(dto.getContactInfo());
-        //if (dto.getStatus() != null)       parent.setStatus(dto.getStatus());
 
         Parent saved = parentRepo.save(parent);
         return toResponse(saved);
