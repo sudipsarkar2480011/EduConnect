@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
  *  @version 1.0
  *  @since 1.0
  */
+@CrossOrigin(origins = "http://localhost:5173")
 @RestController
 @RequestMapping("v1/auth")
 @RequiredArgsConstructor
