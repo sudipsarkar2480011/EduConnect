@@ -5,6 +5,7 @@ import com.educonnect.dto.course.CourseResponseDTO;
 import com.educonnect.dto.course.ModuleResponseDTO;
 import com.educonnect.dto.student.StudentResponse;
 import com.educonnect.exception.custom_exceptions.CourseNotFoundException;
+import com.educonnect.exception.custom_exceptions.UserNotFoundException;
 import com.educonnect.model.course.Course;
 import com.educonnect.model.course.Enrollment;
 import com.educonnect.model.user.Student;
@@ -16,9 +17,6 @@ import com.educonnect.repo.course.CourseRepo;
 import com.educonnect.service.contract.course.CourseService;
 import com.educonnect.utils.mapper.CourseMapper;
 import com.educonnect.utils.mapper.StudentMapper;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -78,7 +76,12 @@ private  final StudentMapper studentMapper=new StudentMapper();
             throw new IllegalStateException("Student is already enrolled in this course");
         }
 
-        Student student = studentRepo.findById(userId).orElseThrow(()->new UsernameNotFoundException("User nt found: "));
+        Student student = null;
+        try {
+            student = studentRepo.findById(userId).orElseThrow(()->new UserNotFoundException("User nt found: "));
+        } catch (UserNotFoundException e) {
+            throw new RuntimeException(e);
+        }
         Course course = courseRepo.findById(courseId).orElseThrow(()->new CourseNotFoundException("Course not found: "));
 
         Enrollment e = Enrollment.builder()
@@ -86,12 +89,21 @@ private  final StudentMapper studentMapper=new StudentMapper();
                 .course(course)
                 .finalGrade(0.0)
                 .isActive(true)
+                .remainingDuration(course.getDuration())
+                .progress(0.0)
                 .build();
+
         if (student.getEnrollments() == null) {
             student.setEnrollments(new ArrayList<>());
         }
+
+        enrollmentRepo.save(e);
+
         student.getEnrollments().add(e);
+
         studentRepo.save(student);
+
+
         return studentMapper.toResponse(student);
     }
     @Override
@@ -100,6 +112,5 @@ private  final StudentMapper studentMapper=new StudentMapper();
       return c.getModules().stream().map(courseMapper::getModule).toList();
 
     }
-
 
 }
