@@ -1,8 +1,15 @@
 package com.educonnect.service.strategy.assignment.impl;
 
-import com.educonnect.dto.assessment.*;
+import com.educonnect.dto.assessment.create.CreateAssessmentRequestDTO;
+import com.educonnect.dto.assessment.create.quiz.CreateQuizRequestDTO;
+import com.educonnect.dto.assessment.create.quiz.QuestionOptionDTO;
+import com.educonnect.dto.assessment.submit.AssessmentRequestDTO;
+import com.educonnect.dto.assessment.create.quiz.QuizQuestionDTO;
+import com.educonnect.dto.assessment.submit.quiz.StudentQuestionAndAnswerDTO;
+import com.educonnect.dto.assessment.submit.quiz.StudentQuizQuestionResponseDTO;
 import com.educonnect.exception.custom_exceptions.ResourceNotFoundException;
 import com.educonnect.model.assessment.*;
+import com.educonnect.model.assessment.StudentQuizQuestionResponse;
 import com.educonnect.model.course.Course;
 import com.educonnect.model.user.Student;
 import com.educonnect.model.user.Teacher;
@@ -14,9 +21,11 @@ import com.educonnect.repo.assessment.quiz.QuestionRepo;
 import com.educonnect.repo.assessment.quiz.QuizRepo;
 import com.educonnect.repo.assessment.quiz.StudentQuizQuestionResponseRepo;
 import com.educonnect.repo.course.CourseRepo;
+import com.educonnect.service.contract.result.ResultService;
 import com.educonnect.service.strategy.assignment.AssessmentStrategy;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.BadRequestException;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +34,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class QuizStrategy implements AssessmentStrategy {
 
     private final CourseRepo courseRepo;
@@ -34,6 +44,7 @@ public class QuizStrategy implements AssessmentStrategy {
     private final AssessmentRepo assessmentRepo;
     private final SubmissionRepo submissionRepo;
     private final StudentQuizQuestionResponseRepo studentQuizQuestionResponseRepo;
+    private final ResultService resultService;
 
     @Override
     public boolean supports(AssessmentType type) {
@@ -107,11 +118,6 @@ public class QuizStrategy implements AssessmentStrategy {
     @Transactional
     public String submitAssessment(User user, AssessmentRequestDTO assessmentRequestDTO) {
 
-        System.out.println("++++++++++++++++");
-
-        System.out.println(assessmentRequestDTO);
-        System.out.println("++++++++++++++++");
-
         StudentQuizQuestionResponseDTO dto = (StudentQuizQuestionResponseDTO) assessmentRequestDTO;
 
         Assessment assessment = assessmentRepo.findById(dto.getAssessmentId())
@@ -166,6 +172,11 @@ public class QuizStrategy implements AssessmentStrategy {
         submission.setSubmissionStatus(SubmissionStatus.SUBMITTED);
 
         studentQuizQuestionResponseRepo.saveAll(studentQuizQuestionResponseList);
+
+        String msg = resultService.computeQuizResult(assessment.getAssessmentId(),user.getUserId());
+
+        log.info("Message from resultService : {}",msg );
+        log.info("Result computed successfully for quiz : {}", quiz.getQuizId());
 
         return "Quiz submitted successfully";
 

@@ -33,5 +33,10 @@ public class Enrollment {
     private Course course;
 
     private boolean isActive = true;
+
+    private Double remainingDuration;
+
+    private Double progress;
+
     private Double finalGrade;
 }

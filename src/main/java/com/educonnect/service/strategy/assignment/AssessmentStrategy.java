@@ -1,12 +1,10 @@
 package com.educonnect.service.strategy.assignment;
 
-import com.educonnect.dto.assessment.AssessmentRequestDTO;
-import com.educonnect.dto.assessment.CreateAssessmentRequestDTO;
-import com.educonnect.exception.custom_exceptions.DocumentProcessingException;
+import com.educonnect.dto.assessment.submit.AssessmentRequestDTO;
+import com.educonnect.dto.assessment.create.CreateAssessmentRequestDTO;
 import com.educonnect.model.assessment.AssessmentType;
 import com.educonnect.model.user.Teacher;
 import com.educonnect.model.user.User;
-import org.apache.coyote.BadRequestException;
 
 public interface AssessmentStrategy {
 

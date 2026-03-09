@@ -14,7 +14,7 @@ public class CourseMapper implements Mapper<Course, CourseRequestDTO, CourseResp
         course.setTitle(requestDTO.title());
         course.setDescription(requestDTO.description());
         course.setCourseCode(requestDTO.courseCode());
-        course.setDuration(requestDTO.duration());
+        course.setDuration(0.0);
         return course;
     }
 

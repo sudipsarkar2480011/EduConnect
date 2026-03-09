@@ -7,9 +7,6 @@ import java.util.UUID;
 public record CourseRequestDTO (
     @NotBlank String title,
     @NotBlank String description,
-    @NotBlank  String courseCode,
-    @NotBlank   Double duration,
-    @NotBlank
-    UUID teacherId
+    @NotBlank String courseCode
 )
 {}
