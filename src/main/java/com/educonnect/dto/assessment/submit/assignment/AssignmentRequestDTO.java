@@ -14,6 +14,6 @@ import java.util.UUID;
 @SuperBuilder
 @ToString(callSuper = true)
 public class AssignmentRequestDTO extends AssessmentRequestDTO {
-    private UUID assignment_id;
+    private UUID assignmentId;
     private List<MultipartFile> files;
 }

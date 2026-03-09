@@ -21,9 +21,11 @@ import com.educonnect.repo.assessment.quiz.QuestionRepo;
 import com.educonnect.repo.assessment.quiz.QuizRepo;
 import com.educonnect.repo.assessment.quiz.StudentQuizQuestionResponseRepo;
 import com.educonnect.repo.course.CourseRepo;
+import com.educonnect.service.contract.result.ResultService;
 import com.educonnect.service.strategy.assignment.AssessmentStrategy;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.BadRequestException;
 import org.springframework.stereotype.Service;
 
@@ -32,6 +34,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class QuizStrategy implements AssessmentStrategy {
 
     private final CourseRepo courseRepo;
@@ -41,6 +44,7 @@ public class QuizStrategy implements AssessmentStrategy {
     private final AssessmentRepo assessmentRepo;
     private final SubmissionRepo submissionRepo;
     private final StudentQuizQuestionResponseRepo studentQuizQuestionResponseRepo;
+    private final ResultService resultService;
 
     @Override
     public boolean supports(AssessmentType type) {
@@ -168,6 +172,11 @@ public class QuizStrategy implements AssessmentStrategy {
         submission.setSubmissionStatus(SubmissionStatus.SUBMITTED);
 
         studentQuizQuestionResponseRepo.saveAll(studentQuizQuestionResponseList);
+
+        String msg = resultService.computeQuizResult(assessment.getAssessmentId(),user.getUserId());
+
+        log.info("Message from resultService : {}",msg );
+        log.info("Result computed successfully for quiz : {}", quiz.getQuizId());
 
         return "Quiz submitted successfully";
 

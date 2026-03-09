@@ -43,9 +43,8 @@ public class CourseServiceImpl implements CourseService {
 
 private  final StudentMapper studentMapper=new StudentMapper();
     @Override
-    public CourseResponseDTO addCourse(CourseRequestDTO request) {
-        Teacher teacher = teacherRepo.findById(request.teacherId())
-                .orElseThrow(() -> new UsernameNotFoundException("TEACHER NOT FOUND: "));
+    public CourseResponseDTO addCourse(CourseRequestDTO request, Teacher teacher) {
+
         Course course = courseMapper.toEntity(request);
         course.setTeacher(teacher);
         Course savedCourse = courseRepo.save(course);
