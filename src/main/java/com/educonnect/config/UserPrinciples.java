@@ -1,6 +1,7 @@
 package com.educonnect.config;
 
 import com.educonnect.model.user.User;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
@@ -12,6 +13,7 @@ import java.util.Collection;
 import java.util.Collections;
 @RequiredArgsConstructor
 @NullMarked
+@Data
 public class UserPrinciples implements UserDetails {
     private final User user;
 
