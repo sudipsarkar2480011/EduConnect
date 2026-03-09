@@ -1,6 +1,8 @@
-package com.educonnect.dto.assessment;
+package com.educonnect.dto.assessment.submit;
 
-import com.educonnect.model.assessment.Assessment;
+import com.educonnect.dto.assessment.submit.quiz.QuizRequestDTO;
+import com.educonnect.dto.assessment.submit.quiz.StudentQuizQuestionResponseDTO;
+import com.educonnect.dto.assessment.submit.assignment.AssignmentRequestDTO;
 import com.educonnect.model.assessment.AssessmentType;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;

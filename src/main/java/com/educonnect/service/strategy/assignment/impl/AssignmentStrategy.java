@@ -1,9 +1,9 @@
 package com.educonnect.service.strategy.assignment.impl;
 
-import com.educonnect.dto.assessment.AssessmentRequestDTO;
-import com.educonnect.dto.assessment.AssignmentRequestDTO;
-import com.educonnect.dto.assessment.CreateAssessmentRequestDTO;
-import com.educonnect.dto.assessment.CreateAssignmentRequestDTO;
+import com.educonnect.dto.assessment.submit.AssessmentRequestDTO;
+import com.educonnect.dto.assessment.submit.assignment.AssignmentRequestDTO;
+import com.educonnect.dto.assessment.create.CreateAssessmentRequestDTO;
+import com.educonnect.dto.assessment.create.assignment.CreateAssignmentRequestDTO;
 import com.educonnect.exception.custom_exceptions.DocumentProcessingException;
 import com.educonnect.exception.custom_exceptions.ResourceNotFoundException;
 import com.educonnect.model.assessment.*;

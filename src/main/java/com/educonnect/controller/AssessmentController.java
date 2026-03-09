@@ -1,9 +1,9 @@
 package com.educonnect.controller;
 
 import com.educonnect.config.UserPrinciples;
-import com.educonnect.dto.assessment.AssessmentRequestDTO;
-import com.educonnect.dto.assessment.AssignmentRequestDTO;
-import com.educonnect.dto.assessment.CreateAssessmentRequestDTO;
+import com.educonnect.dto.assessment.submit.AssessmentRequestDTO;
+import com.educonnect.dto.assessment.submit.assignment.AssignmentRequestDTO;
+import com.educonnect.dto.assessment.create.CreateAssessmentRequestDTO;
 import com.educonnect.factory.assessment.AssessmentFactory;
 import com.educonnect.model.user.Student;
 import com.educonnect.model.user.Teacher;
@@ -16,7 +16,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import tools.jackson.databind.ObjectMapper;
 
 import java.util.Arrays;
 
