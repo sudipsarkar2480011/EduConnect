@@ -1,6 +1,9 @@
 package com.educonnect.config;
 
 import com.educonnect.model.user.User;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
+import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -8,18 +11,16 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.Collections;
-
+@RequiredArgsConstructor
+@NullMarked
+@Data
 public class UserPrinciples implements UserDetails {
-    private User user;
-    public UserPrinciples(User user) {
-        this.user=user;
-    }
+    private final User user;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         String role= String.valueOf(user.getRole());
         return Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + role));
-
     }
 
     @Override

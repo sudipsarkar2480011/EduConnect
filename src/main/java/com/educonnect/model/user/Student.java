@@ -3,6 +3,7 @@ package com.educonnect.model.user;
 
 import com.educonnect.model.access.ParentAccess;
 import com.educonnect.model.assessment.Result;
+import com.educonnect.model.assessment.Submission;
 import com.educonnect.model.attendance.Attendance;
 import com.educonnect.model.compliance.ComplianceRecord;
 import com.educonnect.model.course.Enrollment;
@@ -55,6 +56,9 @@ public class Student extends User {
 
     @OneToMany(mappedBy = "student")
     private List<Engagement> engagements;
+
+    @OneToMany(mappedBy = "student")
+    private List<Submission> submissionList;
 
 
 }

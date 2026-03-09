@@ -37,3 +37,7 @@ uploads
 # Ignore secret config
 src/main/resources/application-secret.properties
 
+test
+
+#ignore logs
+logs

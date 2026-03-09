@@ -1,23 +1,12 @@
-package com.educonnect.dto;
+package com.educonnect.dto.teacher;
 
-import java.util.UUID;
+public class TeacherUpdateDTO {
 
-public class TeacherResponseDTO {
-
-    private UUID id;
     private String fullName;
     private String email;
 
     private String department;
     private String qualification;
-
-    public UUID getId() {
-        return id;
-    }
-
-    public void setId(UUID id) {
-        this.id = id;
-    }
 
     public String getFullName() {
         return fullName;
