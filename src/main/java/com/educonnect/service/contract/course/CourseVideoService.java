@@ -18,7 +18,7 @@ public interface CourseVideoService {
     String getVideoUrl(UUID id) throws IOException;
     Resource LoadVideoAsResource(UUID id) throws IOException;
     String deleteVideoResourceWithids(UUID videoId, UUID courseId) throws IOException;
-    public String deleteVideoResource(CourseModule video, Course course) throws IOException;
+    String deleteVideoResource(CourseModule video, Course course) throws IOException;
     CourseModule updateVideoResource(MultipartFile file,String title,UUID videoId, UUID courseId) throws IOException, EncoderException;
-    public Map<String, Object> markModuleAsCompleted(UUID moduleId, UUID courseId, Student student);
+    Map<String, Object> markModuleAsCompleted(UUID moduleId, UUID courseId, Student student);
 }

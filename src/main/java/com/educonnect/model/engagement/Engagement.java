@@ -4,6 +4,7 @@ package com.educonnect.model.engagement;
 
 import com.educonnect.model.course.Course;
 import com.educonnect.model.user.Student;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
