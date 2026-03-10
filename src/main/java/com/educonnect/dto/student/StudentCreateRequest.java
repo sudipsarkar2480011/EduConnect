@@ -10,5 +10,6 @@ public record StudentCreateRequest(
         @NotNull UUID userId,
         @NotBlank String firstName,
         @NotBlank String lastName,
-        @Email String email
+        @Email String email,
+        @Email String parentEmail
 ) {}

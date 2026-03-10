@@ -20,7 +20,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ParentAccessRequestDTO {
-
+    private UUID parentId;
     private UUID studentId;
     private String permissions; // e.g., VIEW_ATTENDANCE, VIEW_PERFORMANCE, ALL
     private String status;      // e.g., ACTIVE, INACTIVE, REVOKED
