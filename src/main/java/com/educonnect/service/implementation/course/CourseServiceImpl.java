@@ -71,17 +71,13 @@ private  final StudentMapper studentMapper=new StudentMapper();
 
     @Override
     @Transactional
-    public StudentResponse addStudentToCourse(UUID userId, UUID courseId) {
+    public StudentResponse addStudentToCourse(UUID userId, UUID courseId) throws UserNotFoundException {
         if (enrollmentRepo.existsByStudentUserIdAndCourseCourseId(userId, courseId)) {
             throw new IllegalStateException("Student is already enrolled in this course");
         }
 
-        Student student = null;
-        try {
-            student = studentRepo.findById(userId).orElseThrow(()->new UserNotFoundException("User nt found: "));
-        } catch (UserNotFoundException e) {
-            throw new RuntimeException(e);
-        }
+        Student student  = studentRepo.findById(userId).orElseThrow(()->new UserNotFoundException("User nt found: "));
+
         Course course = courseRepo.findById(courseId).orElseThrow(()->new CourseNotFoundException("Course not found: "));
 
         Enrollment e = Enrollment.builder()
