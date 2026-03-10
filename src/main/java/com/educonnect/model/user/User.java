@@ -1,5 +1,6 @@
 package com.educonnect.model.user;
 
+import com.educonnect.model.audit.AuditLog;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -47,5 +48,8 @@ public class User {
 
     @OneToMany(mappedBy = "user")
     private List<Notification> notifications;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<AuditLog> auditLogs;
 
 }

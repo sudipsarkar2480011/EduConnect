@@ -29,7 +29,6 @@
 	<properties>
 		<java.version>21</java.version>
 	</properties>
-
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -84,21 +83,6 @@
             <version>4.1.0-M2</version>
             <scope>test</scope>
         </dependency>
-
-		
-		<dependency>
-			<groupId>org.junit.jupiter</groupId>
-			<artifactId>junit-jupiter</artifactId>
-			<version>5.10.2</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.mockito</groupId>
-			<artifactId>mockito-junit-jupiter</artifactId>
-			<version>5.11.0</version>
-			<scope>test</scope>
-		</dependency>
-
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
@@ -134,6 +118,14 @@
             <groupId>ws.schild</groupId>
             <artifactId>jave-nativebin-win64</artifactId>
             <version>3.5.0</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>ws.schild</groupId>
+            <artifactId>jave-all-deps</artifactId>
+            <version>3.5.0</version>
+            <scope>compile</scope>
         </dependency>
 
         <dependency>
@@ -141,7 +133,6 @@
             <artifactId>spring-boot-starter-validation</artifactId>
         </dependency>
     </dependencies>
-
 
 	<build>
 		<plugins>
@@ -157,7 +148,6 @@
 					</annotationProcessorPaths>
 				</configuration>
 			</plugin>
-			
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
@@ -170,16 +160,6 @@
 					</excludes>
 				</configuration>
 			</plugin>
-			
-			<plugin>
-			<groupId>org.apache.maven.plugins</groupId>
-			<artifactId>maven-surefire-plugin</artifactId>
-			<version>3.2.5</version>
-			<configuration>
-				<useModulePath>false</useModulePath>
-			</configuration>
-			</plugin>
-
 		</plugins>
 	</build>
 

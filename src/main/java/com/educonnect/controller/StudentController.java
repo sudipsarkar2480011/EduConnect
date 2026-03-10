@@ -1,30 +1,29 @@
 package com.educonnect.controller;
 
+import com.educonnect.exception.custom_exceptions.UserNotFoundException;
 import com.educonnect.service.contract.StudentService;
-import com.educonnect.dto.student.StudentRegisterRequest;
 import com.educonnect.dto.student.StudentResponse;
 import com.educonnect.dto.student.StudentUpdateRequest;
+import com.educonnect.service.contract.course.CourseService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.net.URI;
 import java.util.List;
 import java.util.UUID;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/v1/api/student")
 public class StudentController {
 
     private final StudentService studentService;
+    private final CourseService courseService;
 
-    public StudentController(StudentService studentService) {
-        this.studentService = studentService;
-    }
-
-    // --- READ ---
     @GetMapping("{id}")
-    public ResponseEntity<StudentResponse> findById(@PathVariable("id") UUID studentId) {
+    public ResponseEntity<StudentResponse> findById(@PathVariable("id") UUID studentId) throws UserNotFoundException {
         return ResponseEntity.ok(studentService.getById(studentId));
     }
 
@@ -33,26 +32,24 @@ public class StudentController {
         return ResponseEntity.ok(studentService.getAll());
     }
 
-    // --- CREATE (POST) — registration via strategy (hash password + role=STUDENT) ---
-    @PostMapping("register")
-    public ResponseEntity<StudentResponse> register(@Valid @RequestBody StudentRegisterRequest request) {
-        StudentResponse created = studentService.register(request);
-        return ResponseEntity.created(URI.create("/v1/api/student/" + created.userId())).body(created);
-    }
-
-    // --- UPDATE (POST) ---
     @PostMapping("{id}/update")
     public ResponseEntity<StudentResponse> update(
             @PathVariable("id") UUID studentId,
             @Valid @RequestBody StudentUpdateRequest request
-    ) {
+    ) throws UserNotFoundException {
         return ResponseEntity.ok(studentService.update(studentId, request));
     }
 
-    // --- DELETE (POST) ---
     @PostMapping("{id}/delete")
-    public ResponseEntity<Void> delete(@PathVariable("id") UUID studentId) {
+    public ResponseEntity<String> delete(@PathVariable("id") UUID studentId) throws UserNotFoundException {
         studentService.delete(studentId);
-        return ResponseEntity.noContent().build();
+        return new ResponseEntity<>("Deleted Successfully ", HttpStatus.OK);
     }
+
+    @PostMapping("/add-student")
+    public ResponseEntity<StudentResponse> studentEnrollToCourse(@RequestParam UUID studentId, @RequestParam UUID courseId)
+    {
+        return new ResponseEntity<>(courseService.addStudentToCourse(studentId,courseId), HttpStatus.OK);
+    }
+
 }
