@@ -6,6 +6,7 @@ import com.educonnect.exception.custom_exceptions.DemographicsNotFoundException;
 import com.educonnect.exception.custom_exceptions.UserNotFoundException;
 import com.educonnect.model.demographics.StudentDemographics;
 import com.educonnect.model.user.Student;
+import com.educonnect.repo.StudentRepo;
 import com.educonnect.repo.demographics.StudentDemographicsRepo;
 // Import your existing Student Repo. Adjust package if needed.
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -24,7 +25,7 @@ public class StudentDemographicsServiceImpl implements StudentDemographicsServic
     private final StudentDemographicsRepo demographicsRepo;
 
     // Injecting your existing Student Repository to fetch the core student
-    private final JpaRepository<Student, UUID> studentRepo;
+    private final StudentRepo studentRepo;
 
     @Override
     @Transactional
