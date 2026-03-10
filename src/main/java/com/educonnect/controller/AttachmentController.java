@@ -7,14 +7,14 @@ import com.educonnect.service.contract.attachment.AttachmentService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.MediaTypeFactory;
+import org.springframework.http.*;
+import org.springframework.stereotype.Service;
 import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -63,4 +63,16 @@ public class AttachmentController {
         }
 
     }
+
+    @GetMapping("assessment/{assessmentId}/student/{studentId}")
+    public ResponseEntity<List<String>> getAssignmentAttachmentUris(
+            @PathVariable("assessmentId") UUID assessmentId,
+            @PathVariable("studentId") UUID studentId
+    ){
+        return new ResponseEntity<>(
+                attachmentService.getAllAttachmentUrisByStudentAndAssessment(studentId,assessmentId),
+                HttpStatus.OK
+        );
+    }
+
 }

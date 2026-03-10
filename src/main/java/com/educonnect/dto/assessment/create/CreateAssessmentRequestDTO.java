@@ -1,10 +1,11 @@
-package com.educonnect.dto.assessment;
+package com.educonnect.dto.assessment.create;
 
+import com.educonnect.dto.assessment.create.assignment.CreateAssignmentRequestDTO;
+import com.educonnect.dto.assessment.create.quiz.CreateQuizRequestDTO;
 import com.educonnect.model.assessment.AssessmentType;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;

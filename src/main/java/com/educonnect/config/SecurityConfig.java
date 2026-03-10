@@ -35,6 +35,8 @@ public class SecurityConfig {
                                 "/v1/api/attachment/view/**"
 
                         ).permitAll()
+                       // .requestMatchers("/v1/api/result/**").hasAnyRole("TEACHER","STUDENT") // NOT WORKING
+                        .requestMatchers("/v1/api/result/**").hasRole("TEACHER")
                         //.requestMatchers("/v1/api/**").hasRole("ADMIN")
                         .requestMatchers("/v1/api/teachers/**").hasRole("TEACHER")
                         .requestMatchers("/v1/api/parent/**").hasRole("PARENT")
@@ -43,6 +45,7 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/v1/api/student/**",
                                 "/v1/api/doc/**").hasRole("STUDENT")
+
                         .anyRequest().authenticated())
                         .sessionManagement(
                                 session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)

@@ -1,14 +1,11 @@
 package com.educonnect.factory.assessment;
 
-import com.educonnect.dto.assessment.AssessmentRequestDTO;
-import com.educonnect.dto.assessment.CreateAssessmentRequestDTO;
-import com.educonnect.dto.assessment.CreateQuizRequestDTO;
-import com.educonnect.exception.custom_exceptions.DocumentProcessingException;
+import com.educonnect.dto.assessment.submit.AssessmentRequestDTO;
+import com.educonnect.dto.assessment.create.CreateAssessmentRequestDTO;
 import com.educonnect.model.user.Teacher;
 import com.educonnect.model.user.User;
 import com.educonnect.service.strategy.assignment.AssessmentStrategy;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.BadRequestException;
 import org.springframework.stereotype.Component;
 
 import java.util.List;

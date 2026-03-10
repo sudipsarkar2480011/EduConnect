@@ -1,6 +1,7 @@
-package com.educonnect.dto.assessment;
+package com.educonnect.dto.assessment.submit;
 
-import com.educonnect.model.assessment.Assessment;
+import com.educonnect.dto.assessment.submit.quiz.StudentQuizQuestionResponseDTO;
+import com.educonnect.dto.assessment.submit.assignment.AssignmentRequestDTO;
 import com.educonnect.model.assessment.AssessmentType;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -18,11 +19,6 @@ import java.util.UUID;
                     value = AssignmentRequestDTO.class,
                     name = "ASSIGNMENT"
                 ),
-                @JsonSubTypes.Type(
-                        value = QuizRequestDTO.class,
-                        name = "QUIZ"
-                ),
-
                 @JsonSubTypes.Type(
                         value = StudentQuizQuestionResponseDTO.class,
                         name = "QUIZ_SUBMISSION"

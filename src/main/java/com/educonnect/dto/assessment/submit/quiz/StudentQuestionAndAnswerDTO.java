@@ -1,4 +1,4 @@
-package com.educonnect.dto.assessment;
+package com.educonnect.dto.assessment.submit.quiz;
 
 import lombok.Data;
 
