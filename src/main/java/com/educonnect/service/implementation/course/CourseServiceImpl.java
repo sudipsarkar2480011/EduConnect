@@ -117,11 +117,9 @@ public class CourseServiceImpl implements CourseService {
             throw new IllegalStateException("Student is already enrolled in this course");
         }
 
-        Student student = studentRepo.findByUserId(userId)
-                .orElseThrow(() -> new UserNotFoundException("User not found: " + userId));
+        Student student  = studentRepo.findById(userId).orElseThrow(()->new UserNotFoundException("User nt found: "));
 
-        Course course = courseRepo.findById(courseId)
-                .orElseThrow(() -> new CourseNotFoundException("Course not found: " + courseId));
+        Course course = courseRepo.findById(courseId).orElseThrow(()->new CourseNotFoundException("Course not found: "));
 
         Enrollment e = Enrollment.builder()
                 .student(student)

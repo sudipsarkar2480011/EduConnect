@@ -29,6 +29,11 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/v1/api/course")
 @RequiredArgsConstructor
+
+/**
+ * REST controller for handling course related requests
+ * Delegates business logic for course related operations
+ */
 public class CourseController {
     private final CourseVideoService courseVideoServiceClass;
     private final CourseService courseService;
@@ -44,6 +49,12 @@ public class CourseController {
         );
     }
 
+    /**
+     * handles adding the course
+     * @param courseRequest The payload
+     * @param userPrinciple AuthenticationPrincipal
+     * @return ResponseEntity of {@link CourseResponseDTO}
+     */
     @PostMapping("/add-course")
     public ResponseEntity<CourseResponseDTO> addCourse(
             @RequestBody CourseRequestDTO courseRequest,
@@ -63,6 +74,16 @@ public class CourseController {
         return ResponseEntity.ok(courseVideoServiceClass.uploadVideo(file,title,sequenceOrder,courseId));
     }
 
+    /**
+     * handles video updation request
+     * @param file The new file
+     * @param courseId The unique identifier of the course whose {@link CourseModule}(video) is to be updated
+     * @param title Title of the video
+     * @param videoId The unique identifier of the video(module) that is to be updated(changed with the new video)
+     * @return ResponseEntity of {@link CourseModule}
+     * @throws IOException
+     * @throws EncoderException
+     */
     @PostMapping("/{courseId}/video/{videoId}/update-video")
     public ResponseEntity<CourseModule> updateVideo(
             @RequestParam MultipartFile file,
@@ -74,6 +95,16 @@ public class CourseController {
                 courseVideoServiceClass.updateVideoResource(file,title,videoId,courseId)
         );
     }
+
+    /**
+     * handles video deletion
+     * @param courseId The unique identifier of the course whose {@link CourseModule}(video) is to be deleted
+     * @param videoId The unique identifier of the video(module) that is to be deleted
+     * @return ResponseEntity of {@link CourseModule}
+     * @return Success message
+     * @throws IOException
+     * @throws EncoderException
+     */
 
     @DeleteMapping("/{courseId}/video/{videoId}/delete-video")
     public ResponseEntity<String> deleteVideo(
@@ -89,19 +120,6 @@ public class CourseController {
     @GetMapping("/get-video/{id}")
     public ResponseEntity<String> getVideo(@PathVariable UUID id) throws IOException {
         String url=courseVideoServiceClass.getVideoUrl(id);
-        return ResponseEntity.ok(url);
-    }
-
-    @PostMapping("/{id}/update")
-    public ResponseEntity<String> updateVideo(
-            @PathVariable UUID id,
-            @RequestParam MultipartFile file,
-            @RequestParam String title,
-            @RequestParam Integer sequenceOrder,
-            @RequestParam UUID courseId
-    ) throws IOException {
-        String url=courseVideoServiceClass.getVideoUrl(id);
-
         return ResponseEntity.ok(url);
     }
 
