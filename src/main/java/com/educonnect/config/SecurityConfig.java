@@ -33,9 +33,11 @@ public class SecurityConfig {
                                 "/v1/auth/**",
                                 "/v1/api/course/**",
                                 "/v1/api/attachment/view/**",
-                                "/v1/api/parent/verify/**"
+                                "/v3/api-docs/**",
+                                "/swagger-ui/index.html",
+                                "/swagger-ui/**"
 
-                        ).permitAll()
+                ).permitAll()
                        // .requestMatchers("/v1/api/result/**").hasAnyRole("TEACHER","STUDENT") // NOT WORKING
                         .requestMatchers("/v1/api/result/**").hasRole("TEACHER")
                         //.requestMatchers("/v1/api/**").hasRole("ADMIN")
@@ -43,11 +45,9 @@ public class SecurityConfig {
                         .requestMatchers("/v1/api/parent/**").hasRole("PARENT")
                         .requestMatchers("/v1/api/assessment/create").hasRole("TEACHER")
                         .requestMatchers("/v1/api/assessment/submit").hasRole("STUDENT")
-                        .requestMatchers("/v1/api/compliance/**").hasRole("ADMIN")
                         .requestMatchers(
                                 "/v1/api/student/**",
                                 "/v1/api/doc/**").hasRole("STUDENT")
-                        .requestMatchers("/v1/api/student/**", "/v1/api/doc/**").hasRole("STUDENT")
 
                         .anyRequest().authenticated())
                         .sessionManagement(
