@@ -35,6 +35,15 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
+/**
+ * Implementation of the CourseVideoService for handling video content.
+ * <p>This service manages physical video file uploads, duration extraction using FFmpeg/Jave,
+ * video streaming resources, and synchronization of course durations.</p>
+ *
+ * @author sanchita das
+ * @version 1.0
+ * @since 1.0
+ */
 
 @Service
 @Slf4j
@@ -56,6 +65,20 @@ public class CourseVideoImpl implements CourseVideoService {
     private EnrollmentRepo enrollmentRepo;
 
 
+    /**
+     * Handles the multi-step process of uploading a video module.
+     * <p>The workflow includes: validating the file type, creating a temporary file to calculate
+     * video duration, saving the final file to the upload directory, and updating the total
+     * duration of the parent Course.</p>
+     *
+     * @param file the video file to upload.
+     * @param title the title of the module.
+     * @param sequenceOrder the ordering of the module within the course.
+     * @param courseId the UUID of the course being updated.
+     * @return the saved CourseModule entity.
+     * @throws IOException if disk operations fail or the course does not exist.
+     * @throws EncoderException if the video duration cannot be extracted.
+     */
     @Override
     public CourseModule uploadVideo(
             MultipartFile file,
@@ -135,12 +158,28 @@ public class CourseVideoImpl implements CourseVideoService {
        }
     }
 
+
+    /**
+     * Constructs the streaming URL for a specific video module.
+     *
+     * @param id the UUID of the module.
+     * @return the full API string for video streaming.
+     */
+
     @Override
     public String getVideoUrl(UUID id) {
         return ServletUriComponentsBuilder.fromCurrentContextPath().path("/v1/api/course/stream/")
                 .path(id.toString())
                 .toUriString();
     }
+
+    /**
+     * Loads a physical video file from the disk as a Spring Resource.
+     *
+     * @param moduleId the UUID of the module file to retrieve.
+     * @return a Resource representing the video file on disk.
+     * @throws IOException if the file is missing or inaccessible.
+     */
 
     @Override
     public Resource LoadVideoAsResource(UUID moduleId) throws IOException {
@@ -154,6 +193,15 @@ public class CourseVideoImpl implements CourseVideoService {
         return new UrlResource(path.toUri());
     }
 
+    /**
+     * Deletes a video resource using module and course identifiers.
+     *
+     * @param videoId the module ID to delete.
+     * @param courseId the ID of the course to update the total duration.
+     * @return a confirmation message.
+     * @throws IOException if file system operations fail.
+     */
+
     @Override
     public String deleteVideoResourceWithids(UUID videoId, UUID courseId) throws IOException {
         CourseModule video = courseModuleRepo.findById(videoId)
@@ -165,6 +213,17 @@ public class CourseVideoImpl implements CourseVideoService {
 
         return deleteVideoResource(video,course);
     }
+
+    /**
+     * Internal logic for deleting a video resource.
+     * <p>Removes the file from disk, adjusts the total course duration, and
+     * removes the database record.</p>
+     *
+     * @param video the module entity to delete.
+     * @param course the parent course entity.
+     * @return a success message.
+     * @throws IOException if the file cannot be deleted from the disk.
+     */
 
     @Override
     public String deleteVideoResource(CourseModule video, Course course) throws IOException {
@@ -200,6 +259,20 @@ public class CourseVideoImpl implements CourseVideoService {
         courseModuleRepo.deleteById(video.getModuleId());
         return "Successfully deleted the video with title " + video.getTitle() + " of course with title " + course.getTitle();
     }
+
+    /**
+     * Updates an existing video module with a new file or title.
+     * <p>Replaces the old file on disk, recalculates the module duration, and updates
+     * the cumulative course duration.</p>
+     *
+     * @param file the new video file.
+     * @param title the new title.
+     * @param videoId the module to update.
+     * @param courseId the parent course.
+     * @return the updated {@link CourseModule}.
+     * @throws IOException if disk operations fail.
+     * @throws EncoderException if the new video metadata cannot be processed.
+     */
 
     @Override
     public CourseModule updateVideoResource(MultipartFile file, String title, UUID videoId, UUID courseId) throws IOException, EncoderException {
@@ -288,6 +361,17 @@ public class CourseVideoImpl implements CourseVideoService {
         }
     }
 
+
+    /**
+     * Marks a specific module as completed for a student and updates course progress.
+     * <p>Calculates the remaining duration for the student and updates the progress percentage
+     * relative to the total course duration.</p>
+     *
+     * @param moduleId the completed module ID.
+     * @param courseId the ID of the course.
+     * @param student the student entity.
+     * @return a map containing the success message, remaining time, and progress percentage.
+     */
 
     @Override
     public Map<String, Object> markModuleAsCompleted(

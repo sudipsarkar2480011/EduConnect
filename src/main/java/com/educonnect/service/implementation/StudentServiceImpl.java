@@ -14,6 +14,16 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Implementation of the {@link StudentService} interface.
+ * <p>This service handles the core business logic for student profile management,
+ * including data retrieval, partial updates, and deletion. It utilizes a
+ * {@link StudentAuthStrategy} for authentication-related concerns.</p>
+ *
+ * @author harini
+ * @version 1.0
+ * @since 1.0
+ */
 @Service
 @Transactional
 public class StudentServiceImpl implements StudentService {
@@ -22,6 +32,13 @@ public class StudentServiceImpl implements StudentService {
     private final StudentMapper mapper;
     private final StudentAuthStrategy studentAuthStrategy;
 
+    /**
+     * Constructs a new StudentServiceImpl with required dependencies.
+     *
+     * @param studentRepo the repository for database operations.
+     * @param mapper the utility for converting entities to DTOs.
+     * @param studentAuthStrategy the strategy for student-specific authentication.
+     */
     public StudentServiceImpl(StudentRepo studentRepo,
                               StudentMapper mapper,
                               StudentAuthStrategy studentAuthStrategy) {
@@ -30,6 +47,13 @@ public class StudentServiceImpl implements StudentService {
         this.studentAuthStrategy = studentAuthStrategy;
     }
 
+    /**
+     * Retrieves a student by their unique user identifier.
+     *
+     * @param id the UUID of the student user.
+     * @return a {@link StudentResponse} containing the profile data.
+     * @throws UsernameNotFoundException if no student is found with the given ID.
+     */
     @Override
     @Transactional(readOnly = true)
     public StudentResponse getById(UUID id) {
@@ -38,6 +62,11 @@ public class StudentServiceImpl implements StudentService {
         return mapper.toResponse(student);
     }
 
+    /**
+     * Fetches all registered students from the system.
+     *
+     * @return a list of {@link StudentResponse} DTOs.
+     */
     @Override
     @Transactional(readOnly = true)
     public List<StudentResponse> getAll() {
@@ -47,6 +76,15 @@ public class StudentServiceImpl implements StudentService {
                 .toList();
     }
 
+    /**
+     * Performs a partial update on a student's profile information.
+     * <p>Only non-null fields in the request will overwrite existing student data.</p>
+     *
+     * @param id the UUID of the student to update.
+     * @param request the DTO containing the update values.
+     * @return the updated {@link StudentResponse}.
+     * @throws UserNotFoundException if the student does not exist.
+     */
     @Override
     public StudentResponse update(UUID id, StudentUpdateRequest request) throws UserNotFoundException {
         Student student = studentRepo.findById(id)
@@ -66,6 +104,12 @@ public class StudentServiceImpl implements StudentService {
         return mapper.toResponse(saved);
     }
 
+    /**
+     * Permanently removes a student record from the system.
+     *
+     * @param id the UUID of the student to delete.
+     * @throws UsernameNotFoundException if the student is not found in the database.
+     */
     @Override
     public void delete(UUID id) {
         if (!studentRepo.existsById(id)) {

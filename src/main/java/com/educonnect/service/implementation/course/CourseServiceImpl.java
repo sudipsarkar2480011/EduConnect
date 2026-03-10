@@ -26,6 +26,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 @Service
+
+/**
+ * Implementation of the CourseService interface.
+ * <p>This service provides the core business logic for course lifecycle management,
+ * including course creation, retrieval, deletion, and the student enrollment process.</p>
+ *
+ * @author sanchita das
+ * @version 1.0
+ * @since 1.0
+ */
+
 public class CourseServiceImpl implements CourseService {
 
     @Autowired
@@ -39,7 +50,16 @@ public class CourseServiceImpl implements CourseService {
 
     private final CourseMapper courseMapper =new CourseMapper();
 
-private  final StudentMapper studentMapper=new StudentMapper();
+    private  final StudentMapper studentMapper=new StudentMapper();
+
+    /**
+     * Creates a new course and assigns a teacher as the instructor.
+     *
+     * @param request the course details provided in the request body.
+     * @param teacher the teacher entity to be associated with this course.
+     * @return a CourseResponseDTO containing the saved course details.
+     */
+
     @Override
     public CourseResponseDTO addCourse(CourseRequestDTO request, Teacher teacher) {
 
@@ -50,6 +70,12 @@ private  final StudentMapper studentMapper=new StudentMapper();
 
     }
 
+    /**
+     * Retrieves all available courses from the database.
+     *
+     * @return a list of all courses mapped to CourseResponseDTO.
+     */
+
     @Override
     public List<CourseResponseDTO> getAllCourse()
     {
@@ -57,17 +83,47 @@ private  final StudentMapper studentMapper=new StudentMapper();
         return   allCourse.stream().map(courseMapper::toResponseDT).toList();
     }
 
+    /**
+     * Finds a specific course by its unique identifier.
+     *
+     * @param id the UUID of the course.
+     * @return the requested course as a CourseResponseDTO.
+     * @throws CourseNotFoundException if no course matches the provided ID.
+     */
+
     @Override
     public CourseResponseDTO getByIdCourse(UUID id) throws CourseNotFoundException {
         Course course=courseRepo.findById(id).orElseThrow(()->new CourseNotFoundException("COURSE NOT FOUND WITH THIS ID :"));
         return courseMapper.toResponseDT(course);
     }
+
+    /**
+     * Deletes a course from the repository by ID.
+     *
+     * @param id the UUID of the course to be removed.
+     * @return a confirmation string ("Deleted").
+     */
+
     @Override
     public String deleteById(UUID id)
     {
         courseRepo.deleteById(id);
         return "Deleted";
     }
+
+    /**
+     * Enrolls a student into a course and initializes their progress tracking.
+     * <p>This method is <b>@Transactional</b> to ensure that student records and
+     * enrollment records are updated atomically. It sets the initial progress to 0%
+     * and the remaining duration to the full course length.</p>
+     *
+     * @param userId the UUID of the student.
+     * @param courseId the UUID of the course.
+     * @return a {@link StudentResponse} showing the student's updated enrollment status.
+     * @throws IllegalStateException if the student is already enrolled.
+     * @throws RuntimeException if the user is not found.
+     * @throws CourseNotFoundException if the course is not found.
+     */
 
     @Override
     @Transactional
@@ -106,6 +162,15 @@ private  final StudentMapper studentMapper=new StudentMapper();
 
         return studentMapper.toResponse(student);
     }
+
+    /**
+     * Retrieves all modules (curriculum content) for a specific course.
+     *
+     * @param courseId the UUID of the course.
+     * @return a list of ModuleResponseDTO associated with the course.
+     * @throws CourseNotFoundException if the course ID is invalid.
+     */
+
     @Override
     public List<ModuleResponseDTO> getAllModulesOfACourse(UUID courseId) {
         Course c= courseRepo.findById(courseId).orElseThrow(()->new CourseNotFoundException("COURSE NOT FOUND: "));
