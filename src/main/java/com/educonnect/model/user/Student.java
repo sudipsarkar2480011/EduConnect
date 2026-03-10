@@ -51,7 +51,7 @@ public class Student extends User {
     @OneToMany(mappedBy = "student")
     private List<Attendance> attendanceList;
 
-    @OneToMany(mappedBy = "student")
+    @OneToMany(mappedBy = "user")
     private List<ComplianceRecord> complianceRecords;
 
     @OneToMany(mappedBy = "student")
