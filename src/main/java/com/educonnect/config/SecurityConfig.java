@@ -47,6 +47,7 @@ public class SecurityConfig {
                         .requestMatchers("/v1/api/assessment/submit").hasRole("STUDENT")
                         .requestMatchers(
                                 "/v1/api/student/**",
+                                "/v1/api/attendance/**",
                                 "/v1/api/doc/**").hasRole("STUDENT")
 
                         .anyRequest().authenticated())

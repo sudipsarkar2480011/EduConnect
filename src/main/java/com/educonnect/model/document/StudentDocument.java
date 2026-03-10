@@ -1,6 +1,7 @@
 package com.educonnect.model.document;
 
 import com.educonnect.model.user.Student;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

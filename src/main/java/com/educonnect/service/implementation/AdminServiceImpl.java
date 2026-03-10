@@ -10,11 +10,13 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.UUID;
 
+
 @Service
 public class AdminServiceImpl implements AdminService {
 
     @Autowired
     private AdminRepo adminRepo;
+
 
     @Override
     public Admin getById(UUID id) throws UserNotFoundException {
@@ -39,7 +41,6 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     public void delete(UUID id) throws UserNotFoundException {
-
         adminRepo.deleteById(id);
     }
 }
