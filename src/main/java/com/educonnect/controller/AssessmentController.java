@@ -19,7 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Arrays;
 
-@Controller
+@RestController
 @RequiredArgsConstructor
 @RequestMapping("/v1/api/assessment")
 /**
