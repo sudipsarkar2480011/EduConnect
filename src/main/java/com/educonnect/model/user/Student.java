@@ -9,6 +9,8 @@ import com.educonnect.model.compliance.ComplianceRecord;
 import com.educonnect.model.course.Enrollment;
 import com.educonnect.model.document.StudentDocument;
 import com.educonnect.model.engagement.Engagement;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -22,7 +24,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString(onlyExplicitlyIncluded = true)
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode(callSuper = true,exclude = "enrollments")
 @PrimaryKeyJoinColumn(name = "student_id")
 public class Student extends User {
 
@@ -48,14 +50,17 @@ public class Student extends User {
     @OneToMany(mappedBy = "student")
     private List<Result> resultList;
 
+
     @OneToMany(mappedBy = "student")
     private List<Attendance> attendanceList;
 
     @OneToMany(mappedBy = "user")
     private List<ComplianceRecord> complianceRecords;
 
+
     @OneToMany(mappedBy = "student")
     private List<Engagement> engagements;
+
 
     @OneToMany(mappedBy = "student")
     private List<Submission> submissionList;

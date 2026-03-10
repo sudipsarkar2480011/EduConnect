@@ -3,7 +3,7 @@ package com.educonnect.model.compliance;
 //ComplianceRecord(ComplianceID, StudentID, Type, Result, Date, Notes)
 
 import com.educonnect.model.user.Student;
-import com.educonnect.model.user.User;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;

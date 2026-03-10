@@ -10,6 +10,7 @@ import com.educonnect.repo.ParentRepo;
 import com.educonnect.repo.StudentRepo;
 import com.educonnect.service.contract.ParentService;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,16 +19,12 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class ParentServiceImpl implements ParentService {
 
     private final ParentRepo parentRepo;
     private final StudentRepo studentRepo;
 
-    @Autowired
-    public ParentServiceImpl(ParentRepo parentRepo, StudentRepo studentRepo) {
-        this.parentRepo = parentRepo;
-        this.studentRepo = studentRepo;
-    }
 
     @Override
     public ParentResponseDTO getById(UUID id) throws UserNotFoundException {
@@ -45,7 +42,6 @@ public class ParentServiceImpl implements ParentService {
         // Update scalar fields (aligns with your typical User/Teacher patterns)
         if (dto.getName() != null)     parent.setFullName(dto.getName());
         if (dto.getContactInfo() != null)  parent.setPhoneNumber(dto.getContactInfo());
-        //if (dto.getStatus() != null)       parent.setStatus(dto.getStatus());
 
         Parent saved = parentRepo.save(parent);
         return toResponse(saved);

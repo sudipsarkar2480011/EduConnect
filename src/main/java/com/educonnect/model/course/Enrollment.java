@@ -1,6 +1,7 @@
 package com.educonnect.model.course;
 
 import com.educonnect.model.user.Student;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -33,5 +34,10 @@ public class Enrollment {
     private Course course;
 
     private boolean isActive = true;
+
+    private Double remainingDuration;
+
+    private Double progress;
+
     private Double finalGrade;
 }

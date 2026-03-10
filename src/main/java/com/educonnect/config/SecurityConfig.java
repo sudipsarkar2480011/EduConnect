@@ -32,9 +32,14 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/v1/auth/**",
                                 "/v1/api/course/**",
-                                "/v1/api/attachment/view/**"
+                                "/v1/api/attachment/view/**",
+                                "/v3/api-docs/**",
+                                "/swagger-ui/index.html",
+                                "/swagger-ui/**"
 
-                        ).permitAll()
+                ).permitAll()
+                       // .requestMatchers("/v1/api/result/**").hasAnyRole("TEACHER","STUDENT") // NOT WORKING
+                        .requestMatchers("/v1/api/result/**").hasRole("TEACHER")
                         //.requestMatchers("/v1/api/**").hasRole("ADMIN")
                         .requestMatchers("/v1/api/teachers/**").hasRole("TEACHER")
                         .requestMatchers("/v1/api/parent/**").hasRole("PARENT")
@@ -43,7 +48,9 @@ public class SecurityConfig {
                         .requestMatchers("/v1/api/compliance/**").hasRole("ADMIN")
                         .requestMatchers(
                                 "/v1/api/student/**",
+                                "/v1/api/attendance/**",
                                 "/v1/api/doc/**").hasRole("STUDENT")
+
                         .anyRequest().authenticated())
                         .sessionManagement(
                                 session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
