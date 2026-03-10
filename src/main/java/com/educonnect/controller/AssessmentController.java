@@ -22,9 +22,19 @@ import java.util.Arrays;
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/v1/api/assessment")
+/**
+ * REST controller for handling assessment related requests
+ * Delegates business logic for assessment related operations
+ */
 public class AssessmentController {
     private final AssessmentFactory assessmentFactory;
 
+    /**
+     *
+     * @param dto The payload
+     * @param userPrinciple The AuthenticationPrincipal
+     * @return Success message
+     */
     @PostMapping("/create")
     public ResponseEntity<String> createAssignment(
             @RequestBody CreateAssessmentRequestDTO dto,
@@ -39,6 +49,14 @@ public class AssessmentController {
         );
     }
 
+    /**
+     *
+     * @param dto The payload
+     * @param userPrinciple AuthenticationPrincipal
+     * @param files The file data (null or empty in case of Quiz submission)
+     * @return Success message
+     * @throws BadRequestException
+     */
     @PostMapping("/submit")
     public ResponseEntity<String> submitAssignment(
             @RequestPart("request") AssessmentRequestDTO dto ,
@@ -46,18 +64,11 @@ public class AssessmentController {
             @RequestPart("files") @Nullable  MultipartFile[] files
     ) throws BadRequestException {
 
-       System.out.println("=======================098");
-
-
         if(files != null && files.length != 0){
-            System.out.println("+++++++++++++++++++++++++++++++  -> " + files.length);
             if(dto != null){
                 ((AssignmentRequestDTO) dto).setFiles(Arrays.asList(files));
             }
         }
-
-        System.out.println("-->" +dto);
-
 
         return new ResponseEntity<>(
                 assessmentFactory.submitAssessment(

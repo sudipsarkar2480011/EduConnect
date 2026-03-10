@@ -11,7 +11,6 @@ import com.educonnect.model.course.Course;
 import com.educonnect.model.document.FileTypeEnum;
 import com.educonnect.model.user.Student;
 import com.educonnect.model.user.Teacher;
-import com.educonnect.model.user.User;
 import com.educonnect.repo.assessment.AssessmentRepo;
 import com.educonnect.repo.assessment.assignment.AssignmentRepo;
 import com.educonnect.repo.assessment.SubmissionRepo;
@@ -31,6 +30,14 @@ import java.util.*;
 @Slf4j
 @RequiredArgsConstructor
 @Service
+
+/**
+ *
+ * Implementation of AssignmentStrategy for {@link AssessmentType} ASSESSMENT
+ * @author SudipSarkar
+ * @version 1.0
+ * @since 1.0
+ */
 public class AssignmentStrategy implements AssessmentStrategy {
 
 
@@ -60,17 +67,7 @@ public class AssignmentStrategy implements AssessmentStrategy {
 
     @Override
     @Transactional
-    public String submitAssessment(User user, AssessmentRequestDTO dto)  {
-
-        if (!(user instanceof Student student)) {
-            try {
-                throw new BadRequestException("Only students can submit assessments.");
-            } catch (BadRequestException e) {
-                log.error(e.getMessage());
-                throw new RuntimeException(e);
-            }
-        }
-
+    public String submitAssessment(Student student, AssessmentRequestDTO dto)  {
 
         List<MultipartFile> files = ((AssignmentRequestDTO)dto).getFiles();
 
@@ -109,7 +106,7 @@ public class AssignmentStrategy implements AssessmentStrategy {
             }
         }
 
-        if (submissionRepo.existsByStudentAndAssessment((Student) user, assessment)) {
+        if (submissionRepo.existsByStudentAndAssessment(student, assessment)) {
             try {
                 throw new BadRequestException("You have already submitted this assignment.");
             } catch (BadRequestException e) {
@@ -120,7 +117,7 @@ public class AssignmentStrategy implements AssessmentStrategy {
 
         Submission submission = Submission.builder()
                 .assessment(assessment)
-                .student((Student) user)
+                .student(student)
                 .submissionStatus(SubmissionStatus.NOT_SUBMITTED)
                 .build();
 

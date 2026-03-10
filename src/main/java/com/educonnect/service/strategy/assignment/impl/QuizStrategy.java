@@ -35,6 +35,12 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Slf4j
+/**
+ * Implementation of AssignmentStrategy for {@link AssessmentType} QUIZ
+ * @author SudipSarkar
+ * @version 1.0
+ * @since 1.0
+ */
 public class QuizStrategy implements AssessmentStrategy {
 
     private final CourseRepo courseRepo;
@@ -116,14 +122,14 @@ public class QuizStrategy implements AssessmentStrategy {
 
     @Override
     @Transactional
-    public String submitAssessment(User user, AssessmentRequestDTO assessmentRequestDTO) {
+    public String submitAssessment(Student student, AssessmentRequestDTO assessmentRequestDTO) {
 
         StudentQuizQuestionResponseDTO dto = (StudentQuizQuestionResponseDTO) assessmentRequestDTO;
 
         Assessment assessment = assessmentRepo.findById(dto.getAssessmentId())
                 .orElseThrow(()-> new ResourceNotFoundException("Assessment not found"));
 
-        if(submissionRepo.existsByStudentAndAssessment((Student) user, assessment)){
+        if(submissionRepo.existsByStudentAndAssessment(student, assessment)){
             try {
                 throw new BadRequestException("You already submitted the Quiz");
             } catch (BadRequestException e) {
@@ -137,7 +143,7 @@ public class QuizStrategy implements AssessmentStrategy {
 
         Submission submission =
                 Submission.builder()
-                        .student((Student) user)
+                        .student(student)
                         .assessment(assessment)
                         .submissionStatus(SubmissionStatus.NOT_SUBMITTED)
                         .build();
@@ -173,7 +179,7 @@ public class QuizStrategy implements AssessmentStrategy {
 
         studentQuizQuestionResponseRepo.saveAll(studentQuizQuestionResponseList);
 
-        String msg = resultService.computeQuizResult(assessment.getAssessmentId(),user.getUserId());
+        String msg = resultService.computeQuizResult(assessment.getAssessmentId(),student.getUserId());
 
         log.info("Message from resultService : {}",msg );
         log.info("Result computed successfully for quiz : {}", quiz.getQuizId());
