@@ -2,6 +2,7 @@ package com.educonnect.controller;
 
 
 
+import com.educonnect.config.UserPrinciples;
 import com.educonnect.model.document.DocTypeEnum;
 import com.educonnect.service.contract.StudentDocumentService;
 import jakarta.servlet.http.HttpServletResponse;
@@ -10,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.MediaTypeFactory;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -42,7 +44,7 @@ public class StudentDocumentController {
      * This method accepts a file and stores it as a BLOB in the DB.
      * </p>
      *
-     * @param studentUuid The unique identifier of the student whose document will be uploaded.
+     * @param userPrinciple The student whose document will be uploaded.
      * @param file The document file
      * @param docType The type of the document(ADHAAR, PAN...)
      * @since 1.0
@@ -50,13 +52,13 @@ public class StudentDocumentController {
 
     @PostMapping(path = "/upload", consumes = "multipart/form-data")
     ResponseEntity<String> saveDocument(
-            @RequestParam String studentUuid,
             @RequestParam MultipartFile file,
-            @RequestParam DocTypeEnum docType
+            @RequestParam DocTypeEnum docType,
+            @AuthenticationPrincipal UserPrinciples userPrinciple
             ){
         try{
             return ResponseEntity.ok(
-                    studentDocumentService.saveStudentDocument(UUID.fromString(studentUuid),file,docType)
+                    studentDocumentService.saveStudentDocument(userPrinciple.getUser().getUserId(), file,docType)
             ) ;
         } catch (Exception e) {
             log.error(e.getMessage());
