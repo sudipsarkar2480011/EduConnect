@@ -33,6 +33,8 @@ public class CourseModule {
 
     private Double duration ;
 
+
+
     @ManyToOne
     @JoinColumn(name = "course_id")
     @JsonIgnore

@@ -8,6 +8,7 @@ import com.educonnect.model.user.Teacher;
 import com.educonnect.model.user.User;
 import com.educonnect.service.strategy.assignment.AssessmentStrategy;
 import lombok.RequiredArgsConstructor;
+import org.apache.coyote.BadRequestException;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -40,7 +41,13 @@ public class AssessmentFactory {
 
          return assessmentStrategyList.stream()
                 .filter(assessmentStrategy -> assessmentStrategy.supports(assessmentRequestDTO.getAssessmentType()))
-                .map(assessmentStrategy -> assessmentStrategy.createAssessment(teacher,assessmentRequestDTO))
+                .map(assessmentStrategy -> {
+                    try {
+                        return assessmentStrategy.createAssessment(teacher, assessmentRequestDTO);
+                    } catch (BadRequestException e) {
+                        throw new RuntimeException(e);
+                    }
+                })
                 .toList().getFirst();
 
     }

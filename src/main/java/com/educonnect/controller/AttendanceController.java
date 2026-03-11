@@ -4,6 +4,7 @@ import com.educonnect.dto.attendance.AttendanceResponseDTO;
 import com.educonnect.exception.custom_exceptions.UserNotFoundException;
 import com.educonnect.service.contract.attendance.AttendanceService;
 import com.educonnect.utils.mapper.AttendanceMapper;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,6 +15,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("v1/api/attendance")
 @RequiredArgsConstructor
+@Tag(name = "03 AttendanceController")
 public class AttendanceController {
 
     private final AttendanceService attendanceService;

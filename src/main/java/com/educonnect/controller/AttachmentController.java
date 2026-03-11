@@ -4,6 +4,7 @@ import com.educonnect.dto.attachment.AttachmentStreamDTO;
 import com.educonnect.exception.custom_exceptions.DocumentExceptions;
 import com.educonnect.model.document.attachment.Attachment;
 import com.educonnect.service.contract.attachment.AttachmentService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +22,7 @@ import java.util.UUID;
 @RequestMapping("/v1/api/attachment")
 @RequiredArgsConstructor
 @Slf4j
+@Tag(name = "11 AttachmentController")
 public class AttachmentController {
 
     private final AttachmentService attachmentService;
