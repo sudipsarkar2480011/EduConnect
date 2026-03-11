@@ -5,7 +5,9 @@ import com.educonnect.dto.course.CourseResponseDTO;
 import com.educonnect.dto.course.ModuleResponseDTO;
 import com.educonnect.model.course.Course;
 import com.educonnect.model.course.CourseModule;
+import org.springframework.stereotype.Component;
 
+@Component
 public class CourseMapper implements Mapper<Course, CourseRequestDTO, CourseResponseDTO>{
 
     @Override

@@ -37,6 +37,15 @@ public interface UserAuthStrategy {
      */
     User save(User u);
 
+    /**
+     * Executes the logic to verify, if an user is authentic or not,
+     * it utulizes the jwt service and the refresh token service to manage stateless authentication
+     * @param u - the user entity to be verifed
+     * @param authManager - the instqnce of the authentication manageer to fetch the username and password
+     * @param jwtService
+     * @param  userRepo
+     * @return the user dto containing the jwt token and the refresh token {@link UserResponseDTO}
+     * */
     default UserResponseDTO verify(User u, AuthenticationManager authManager, JWTService jwtService, UserRepo userRepo, RefreshTokenService refreshTokenService) throws Exception {
         Authentication authentication = authManager.authenticate(
                 new UsernamePasswordAuthenticationToken(u.getEmail(), u.getPassword())

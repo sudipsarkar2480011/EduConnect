@@ -2,11 +2,13 @@ package com.educonnect.service.implementation;
 
 import com.educonnect.dto.studentdetails.StudentDetailsDTO;
 import com.educonnect.exception.custom_exceptions.UserNotFoundException;
+import com.educonnect.model.user.Parent;
 import com.educonnect.model.user.Student;
 import com.educonnect.repo.ParentRepo;
 import com.educonnect.repo.StudentRepo;
 import com.educonnect.service.contract.StudentDetailsService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -36,10 +38,15 @@ public class StudentDetailsServiceImpl implements StudentDetailsService {
 
 
         if (studentDetailsDTO.getParentId() != null) {
-
+            Parent parent=parentRepo.findById(studentDetailsDTO.getParentId()).orElseThrow(()->new UserNotFoundException("Parent not found"));
+            student.setParent(parent);
         }
-
-        return null; //YET TO implement
+        Student savedStudent=studentRepo.save(student);
+        return StudentDetailsDTO.builder().
+                dateOfBirth(savedStudent.getDateOfBirth()).
+                enrollmentNumber(savedStudent.getEnrollmentNumber()).
+                parentId(savedStudent.getParent()!=null?savedStudent.getParent().getUserId():null).
+                build(); //YET TO implement
 
     }
 

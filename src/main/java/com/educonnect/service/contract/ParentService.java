@@ -58,4 +58,6 @@ public interface ParentService {
      * @since 1.0
      */
     ParentResponseDTO linkStudent(UUID parentId, UUID studentId) throws NoChildFoundException;
+    void createParentAndSendVerification(String parentEmail);
+    void verifyParent(String token);
 }
