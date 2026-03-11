@@ -3,12 +3,17 @@ package com.educonnect.model.compliance;
 //ComplianceRecord(ComplianceID, StudentID, Type, Result, Date, Notes)
 
 import com.educonnect.model.user.Student;
+import com.educonnect.model.user.User;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import org.hibernate.annotations.CurrentTimestamp;
 
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -22,8 +27,8 @@ public class ComplianceRecord {
     private UUID complianceRecordID;
 
     @ManyToOne
-    @JoinColumn(name = "student_id")
-    private Student student;
+    @JoinColumn(name = "user_id")
+    private User user;
 
     @Enumerated(EnumType.STRING)
     private ComplianceType type;
@@ -34,7 +39,9 @@ public class ComplianceRecord {
     private LocalDate date;
 
     @OneToMany(mappedBy = "complianceRecord")
-    private List<Note> notes;
+    @ToString.Exclude // Prevents infinite loop in logging/debugging
+    @EqualsAndHashCode.Exclude // Prevents infinite loop in collections
+    private List<Note> notes = new ArrayList<>();
 
 
 }

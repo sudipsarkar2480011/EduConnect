@@ -1,9 +1,9 @@
 package com.educonnect.controller;
 
 import com.educonnect.config.UserPrinciples;
-import com.educonnect.dto.assessment.AssessmentRequestDTO;
-import com.educonnect.dto.assessment.AssignmentRequestDTO;
-import com.educonnect.dto.assessment.CreateAssessmentRequestDTO;
+import com.educonnect.dto.assessment.submit.AssessmentRequestDTO;
+import com.educonnect.dto.assessment.submit.assignment.AssignmentRequestDTO;
+import com.educonnect.dto.assessment.create.CreateAssessmentRequestDTO;
 import com.educonnect.factory.assessment.AssessmentFactory;
 import com.educonnect.model.user.Student;
 import com.educonnect.model.user.Teacher;
@@ -16,16 +16,25 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import tools.jackson.databind.ObjectMapper;
 
 import java.util.Arrays;
 
-@Controller
+@RestController
 @RequiredArgsConstructor
 @RequestMapping("/v1/api/assessment")
+/**
+ * REST controller for handling assessment related requests
+ * Delegates business logic for assessment related operations
+ */
 public class AssessmentController {
     private final AssessmentFactory assessmentFactory;
 
+    /**
+     *
+     * @param dto The payload
+     * @param userPrinciple The AuthenticationPrincipal
+     * @return Success message
+     */
     @PostMapping("/create")
     public ResponseEntity<String> createAssignment(
             @RequestBody CreateAssessmentRequestDTO dto,
@@ -40,6 +49,14 @@ public class AssessmentController {
         );
     }
 
+    /**
+     *
+     * @param dto The payload
+     * @param userPrinciple AuthenticationPrincipal
+     * @param files The file data (null or empty in case of Quiz submission)
+     * @return Success message
+     * @throws BadRequestException
+     */
     @PostMapping("/submit")
     public ResponseEntity<String> submitAssignment(
             @RequestPart("request") AssessmentRequestDTO dto ,
@@ -47,18 +64,11 @@ public class AssessmentController {
             @RequestPart("files") @Nullable  MultipartFile[] files
     ) throws BadRequestException {
 
-       System.out.println("=======================098");
-
-
         if(files != null && files.length != 0){
-            System.out.println("+++++++++++++++++++++++++++++++  -> " + files.length);
             if(dto != null){
                 ((AssignmentRequestDTO) dto).setFiles(Arrays.asList(files));
             }
         }
-
-        System.out.println("-->" +dto);
-
 
         return new ResponseEntity<>(
                 assessmentFactory.submitAssessment(
