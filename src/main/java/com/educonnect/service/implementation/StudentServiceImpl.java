@@ -5,8 +5,10 @@ import com.educonnect.repo.StudentRepo;
 import com.educonnect.service.contract.StudentService;
 import com.educonnect.dto.student.StudentResponse;
 import com.educonnect.dto.student.StudentUpdateRequest;
+import com.educonnect.utils.UpdateUtil;
 import com.educonnect.utils.mapper.StudentMapper;
 import com.educonnect.service.strategy.impl.StudentAuthStrategy;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.UUID;
 
+@RequiredArgsConstructor
 @Service
 @Transactional
 public class StudentServiceImpl implements StudentService {
@@ -22,20 +25,12 @@ public class StudentServiceImpl implements StudentService {
     private final StudentMapper mapper;
     private final StudentAuthStrategy studentAuthStrategy;
 
-    public StudentServiceImpl(StudentRepo studentRepo,
-                              StudentMapper mapper,
-                              StudentAuthStrategy studentAuthStrategy) {
-        this.studentRepo = studentRepo;
-        this.mapper = mapper;
-        this.studentAuthStrategy = studentAuthStrategy;
-    }
-
     @Override
     @Transactional(readOnly = true)
     public StudentResponse getById(UUID id) {
         Student student = studentRepo.findByUserId(id)
                 .orElseThrow(() -> new UsernameNotFoundException("Student not found: " + id));
-        return mapper.toResponse(student);
+        return mapper.toResponseDTO(student);
     }
 
     @Override
@@ -43,7 +38,7 @@ public class StudentServiceImpl implements StudentService {
     public List<StudentResponse> getAll() {
         return studentRepo.findAll()
                 .stream()
-                .map(mapper::toResponse)
+                .map(mapper::toResponseDTO)
                 .toList();
     }
 
@@ -52,20 +47,15 @@ public class StudentServiceImpl implements StudentService {
         Student student = studentRepo.findById(id)
                 .orElseThrow(() -> new UserNotFoundException("Student not found: " + id));
 
-        if (request.getFullName() != null) {
-            student.setFullName(request.getFullName());
-        }
-        if (request.getEmail() != null)  {
-            student.setEmail(request.getEmail());
-        }
-        if (request.getActive() != null)  {
-            student.setActive(request.getActive());
-        }
-
-        Student saved = studentRepo.save(student);
-        return mapper.toResponse(saved);
+        UpdateUtil.setIfPresent(request.getFullName(),student::setFullName);
+        UpdateUtil.setIfPresent(request.getEmail(),student::setEmail);
+        UpdateUtil.setIfPresent(request.getDateOfBirth(),student::setDateOfBirth);
+        UpdateUtil.setIfPresent(request.getActive(),student::setActive);
+        UpdateUtil.setIfPresent(request.getEnrollmentNumber(),student::setEnrollmentNumber);
+        return mapper.toResponseDTO(studentRepo.save(student));
     }
 
+    @Transactional
     @Override
     public void delete(UUID id) {
         if (!studentRepo.existsById(id)) {

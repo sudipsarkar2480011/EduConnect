@@ -1,6 +1,5 @@
 package com.educonnect.service.contract;
 
-import com.educonnect.dto.student.StudentRegisterRequest;
 import com.educonnect.dto.student.StudentResponse;
 import com.educonnect.dto.student.StudentUpdateRequest;
 import com.educonnect.exception.custom_exceptions.UserNotFoundException;

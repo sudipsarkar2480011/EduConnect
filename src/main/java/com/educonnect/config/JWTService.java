@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import java.security.NoSuchAlgorithmException;
+import java.time.Duration;
 import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
@@ -20,7 +21,7 @@ import java.util.function.Function;
 public class JWTService {
 
     private String secretKey = "4aaf7daf79c1510e29234073";
-    private final Long expiry=1000* 60L * 10; // 10 minutes
+    private final Long expiry= Duration.ofMinutes(10).toMillis(); // 10 minutes
 
     public JWTService() throws Exception {
         try {
