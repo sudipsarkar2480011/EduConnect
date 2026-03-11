@@ -1,10 +1,7 @@
 package com.educonnect.exception;
 
 import com.educonnect.dto.error.ErrorResponseDTO;
-import com.educonnect.exception.custom_exceptions.CourseNotFoundException;
-import com.educonnect.exception.custom_exceptions.DocumentProcessingException;
-import com.educonnect.exception.custom_exceptions.NoChildFoundException;
-import com.educonnect.exception.custom_exceptions.UserNotFoundException;
+import com.educonnect.exception.custom_exceptions.*;
 import com.educonnect.repo.course.CourseRepo;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +12,7 @@ import ws.schild.jave.EncoderException;
 
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.time.LocalDateTime;
+import java.util.Map;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -107,5 +105,10 @@ public class GlobalExceptionHandler {
                 ex.getMessage()
         );
         return new ResponseEntity<>(dto,HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(ComplianceRecordNotFoundException.class)
+    public ResponseEntity<?> handleNotFound(ComplianceRecordNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", ex.getMessage()));
     }
 }
