@@ -6,6 +6,7 @@ import com.educonnect.model.user.Parent;
 import com.educonnect.model.user.Student;
 import com.educonnect.repo.ParentRepo;
 import com.educonnect.repo.StudentRepo;
+import com.educonnect.service.contract.ParentService;
 import com.educonnect.service.contract.StudentDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -19,6 +20,7 @@ public class StudentDetailsServiceImpl implements StudentDetailsService {
 
     private final StudentRepo studentRepo;
     private final ParentRepo parentRepo;
+    private final ParentService parentService;
 
     @Override
     public StudentDetailsDTO updateStudentDetails(UUID studentUuid,StudentDetailsDTO studentDetailsDTO) throws UserNotFoundException {
@@ -30,7 +32,9 @@ public class StudentDetailsServiceImpl implements StudentDetailsService {
         if(studentDetailsDTO.getDateOfBirth()!=null){
             student.setDateOfBirth(studentDetailsDTO.getDateOfBirth());
         }
-
+        if(studentDetailsDTO.getParentEmail()!=null && studentDetailsDTO.getParentEmail().isBlank()){
+            parentService.createParentAndSendVerification(studentDetailsDTO.getParentId());
+        }
 
         if (studentDetailsDTO.getEnrollmentNumber() != null && !studentDetailsDTO.getEnrollmentNumber().isBlank()) {
             student.setEnrollmentNumber(studentDetailsDTO.getEnrollmentNumber().trim());
