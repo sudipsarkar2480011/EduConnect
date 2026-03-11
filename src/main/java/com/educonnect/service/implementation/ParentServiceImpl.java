@@ -14,7 +14,6 @@ import com.educonnect.repo.StudentRepo;
 import com.educonnect.service.contract.EmailService;
 import com.educonnect.service.contract.ParentService;
 import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,7 +23,6 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
 public class ParentServiceImpl implements ParentService {
 
     private final ParentRepo parentRepo;
@@ -59,6 +57,7 @@ public class ParentServiceImpl implements ParentService {
         // Update scalar fields (aligns with your typical User/Teacher patterns)
         if (dto.getName() != null)     parent.setFullName(dto.getName());
         if (dto.getContactInfo() != null)  parent.setPhoneNumber(dto.getContactInfo());
+        //if (dto.getStatus() != null)       parent.setStatus(dto.getStatus());
 
         Parent saved = parentRepo.save(parent);
         return toResponse(saved);
@@ -67,6 +66,18 @@ public class ParentServiceImpl implements ParentService {
     @Override
     @Transactional
     public void delete(UUID id) throws UserNotFoundException {
+        Parent parent = parentRepo.findById(id)
+                .orElseThrow(() -> new UserNotFoundException("Parent not found: " + id));
+
+        // Unlink children first to avoid FK constraint issues
+//        List<Student> linked = parent.getLinkedStudents();
+//        if (linked != null && !linked.isEmpty()) {
+//            for (Student s : linked) {
+//                s.setParent(null);
+//            }
+//            studentRepo.saveAll(linked);
+//        }
+
         parentRepo.deleteById(id);
     }
 
@@ -91,7 +102,8 @@ public class ParentServiceImpl implements ParentService {
         return toResponse(refreshed);
     }
 
-
+    @Override
+    @Transactional
 
 /**
  * Creates a {@link com.educonnect.model.user.Parent} account in an unverified state
@@ -113,24 +125,22 @@ public class ParentServiceImpl implements ParentService {
  * @param parentEmail the parent's email address to register and verify
  * @throws RuntimeException if token generation or email dispatch fails (implementation-specific)
  */
-@Override
-@Transactional
- public void createParentAndSendVerification(String parentEmail) {
-        Parent parent=new Parent();
-        parent.setEmail(parentEmail);
-        parent.setVerified(false);
-        Parent savedParent=parentRepo.save(parent);
+
+ public void createParentAndSendVerification(UUID parentId) {
+        Parent parent=parentRepo.findById(parentId).orElseThrow(()->new RuntimeException("Parent Not found"));
+        String parentEmail= parent.getEmail();
         String token=jwtService.generateToken(parentEmail);
         ParentVerificationToken verificationToken=ParentVerificationToken.builder().
                 token(token).
-                parent(savedParent).
+                parent(parent).
                 expiryDate(LocalDateTime.now().plusHours(24)).
                 build();
         tokenRepo.save(verificationToken);
         emailService.sendParentVerificationEmail(parentEmail,token);
     }
 
-
+    @Override
+    @Transactional
 
 /**
  * Verifies a parent account using a previously issued verification token.
@@ -145,6 +155,7 @@ public class ParentServiceImpl implements ParentService {
             *   Delete the used verification token
 
             * <p>Security considerations:
+            *
  *   Reject expired tokens
             *   Ensure tokens are single-use by deleting after success
             *   Consider rotating or invalidating older tokens if multiple are issued
@@ -153,8 +164,6 @@ public class ParentServiceImpl implements ParentService {
  * @throws RuntimeException if the token is invalid (not found) or expired
  */
 
-@Override
-@Transactional
     public void verifyParent(String token) {
         ParentVerificationToken tokenObj=tokenRepo.findByToken(token).orElseThrow(()->new RuntimeException("Invalid token"));
         if(tokenObj.getExpiryDate().isBefore(LocalDateTime.now())){
@@ -174,6 +183,15 @@ public class ParentServiceImpl implements ParentService {
         dto.setId(p.getUserId());
         dto.setName(p.getFullName());
         dto.setContactInfo(p.getPhoneNumber());
+        //dto.setStatus(p.get());
+
+//        List<Student> children = p.getLinkedStudents();
+//        dto.setLinkedStudentIds(
+//                (children == null) ? List.of() :
+//                        children.stream()
+//                                .map(Student::getUserId)
+//                                .collect(Collectors.toList())
+//        );
           return dto;
     }
 
