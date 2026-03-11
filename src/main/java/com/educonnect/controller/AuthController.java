@@ -9,6 +9,7 @@ import com.educonnect.model.token.RefreshToken;
 import com.educonnect.model.user.User;
 import com.educonnect.service.contract.RefreshTokenService;
 import com.educonnect.service.contract.audit.AuditLogService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.http.ResponseEntity;
@@ -22,9 +23,11 @@ import org.springframework.web.bind.annotation.*;
  *  @version 1.0
  *  @since 1.0
  */
+
 @RestController
 @RequestMapping("v1/auth")
 @RequiredArgsConstructor
+@Tag(name = "01 AuthController")
 public class AuthController {
     private final UserFactory userFactory;
     private final RefreshTokenService refreshTokenService;

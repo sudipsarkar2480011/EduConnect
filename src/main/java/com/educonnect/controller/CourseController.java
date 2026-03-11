@@ -12,6 +12,7 @@ import com.educonnect.model.user.Student;
 import com.educonnect.model.user.Teacher;
 import com.educonnect.service.contract.course.CourseService;
 import com.educonnect.service.contract.course.CourseVideoService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
@@ -29,6 +30,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/v1/api/course")
 @RequiredArgsConstructor
+@Tag(name = "08 CourseController")
 
 /**
  * REST controller for handling course related requests
