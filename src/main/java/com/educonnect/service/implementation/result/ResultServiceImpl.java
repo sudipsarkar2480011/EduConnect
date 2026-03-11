@@ -86,7 +86,13 @@ public class ResultServiceImpl implements ResultService {
         Assessment assessment = assessmentRepo.findById(assessmentId)
                 .orElseThrow(() -> new ResourceNotFoundException("Assessment not found"));
 
-        if(!assessment.getCourse().getTeacher().equals(teacher)){
+        if(assessment.getCourse().getTeacher().getUserId() != teacher.getUserId()){
+            System.out.println("==========================");
+
+            System.out.println(assessment.getCourse().getTeacher().getUserId());
+            System.out.println(teacher.getUserId());
+
+            System.out.println("========================");
             try {
                 throw new BadRequestException("Teacher `" +teacher.getFullName() + "` does not have permission to evaluate");
             } catch (BadRequestException e) {

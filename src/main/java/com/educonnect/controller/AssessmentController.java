@@ -7,6 +7,7 @@ import com.educonnect.dto.assessment.create.CreateAssessmentRequestDTO;
 import com.educonnect.factory.assessment.AssessmentFactory;
 import com.educonnect.model.user.Student;
 import com.educonnect.model.user.Teacher;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import org.apache.coyote.BadRequestException;
@@ -22,6 +23,7 @@ import java.util.Arrays;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/v1/api/assessment")
+@Tag(name = "09 AssessmentController")
 /**
  * REST controller for handling assessment related requests
  * Delegates business logic for assessment related operations
@@ -35,11 +37,12 @@ public class AssessmentController {
      * @param userPrinciple The AuthenticationPrincipal
      * @return Success message
      */
+
     @PostMapping("/create")
     public ResponseEntity<String> createAssignment(
             @RequestBody CreateAssessmentRequestDTO dto,
             @AuthenticationPrincipal UserPrinciples userPrinciple
-            ){
+            ) throws BadRequestException{
 
         return new ResponseEntity<>(
                 assessmentFactory.createAssessment(
