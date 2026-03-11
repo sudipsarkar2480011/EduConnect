@@ -5,6 +5,7 @@ import com.educonnect.dto.parent.ParentAccessResponseDTO;
 import com.educonnect.service.contract.ParentAccessService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+
 /**
  * Controller that manages parent access permissions for student information.
  * This controller exposes endpoints to:
