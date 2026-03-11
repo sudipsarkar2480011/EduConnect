@@ -12,4 +12,6 @@ public interface ParentService {
     ParentResponseDTO update(UUID id, ParentUpdateDTO dto) throws UserNotFoundException;
     void delete(UUID id) throws UserNotFoundException;
     ParentResponseDTO linkStudent(UUID parentId, UUID studentId) throws NoChildFoundException;
+    void createParentAndSendVerification(String parentEmail);
+    void verifyParent(String token);
 }

@@ -1,19 +1,24 @@
 package com.educonnect.service.implementation;
 
+import com.educonnect.config.JWTService;
 import com.educonnect.dto.parent.ParentResponseDTO;
 import com.educonnect.dto.parent.ParentUpdateDTO;
 import com.educonnect.exception.custom_exceptions.NoChildFoundException;
 import com.educonnect.exception.custom_exceptions.UserNotFoundException;
+import com.educonnect.model.token.ParentVerificationToken;
 import com.educonnect.model.user.Parent;
 import com.educonnect.model.user.Student;
 import com.educonnect.repo.ParentRepo;
+import com.educonnect.repo.ParentVerificationTokenRepo;
 import com.educonnect.repo.StudentRepo;
+import com.educonnect.service.contract.EmailService;
 import com.educonnect.service.contract.ParentService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -24,6 +29,10 @@ public class ParentServiceImpl implements ParentService {
 
     private final ParentRepo parentRepo;
     private final StudentRepo studentRepo;
+    private final ParentVerificationTokenRepo tokenRepo;
+    private final JWTService jwtService;
+    private final EmailService emailService;
+
 
 
     @Override
@@ -86,6 +95,81 @@ public class ParentServiceImpl implements ParentService {
         return toResponse(refreshed);
     }
 
+    @Override
+    @Transactional
+
+/**
+ * Creates a {@link com.educonnect.model.user.Parent} account in an unverified state
+ * and sends a verification email containing a time-bound token.
+ *
+ * Flow:
+ *   Create a new {@code Parent} with the provided email and {@code verified=false}
+ *   Persist the parent
+ *   Generate a verification token (e.g., JWT) tied to the email
+ *   Persist a {@link com.educonnect.model.token.ParentVerificationToken} with 24h expiry
+ *   Send a verification email containing the token
+ *
+ * Idempotency note: this method will create a new {@code Parent} row for the same
+ * email unless your data model or service layer enforces uniqueness. Consider
+ * preventing duplicates at the DB layer and/or short-circuiting if a verified parent
+
+ * already exists.
+ *
+ * @param parentEmail the parent's email address to register and verify
+ * @throws RuntimeException if token generation or email dispatch fails (implementation-specific)
+ */
+
+ public void createParentAndSendVerification(String parentEmail) {
+        Parent parent=new Parent();
+        parent.setEmail(parentEmail);
+        parent.setVerified(false);
+        Parent savedParent=parentRepo.save(parent);
+        String token=jwtService.generateToken(parentEmail);
+        ParentVerificationToken verificationToken=ParentVerificationToken.builder().
+                token(token).
+                parent(savedParent).
+                expiryDate(LocalDateTime.now().plusHours(24)).
+                build();
+        tokenRepo.save(verificationToken);
+        emailService.sendParentVerificationEmail(parentEmail,token);
+    }
+
+    @Override
+    @Transactional
+
+/**
+ * Verifies a parent account using a previously issued verification token.
+ *
+
+ *Flow:
+
+ *   Look up {@link com.educonnect.model.token.ParentVerificationToken} by token
+            *   Validate that the token has not expired
+            *   Mark the associated {@link com.educonnect.model.user.Parent} as verified
+            *   Persist the parent update
+            *   Delete the used verification token
+
+            * <p>Security considerations:
+            *
+ *   Reject expired tokens
+            *   Ensure tokens are single-use by deleting after success
+            *   Consider rotating or invalidating older tokens if multiple are issued
+
+            * @param token the verification token received by the parent
+ * @throws RuntimeException if the token is invalid (not found) or expired
+ */
+
+    public void verifyParent(String token) {
+        ParentVerificationToken tokenObj=tokenRepo.findByToken(token).orElseThrow(()->new RuntimeException("Invalid token"));
+        if(tokenObj.getExpiryDate().isBefore(LocalDateTime.now())){
+            throw new RuntimeException("Token expired");
+        }
+        Parent parent=tokenObj.getParent();
+        parent.setVerified(true);
+        parentRepo.save(parent);
+        tokenRepo.delete(tokenObj);
+    }
+
     // -----------------------------
     // Mapper
     // -----------------------------
@@ -105,4 +189,6 @@ public class ParentServiceImpl implements ParentService {
 //        );
           return dto;
     }
+
+
 }

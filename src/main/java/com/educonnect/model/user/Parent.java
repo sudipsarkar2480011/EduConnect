@@ -18,6 +18,7 @@ import java.util.List;
 public class Parent extends User {
 
     private String phoneNumber;
+    private Boolean verified=false;
 
     @OneToMany(mappedBy = "parent")
     private List<Student> children;
