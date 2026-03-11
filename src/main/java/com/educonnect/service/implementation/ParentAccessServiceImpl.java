@@ -61,7 +61,7 @@ public class ParentAccessServiceImpl implements ParentAccessService {
     public ParentAccessResponseDTO grantAccess(ParentAccessRequestDTO request) {
         Parent parent = parentRepo.findById(request.getParentId()).orElseThrow(() -> new RuntimeException("Parent not found"));
         Student student=studentRepo.findById(request.getStudentId()).orElseThrow(()->new RuntimeException("Student not found"));
-        Optional<ParentAccess> existing=parentAccessRepo.findByParent_UserAndStudent_UserId(request.getParentId(),request.getStudentId());
+        Optional<ParentAccess> existing=parentAccessRepo.findByParentUserIdAndStudentUserId(request.getParentId(),request.getStudentId());
         if(existing.isPresent()){
             throw new RuntimeException("Access already exists for this parent");
         }
@@ -92,7 +92,7 @@ public class ParentAccessServiceImpl implements ParentAccessService {
 
     @Override
     public ParentAccessResponseDTO getAccess(UUID parentId,UUID studentId){
-        ParentAccess access=parentAccessRepo.findByParent_UserAndStudent_UserId(parentId,studentId).orElseThrow(()->new RuntimeException("Access not found"));
+        ParentAccess access=parentAccessRepo.findByParentUserIdAndStudentUserId(parentId,studentId).orElseThrow(()->new RuntimeException("Access not found"));
         return ParentAccessResponseDTO.builder().
                 accessId(access.getParentAccessId()).
                 parentId(parentId).
