@@ -166,10 +166,15 @@ public class AssignmentStrategy implements AssessmentStrategy {
 
     @Override
     @Transactional
-    public String createAssessment(Teacher teacher, CreateAssessmentRequestDTO dto) {
+    public String createAssessment(Teacher teacher, CreateAssessmentRequestDTO dto) throws BadRequestException {
 
             Course course = courseRepo.findById(dto.getCourseId())
                     .orElseThrow(() -> new ResourceNotFoundException("Course not found"));
+
+            if(!canCreateAssessment(teacher,course)){
+                throw new BadRequestException("Teacher " + teacher.getFullName()
+                        +" can't add assessment to this course " + course.getTitle());
+            }
 
             //Assignment
 

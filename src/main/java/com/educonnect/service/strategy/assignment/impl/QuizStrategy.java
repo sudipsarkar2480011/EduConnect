@@ -60,10 +60,14 @@ public class QuizStrategy implements AssessmentStrategy {
 
     @Override
     @Transactional
-    public String createAssessment(Teacher teacher, CreateAssessmentRequestDTO assessmentRequestDTO) {
+    public String createAssessment(Teacher teacher, CreateAssessmentRequestDTO assessmentRequestDTO) throws BadRequestException {
 
         Course course = courseRepo.findById(assessmentRequestDTO.getCourseId())
                 .orElseThrow(() -> new ResourceNotFoundException("Course not found"));
+
+        if(!canCreateAssessment(teacher,course)){
+            throw new BadRequestException("Teacher " + teacher.getFullName() +" can't add assessment to this course " + course.getTitle());
+        }
 
         Assessment assessment =
                 Assessment.builder()

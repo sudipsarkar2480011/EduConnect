@@ -5,6 +5,7 @@ package com.educonnect.controller;
 import com.educonnect.config.UserPrinciples;
 import com.educonnect.model.document.DocTypeEnum;
 import com.educonnect.service.contract.StudentDocumentService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,7 +34,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/v1/api/doc")
-
+@Tag(name = "04 StudentDocumentController")
 public class StudentDocumentController {
     private final StudentDocumentService studentDocumentService;
 
