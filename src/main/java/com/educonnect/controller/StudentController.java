@@ -47,8 +47,7 @@ public class StudentController {
     }
 
     @PostMapping("/add-student")
-    public ResponseEntity<StudentResponse> studentEnrollToCourse(@RequestParam UUID studentId, @RequestParam UUID courseId)
-    {
+    public ResponseEntity<StudentResponse> studentEnrollToCourse(@RequestParam UUID studentId, @RequestParam UUID courseId) throws UserNotFoundException {
         return new ResponseEntity<>(courseService.addStudentToCourse(studentId,courseId), HttpStatus.OK);
     }
 

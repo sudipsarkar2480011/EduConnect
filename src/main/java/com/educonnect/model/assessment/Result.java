@@ -1,6 +1,7 @@
 package com.educonnect.model.assessment;
 
 import com.educonnect.model.user.Student;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -25,7 +26,7 @@ public class Result {
     @JoinColumn(name = "assessment_id")
     private Assessment assessment;
 
-    private Integer score ;
+    private Double percentageScore ;
 
     @Enumerated(EnumType.STRING)
     private ResultStatus status;

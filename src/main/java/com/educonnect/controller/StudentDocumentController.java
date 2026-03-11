@@ -3,12 +3,12 @@ package com.educonnect.controller;
 
 
 import com.educonnect.model.document.DocTypeEnum;
-import com.educonnect.model.document.FileTypeEnum;
 import com.educonnect.service.contract.StudentDocumentService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
+import org.springframework.http.MediaTypeFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.*;
@@ -90,19 +90,11 @@ public class StudentDocumentController {
                 "inline; filename=\""  + document.getFileName() + "\"");
         response.setHeader("Cache-Control", "public, max-age=86400"); // optional
 
-        var fileType = document.getFileType();
+        String contentType = MediaTypeFactory.getMediaType(document.getFileName())
+                .map(MediaType::toString)
+                .orElse(MediaType.APPLICATION_OCTET_STREAM_VALUE);
 
-        if(fileType == FileTypeEnum.PDF){
-            response.setContentType(MediaType.APPLICATION_PDF_VALUE);
-        }
-        else if (fileType == FileTypeEnum.JPEG){
-            response.setContentType(MediaType.IMAGE_JPEG_VALUE);
-        }
-        else if (fileType == FileTypeEnum.PNG) {
-            response.setContentType(MediaType.IMAGE_PNG_VALUE);
-        }else{
-            response.setContentType(MediaType.APPLICATION_OCTET_STREAM_VALUE);
-        }
+        response.setContentType(contentType);
 
         StreamUtils.copy(inputStream,response.getOutputStream());
     }

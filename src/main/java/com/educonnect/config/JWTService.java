@@ -20,7 +20,7 @@ import java.util.function.Function;
 public class JWTService {
 
     private String secretKey = "4aaf7daf79c1510e29234073";
-    private final Long expiry=1000*60L * 10; // 10 minutes
+    private final Long expiry=1000* 60L * 10; // 10 minutes
 
     public JWTService() throws Exception {
         try {

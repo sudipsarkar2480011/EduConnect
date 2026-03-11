@@ -5,7 +5,9 @@ import com.educonnect.dto.course.CourseResponseDTO;
 import com.educonnect.dto.course.ModuleResponseDTO;
 import com.educonnect.model.course.Course;
 import com.educonnect.model.course.CourseModule;
+import org.springframework.stereotype.Component;
 
+@Component
 public class CourseMapper implements Mapper<Course, CourseRequestDTO, CourseResponseDTO>{
 
     @Override
@@ -14,7 +16,7 @@ public class CourseMapper implements Mapper<Course, CourseRequestDTO, CourseResp
         course.setTitle(requestDTO.title());
         course.setDescription(requestDTO.description());
         course.setCourseCode(requestDTO.courseCode());
-        course.setDuration(requestDTO.duration());
+        course.setDuration(0.0);
         return course;
     }
 

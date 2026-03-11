@@ -1,5 +1,6 @@
 package com.educonnect.controller;
 
+import com.educonnect.config.UserPrinciples;
 import com.educonnect.dto.course.CourseRequestDTO;
 import com.educonnect.dto.course.CourseResponseDTO;
 import com.educonnect.dto.teacher.TeacherCreateDTO;
@@ -13,6 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -22,7 +24,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class TeacherController {
     private final TeacherService teacherService;
-    private final CourseService courseService;
+
     @GetMapping("test")
     public  String test(){
         return "working";
@@ -50,9 +52,5 @@ public class TeacherController {
         teacherService.delete(id);
     }
 
-    @PostMapping("/add-course")
-    public ResponseEntity<CourseResponseDTO> addCourse(@RequestBody CourseRequestDTO courseRequest) {
-        return ResponseEntity.ok(courseService.addCourse(courseRequest));
-    }
 
 }
