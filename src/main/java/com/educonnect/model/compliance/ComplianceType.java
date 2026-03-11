@@ -1,5 +1,5 @@
 package com.educonnect.model.compliance;
 
 public enum ComplianceType {
-    HEALTH,IDENTITY,ATTENDANCE
+    LOGIN, COURSE_PROGRESS, COURSE_CREATION, ASSIGNMENT_SUBMISSION, QUIZ_CREATION
 }

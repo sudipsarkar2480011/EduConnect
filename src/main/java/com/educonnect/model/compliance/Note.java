@@ -2,6 +2,8 @@ package com.educonnect.model.compliance;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 import java.util.UUID;
 
@@ -10,6 +12,7 @@ import java.util.UUID;
 @Table(name = "compliance_notes")
 public class Note {
 
+    // primary key
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(nullable = false,updatable = false)
@@ -19,5 +22,7 @@ public class Note {
 
     @ManyToOne
     @JoinColumn(name = "compliance_record")
+    @ToString.Exclude // Prevents infinite loop back to ComplianceRecord
+    @EqualsAndHashCode.Exclude
     private ComplianceRecord complianceRecord;
 }
