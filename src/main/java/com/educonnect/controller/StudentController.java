@@ -42,6 +42,9 @@ public class StudentController {
             @AuthenticationPrincipal UserPrinciples principles
             ) throws UserNotFoundException, InvalidUserException
     {
+        /*
+        * Ensures an user is modifying their own data not any other user's
+        * */
         if(!principles.getUser().getUserId().equals(studentId)){
                 throw new InvalidUserException("Access Denied.");
         }
