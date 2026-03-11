@@ -37,5 +37,5 @@ public interface ParentAccessRepo extends JpaRepository<ParentAccess, UUID> {
      *         or empty if no such permission exists
      */
 
-    Optional<ParentAccess> findByParent_UserAndStudent_UserId(UUID parentId,UUID studentId);
+    Optional<ParentAccess> findByParentUserIdAndStudentUserId(UUID parentId,UUID studentId);
 }
