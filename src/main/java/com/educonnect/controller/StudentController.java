@@ -5,6 +5,7 @@ import com.educonnect.service.contract.StudentService;
 import com.educonnect.dto.student.StudentResponse;
 import com.educonnect.dto.student.StudentUpdateRequest;
 import com.educonnect.service.contract.course.CourseService;
+import com.educonnect.service.implementation.report.ReportServiceImpl;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,12 @@ public class StudentController {
 
     private final StudentService studentService;
     private final CourseService courseService;
+    private final ReportServiceImpl reportService;
+
+    @GetMapping("/all")
+    public ResponseEntity<List<StudentResponse>> getAllStudentsReport() {
+        return ResponseEntity.ok(reportService.getAllStudents());
+    }
 
     @GetMapping("{id}")
     public ResponseEntity<StudentResponse> findById(@PathVariable("id") UUID studentId) throws UserNotFoundException {
