@@ -1,12 +1,13 @@
 package com.educonnect.controller;
 
+import com.educonnect.dto.parent.ParentResponseDTO;
+import com.educonnect.exception.custom_exceptions.NoChildFoundException;
 import com.educonnect.service.contract.ParentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
 
 /**
  * REST controller responsible for handling parent-related API operations.
@@ -24,11 +25,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/v1/api/parent")
 @RequiredArgsConstructor
 public class ParentController {
-    private ParentService parentService;
+    private final ParentService parentService;
 
     @GetMapping("/verify")
     public ResponseEntity<String> verifyParent(@RequestParam String token){
         parentService.verifyParent(token);
         return ResponseEntity.ok("Parent verified successfully");
+    }
+    @PostMapping("/link")
+    public ParentResponseDTO linkStudent(@RequestParam UUID parentId,@RequestParam UUID studentId) throws NoChildFoundException {
+        return parentService.linkStudent(parentId,studentId);
     }
 }
