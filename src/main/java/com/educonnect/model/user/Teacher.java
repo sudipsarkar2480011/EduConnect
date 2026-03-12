@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 import java.util.List;
+import java.util.Objects;
 
 @SuperBuilder
 @Entity
@@ -26,16 +27,4 @@ public class Teacher extends User {
     @OneToMany(mappedBy = "teacher")
     private List<Course> coursesTaught;
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Teacher)) return false;
-
-        Teacher teacher = (Teacher) o;
-
-        System.out.println("Inside equals -- >> "
-                + (this.getUserId() != null && this.getUserId().equals(teacher.getUserId())));
-
-        return this.getUserId() != null && this.getUserId().equals(teacher.getUserId());
-    }
 }
