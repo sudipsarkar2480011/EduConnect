@@ -2,6 +2,7 @@ package com.educonnect.controller;
 
 import com.educonnect.dto.parent.ParentResponseDTO;
 import com.educonnect.exception.custom_exceptions.UserNotFoundException;
+import com.educonnect.exception.custom_exceptions.NoChildFoundException;
 import com.educonnect.service.contract.ParentService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -40,4 +41,8 @@ public class ParentController {
         return  ResponseEntity.ok(parentService.getById(parentId));
     }
 
+    @PostMapping("/link")
+    public ParentResponseDTO linkStudent(@RequestParam UUID parentId,@RequestParam UUID studentId) throws NoChildFoundException {
+        return parentService.linkStudent(parentId,studentId);
+    }
 }

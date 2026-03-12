@@ -69,7 +69,9 @@ public class ParentServiceImpl implements ParentService {
         // Use it for not-found scenarios in this method.
         Parent parent = parentRepo.findById(parentId)
                 .orElseThrow(() -> new NoChildFoundException("Parent not found: " + parentId));
-
+        if(!Boolean.TRUE.equals(parent.getVerified())){
+            throw new RuntimeException("Parent is not verified yet");
+        }
         Student student = studentRepo.findById(studentId)
                 .orElseThrow(() -> new NoChildFoundException("Student not found: " + studentId));
 
