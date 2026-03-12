@@ -29,5 +29,6 @@ public class ParentAuthStrategy  implements UserAuthStrategy {
                 .password(encoder.encode(u.getPassword()))
                 .role(Role.PARENT)
                 .build());
+
     }
 }
