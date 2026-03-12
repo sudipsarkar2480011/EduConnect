@@ -86,6 +86,7 @@ public class CourseControllerTest {
     void shouldUpdateVideoSuccessfully() throws Exception {
         UUID courseId = UUID.randomUUID();
         UUID videoId = UUID.randomUUID();
+        UUID userId = UUID.randomUUID();
 
         MockMultipartFile file = new MockMultipartFile(
                 "file",
@@ -102,7 +103,7 @@ public class CourseControllerTest {
                 .duration(240.0)
                 .build();
 
-        when(courseVideoService.updateVideoResource(any(), eq("Updated Title"), eq(videoId), eq(courseId)))
+        when(courseVideoService.updateVideoResource(any(), eq("Updated Title"), eq(videoId), eq(courseId),eq(userId)))
                 .thenReturn(updatedModule);
 
         mockMvc.perform(
@@ -121,10 +122,10 @@ public class CourseControllerTest {
     void shouldDeleteVideoSuccessfully() throws Exception {
         UUID courseId = UUID.randomUUID();
         UUID videoId = UUID.randomUUID();
-
+        UUID userId = UUID.randomUUID();
         String successMsg = "Successfully deleted the video with title Intro of course with title Java Masterclass";
 
-        when(courseVideoService.deleteVideoResourceWithids(videoId, courseId))
+        when(courseVideoService.deleteVideoResourceWithids(videoId, courseId,userId))
                 .thenReturn(successMsg);
 
         mockMvc.perform(
