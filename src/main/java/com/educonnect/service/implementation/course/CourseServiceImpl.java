@@ -18,7 +18,6 @@ import com.educonnect.service.contract.course.CourseService;
 import com.educonnect.utils.mapper.CourseMapper;
 import com.educonnect.utils.mapper.StudentMapper;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -59,7 +58,7 @@ public class CourseServiceImpl implements CourseService {
         Course course = courseMapper.toEntity(request);
         course.setTeacher(teacher);
         Course savedCourse = courseRepo.save(course);
-        return courseMapper.toResponseDT(savedCourse);
+        return courseMapper.toResponseDTO(savedCourse);
     }
 
     /**
@@ -70,7 +69,7 @@ public class CourseServiceImpl implements CourseService {
     @Override
     public List<CourseResponseDTO> getAllCourse() {
         List<Course> allCourse = courseRepo.findAll();
-        return allCourse.stream().map(courseMapper::toResponseDT).toList();
+        return allCourse.stream().map(courseMapper::toResponseDTO).toList();
     }
 
     /**
@@ -84,7 +83,7 @@ public class CourseServiceImpl implements CourseService {
     public CourseResponseDTO getByIdCourse(UUID id) throws CourseNotFoundException {
         Course course = courseRepo.findById(id)
                 .orElseThrow(() -> new CourseNotFoundException("COURSE NOT FOUND WITH THIS ID: " + id));
-        return courseMapper.toResponseDT(course);
+        return courseMapper.toResponseDTO(course);
     }
 
     /**
@@ -118,7 +117,6 @@ public class CourseServiceImpl implements CourseService {
         }
 
         Student student  = studentRepo.findById(userId).orElseThrow(()->new UserNotFoundException("User nt found: "));
-
         Course course = courseRepo.findById(courseId).orElseThrow(()->new CourseNotFoundException("Course not found: "));
 
         Enrollment e = Enrollment.builder()
@@ -138,7 +136,7 @@ public class CourseServiceImpl implements CourseService {
         student.getEnrollments().add(e);
         studentRepo.save(student);
 
-        return studentMapper.toResponse(student);
+        return studentMapper.toResponseDTO(student);
     }
 
     /**

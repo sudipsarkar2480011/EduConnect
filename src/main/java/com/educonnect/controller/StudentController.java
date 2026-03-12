@@ -1,5 +1,7 @@
 package com.educonnect.controller;
 
+import com.educonnect.config.UserPrinciples;
+import com.educonnect.exception.custom_exceptions.InvalidUserException;
 import com.educonnect.exception.custom_exceptions.UserNotFoundException;
 import com.educonnect.service.contract.StudentService;
 import com.educonnect.dto.student.StudentResponse;
@@ -10,6 +12,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,28 +27,36 @@ public class StudentController {
     private final StudentService studentService;
     private final CourseService courseService;
 
-    @GetMapping("{id}")
-    public ResponseEntity<StudentResponse> findById(@PathVariable("id") UUID studentId) throws UserNotFoundException {
-        return ResponseEntity.ok(studentService.getById(studentId));
-    }
-
     @GetMapping
     public ResponseEntity<List<StudentResponse>> findAll() {
         return ResponseEntity.ok(studentService.getAll());
     }
 
+    @GetMapping("{id}")
+    public ResponseEntity<StudentResponse> findById(@PathVariable("id") UUID studentId) throws UserNotFoundException {
+        return ResponseEntity.ok(studentService.getById(studentId));
+    }
+
     @PostMapping("{id}/update")
     public ResponseEntity<StudentResponse> update(
             @PathVariable("id") UUID studentId,
-            @Valid @RequestBody StudentUpdateRequest request
-    ) throws UserNotFoundException {
+            @Valid @RequestBody StudentUpdateRequest request,
+            @AuthenticationPrincipal UserPrinciples principles
+            ) throws UserNotFoundException, InvalidUserException
+    {
+        /*
+        * Ensures an user is modifying their own data not any other user's
+        * */
+        if(!principles.getUser().getUserId().equals(studentId)){
+                throw new InvalidUserException("Access Denied.");
+        }
         return ResponseEntity.ok(studentService.update(studentId, request));
     }
 
     @PostMapping("{id}/delete")
-    public ResponseEntity<String> delete(@PathVariable("id") UUID studentId) throws UserNotFoundException {
+    public ResponseEntity<Void> delete(@PathVariable("id") UUID studentId) throws UserNotFoundException {
         studentService.delete(studentId);
-        return new ResponseEntity<>("Deleted Successfully ", HttpStatus.OK);
+        return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/add-student")
