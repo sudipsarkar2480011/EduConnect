@@ -50,7 +50,6 @@ public class Student extends User {
     @OneToMany(mappedBy = "student")
     private List<Result> resultList;
 
-
     @OneToMany(mappedBy = "student")
     private List<Attendance> attendanceList;
 

@@ -40,8 +40,4 @@ public class ParentController {
         return  ResponseEntity.ok(parentService.getById(parentId));
     }
 
-    @GetMapping("/test")
-    public  ResponseEntity<String> test(){
-        return  ResponseEntity.ok("Working");
-    }
 }

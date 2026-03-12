@@ -6,6 +6,7 @@ import com.educonnect.model.demographics.enums.BloodGroup;
 import com.educonnect.model.demographics.enums.Gender;
 import com.educonnect.model.demographics.enums.VisaType;
 import com.educonnect.model.user.Student;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -31,6 +32,7 @@ public class StudentDemographics {
     @JoinColumn(name = "student_id")
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
+    @JsonIgnore
     private Student student;
 
     // Legal & Identity
