@@ -9,6 +9,7 @@ import com.educonnect.model.user.Student;
 import com.educonnect.repo.StudentRepo;
 import com.educonnect.repo.demographics.StudentDemographicsRepo;
 // Import your existing Student Repo. Adjust package if needed.
+import com.educonnect.utils.UpdateUtil;
 import org.springframework.data.jpa.repository.JpaRepository;
 import com.educonnect.service.contract.StudentDemographicsService;
 
@@ -147,16 +148,18 @@ public class StudentDemographicsServiceImpl implements StudentDemographicsServic
      * @since 1.0
      */
     private void updateEntityFields(StudentDemographics entity, DemographicsRequestDTO dto) {
-        entity.setLegalFullName(dto.legalFullName());
-        entity.setNationality(dto.nationality());
-        entity.setReligion(dto.religion());
-        entity.setGender(dto.gender());
-        entity.setBloodGroup(dto.bloodGroup());
-        entity.setPassportNumber(dto.passportNumber());
-        entity.setVisaType(dto.visaType());
-        entity.setPermanentAddress(dto.permanentAddress());
-        entity.setParentEmail(dto.parentEmail());
-        entity.setParentPhone(dto.parentPhone());
-        entity.setEmergencyContact(dto.emergencyContact());
+        UpdateUtil.setIfPresent(dto.legalFullName(), entity::setLegalFullName);
+        UpdateUtil.setIfPresent(dto.nationality(), entity::setNationality);
+        UpdateUtil.setIfPresent(dto.bloodGroup(), entity::setBloodGroup);
+        UpdateUtil.setIfPresent(dto.religion(), entity::setReligion);
+        UpdateUtil.setIfPresent(dto.gender(), entity::setGender);
+        UpdateUtil.setIfPresent(dto.bloodGroup(), entity::setBloodGroup);
+        UpdateUtil.setIfPresent(dto.passportNumber(), entity::setPassportNumber);
+        UpdateUtil.setIfPresent(dto.visaType(), entity::setVisaType);
+        UpdateUtil.setIfPresent(dto.permanentAddress(), entity::setPermanentAddress);
+        UpdateUtil.setIfPresent(dto.parentEmail(), entity::setParentEmail);
+        UpdateUtil.setIfPresent(dto.parentPhone(), entity::setParentPhone);
+        UpdateUtil.setIfPresent(dto.emergencyContact(), entity::setEmergencyContact);
     }
+
 }
