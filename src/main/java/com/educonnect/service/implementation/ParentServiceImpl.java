@@ -145,7 +145,6 @@ public class ParentServiceImpl implements ParentService {
             *   Delete the used verification token
 
             * <p>Security considerations:
-            *
  *   Reject expired tokens
             *   Ensure tokens are single-use by deleting after success
             *   Consider rotating or invalidating older tokens if multiple are issued
@@ -175,15 +174,6 @@ public class ParentServiceImpl implements ParentService {
         dto.setId(p.getUserId());
         dto.setName(p.getFullName());
         dto.setContactInfo(p.getPhoneNumber());
-        //dto.setStatus(p.get());
-
-//        List<Student> children = p.getLinkedStudents();
-//        dto.setLinkedStudentIds(
-//                (children == null) ? List.of() :
-//                        children.stream()
-//                                .map(Student::getUserId)
-//                                .collect(Collectors.toList())
-//        );
           return dto;
     }
 
