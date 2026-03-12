@@ -41,10 +41,6 @@ public class AttachmentController {
                     .orElse(MediaType.APPLICATION_OCTET_STREAM_VALUE);
 
 
-            System.out.println("+++++++++++++++++++++++++++++++++++++++++++");
-            System.out.println("----------------------" + contentType);
-            System.out.println("+++++++++++++++++++++++++++++++++++++++++++");
-
             response.setContentType(contentType);
 
             response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + attachment.getFileName() + "\"");
