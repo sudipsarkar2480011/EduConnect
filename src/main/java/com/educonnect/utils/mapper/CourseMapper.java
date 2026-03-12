@@ -21,7 +21,7 @@ public class CourseMapper implements Mapper<Course, CourseRequestDTO, CourseResp
     }
 
     @Override
-    public CourseResponseDTO toResponseDT(Course entity) {
+    public CourseResponseDTO toResponseDTO(Course entity) {
         return new CourseResponseDTO(
                 entity.getCourseId(),
                 entity.getTitle(),

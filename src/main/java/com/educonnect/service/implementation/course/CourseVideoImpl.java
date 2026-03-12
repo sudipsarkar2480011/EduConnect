@@ -146,7 +146,6 @@ public class CourseVideoImpl implements CourseVideoService {
            log.error(e.getMessage());
            throw e;
        }finally {
-            System.out.println("finally");
             if(tempFile != null) {
                 Files.deleteIfExists(tempFile.toPath());
             }
@@ -231,7 +230,6 @@ public class CourseVideoImpl implements CourseVideoService {
             Files.deleteIfExists(path);
         } catch (IOException e) {
             log.error(e.getMessage());
-            System.out.println(e.getMessage());
             throw new IOException(e);
         }
         courseModuleRepo.deleteById(video.getModuleId());
@@ -304,15 +302,6 @@ public class CourseVideoImpl implements CourseVideoService {
 
 
 
-            System.out.println();
-            System.out.println();
-            System.out.println();
-            System.out.println("duration "+ duration);
-            System.out.println("video.getDuration() "+ video.getDuration());
-            System.out.println("course.getDuration() "+ course.getDuration());
-            System.out.println();
-            System.out.println();;
-
             course.setDuration(
                     course.getDuration() != null ?
                             course.getDuration() - video.getDuration() + duration : 0
@@ -327,7 +316,6 @@ public class CourseVideoImpl implements CourseVideoService {
             courseRepo.save(course);
 
             log.info("video deleted successfully course table");
-            System.out.println("video deleted successfully from course table");
             return video;
 
         } catch (Exception e) {

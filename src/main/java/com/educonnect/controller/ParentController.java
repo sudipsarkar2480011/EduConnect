@@ -1,6 +1,7 @@
 package com.educonnect.controller;
 
 import com.educonnect.dto.parent.ParentResponseDTO;
+import com.educonnect.exception.custom_exceptions.UserNotFoundException;
 import com.educonnect.exception.custom_exceptions.NoChildFoundException;
 import com.educonnect.service.contract.ParentService;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -34,6 +35,12 @@ public class ParentController {
         parentService.verifyParent(token);
         return ResponseEntity.ok("Parent verified successfully");
     }
+
+    @GetMapping("{parentId}")
+    public ResponseEntity<ParentResponseDTO> findParentById(@PathVariable UUID parentId) throws UserNotFoundException {
+        return  ResponseEntity.ok(parentService.getById(parentId));
+    }
+
     @PostMapping("/link")
     public ParentResponseDTO linkStudent(@RequestParam UUID parentId,@RequestParam UUID studentId) throws NoChildFoundException {
         return parentService.linkStudent(parentId,studentId);

@@ -18,6 +18,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
+/**
+ * Implementation of {@link StudentDemographicsService} to manage student profile data.
+ * Handles the capture, update, and retrieval of legal and personal demographics.
+ * * @author Sankha Subhra Chakraborty
+ * @version 1.0
+ * @since 1.0
+ */
+
 @Service
 @RequiredArgsConstructor
 public class StudentDemographicsServiceImpl implements StudentDemographicsService {
@@ -26,6 +34,17 @@ public class StudentDemographicsServiceImpl implements StudentDemographicsServic
 
     // Injecting your existing Student Repository to fetch the core student
     private final StudentRepo studentRepo;
+
+    /**
+     * Captures and persists new student demographics in the database.
+     * Links the demographics record to an existing Student via their UUID.
+     * * @param studentId The unique identifier of the student
+     * @param requestDTO Data transfer object containing demographic details
+     * @return {@link StudentDemographics} The persisted demographic entity
+     * @throws UserNotFoundException If the student does not exist
+     * @throws DemographicsAlreadyExistsException If a record already exists for the given student
+     * @since 1.0
+     */
 
     @Override
     @Transactional
@@ -58,6 +77,16 @@ public class StudentDemographicsServiceImpl implements StudentDemographicsServic
 
     @Override
     @Transactional
+
+    /**
+     * Updates an existing student demographic record with new information.
+     * * @param studentId The unique identifier of the student
+     * @param requestDTO Data transfer object containing updated details
+     * @return {@link StudentDemographics} The updated demographic entity
+     * @throws DemographicsNotFoundException If no demographic record exists to update
+     * @since 1.0
+     */
+
     public StudentDemographics updateDemographics(UUID studentId, DemographicsRequestDTO requestDTO) {
 
         // 1. Fetch the existing demographics record
@@ -71,6 +100,14 @@ public class StudentDemographicsServiceImpl implements StudentDemographicsServic
         return demographicsRepo.save(existingDemographics);
     }
 
+    /**
+     * Retrieves the demographic record for a specific student from the database.
+     * * @param studentId The unique identifier of the student
+     * @return {@link StudentDemographics} The found demographic entity
+     * @throws DemographicsNotFoundException If no record is found for the student ID
+     * @since 1.0
+     */
+
     @Override
     public StudentDemographics getDemographics(UUID studentId) {
         return demographicsRepo.findById(studentId)
@@ -82,7 +119,10 @@ public class StudentDemographicsServiceImpl implements StudentDemographicsServic
     // ==========================================
 
     /**
-     * Helper method to map a new DTO to an Entity object.
+     * Internal helper to map the Request DTO to the StudentDemographics Entity.
+     * * @param dto The source data transfer object
+     * @return {@link StudentDemographics} A newly built entity object
+     * @since 1.0
      */
     private StudentDemographics mapToEntity(DemographicsRequestDTO dto) {
         return StudentDemographics.builder()
@@ -101,7 +141,10 @@ public class StudentDemographicsServiceImpl implements StudentDemographicsServic
     }
 
     /**
-     * Helper method to update existing entity fields from a DTO.
+     * Internal helper to synchronize fields from a DTO to an existing Entity.
+     * * @param entity The target entity to be updated
+     * @param dto The source data transfer object
+     * @since 1.0
      */
     private void updateEntityFields(StudentDemographics entity, DemographicsRequestDTO dto) {
         entity.setLegalFullName(dto.legalFullName());

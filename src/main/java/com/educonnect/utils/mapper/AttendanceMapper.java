@@ -6,7 +6,6 @@ import com.educonnect.model.attendance.Attendance;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Component
 public class AttendanceMapper implements  Mapper<Attendance, AttendanceRequestDTO, AttendanceResponseDTO>{
@@ -16,7 +15,7 @@ public class AttendanceMapper implements  Mapper<Attendance, AttendanceRequestDT
     }
 
     @Override
-    public AttendanceResponseDTO toResponseDT(Attendance entity) {
+    public AttendanceResponseDTO toResponseDTO(Attendance entity) {
         return new AttendanceResponseDTO(
                 entity.getAttendanceId(),
                 entity.getStudent().getUserId(),
@@ -29,6 +28,6 @@ public class AttendanceMapper implements  Mapper<Attendance, AttendanceRequestDT
     }
 
     public  List<AttendanceResponseDTO> toListResponseDTO(List<Attendance> attendanceList){
-        return attendanceList.stream().map(this::toResponseDT).toList();
+        return attendanceList.stream().map(this::toResponseDTO).toList();
     }
 }
