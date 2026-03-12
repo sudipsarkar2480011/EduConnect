@@ -84,38 +84,13 @@ public class ParentServiceImpl implements ParentService {
     }
 
 
-
-/**
- * Creates a {@link com.educonnect.model.user.Parent} account in an unverified state
- * and sends a verification email containing a time-bound token.
- *
- * Flow:
- *   Create a new {@code Parent} with the provided email and {@code verified=false}
- *   Persist the parent
- *   Generate a verification token (e.g., JWT) tied to the email
- *   Persist a {@link com.educonnect.model.token.ParentVerificationToken} with 24h expiry
- *   Send a verification email containing the token
- *
- * Idempotency note: this method will create a new {@code Parent} row for the same
- * email unless your data model or service layer enforces uniqueness. Consider
- * preventing duplicates at the DB layer and/or short-circuiting if a verified parent
-
- * already exists.
- *
- * @param parentEmail the parent's email address to register and verify
- * @throws RuntimeException if token generation or email dispatch fails (implementation-specific)
- */
-@Override
-@Transactional
- public void createParentAndSendVerification(String parentEmail) {
-        Parent parent=new Parent();
-        parent.setEmail(parentEmail);
-        parent.setVerified(false);
-        Parent savedParent=parentRepo.save(parent);
+ public void createParentAndSendVerification(UUID parentId) {
+        Parent parent=parentRepo.findById(parentId).orElseThrow(()->new RuntimeException("Parent Not found"));
+        String parentEmail= parent.getEmail();
         String token=jwtService.generateToken(parentEmail);
         ParentVerificationToken verificationToken=ParentVerificationToken.builder().
                 token(token).
-                parent(savedParent).
+                parent(parent).
                 expiryDate(LocalDateTime.now().plusHours(24)).
                 build();
         tokenRepo.save(verificationToken);

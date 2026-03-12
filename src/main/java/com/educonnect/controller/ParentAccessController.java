@@ -3,6 +3,7 @@ package com.educonnect.controller;
 import com.educonnect.dto.parent.ParentAccessRequestDTO;
 import com.educonnect.dto.parent.ParentAccessResponseDTO;
 import com.educonnect.service.contract.ParentAccessService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,6 +26,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/v1/api/parent/access")
 @RequiredArgsConstructor
+@Tag(name = "07 ParentAccessController")
 public class ParentAccessController {
     private final ParentAccessService parentAccessService;
 

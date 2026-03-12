@@ -4,6 +4,7 @@ import com.educonnect.config.UserPrinciples;
 import com.educonnect.model.assessment.Result;
 import com.educonnect.model.user.Teacher;
 import com.educonnect.service.contract.result.ResultService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +22,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/v1/api/result")
 @RequiredArgsConstructor
+@Tag(name = "10 ResultController")
 public class ResultController {
 
     private final ResultService resultService;

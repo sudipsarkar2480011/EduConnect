@@ -3,8 +3,10 @@ package com.educonnect.service.strategy.assignment;
 import com.educonnect.dto.assessment.submit.AssessmentRequestDTO;
 import com.educonnect.dto.assessment.create.CreateAssessmentRequestDTO;
 import com.educonnect.model.assessment.AssessmentType;
+import com.educonnect.model.course.Course;
 import com.educonnect.model.user.Student;
 import com.educonnect.model.user.Teacher;
+import org.apache.coyote.BadRequestException;
 
 /**
  * Defines the contract for assessment operations
@@ -35,5 +37,9 @@ public interface AssessmentStrategy {
      * @param assessmentRequestDTO The payload
      * @return A success message (Might change in future)
      */
-    String createAssessment(Teacher teacher, CreateAssessmentRequestDTO assessmentRequestDTO);
+    String createAssessment(Teacher teacher, CreateAssessmentRequestDTO assessmentRequestDTO) throws BadRequestException;
+
+    default boolean canCreateAssessment(Teacher teacher, Course course){
+        return teacher.getUserId() == course.getTeacher().getUserId();
+    }
 }
