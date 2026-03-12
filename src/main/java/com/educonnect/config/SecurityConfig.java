@@ -21,13 +21,15 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
     private final EduconnectUserDetailsService educonnectUserDetailsService;
     private final JwtFilter jwtfilter;
-
+    private final CustomAccessDeniedHandler accessDeniedHandler;
 
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http)  {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
+                .exceptionHandling(exception->
+                        exception.accessDeniedHandler(accessDeniedHandler))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/v1/auth/**",
