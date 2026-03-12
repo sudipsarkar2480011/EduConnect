@@ -16,5 +16,6 @@ public class StudentDetailsDTO {
     private UUID parentId;
     private List<UUID> enrollmentIds;
     private List<UUID> documentIds;
+    private String parentEmail;
 
 }

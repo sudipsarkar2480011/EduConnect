@@ -119,15 +119,13 @@ public class ParentServiceImpl implements ParentService {
  * @throws RuntimeException if token generation or email dispatch fails (implementation-specific)
  */
 
- public void createParentAndSendVerification(String parentEmail) {
-        Parent parent=new Parent();
-        parent.setEmail(parentEmail);
-        parent.setVerified(false);
-        Parent savedParent=parentRepo.save(parent);
+ public void createParentAndSendVerification(UUID parentId) {
+        Parent parent=parentRepo.findById(parentId).orElseThrow(()->new RuntimeException("Parent Not found"));
+        String parentEmail= parent.getEmail();
         String token=jwtService.generateToken(parentEmail);
         ParentVerificationToken verificationToken=ParentVerificationToken.builder().
                 token(token).
-                parent(savedParent).
+                parent(parent).
                 expiryDate(LocalDateTime.now().plusHours(24)).
                 build();
         tokenRepo.save(verificationToken);
