@@ -21,10 +21,9 @@ import java.util.UUID;
  */
 
 @RestController
-@RequestMapping("/api/v1/student/{studentId}/demographics")
+@RequestMapping("/v1/api/student/{studentId}/demographics")
 @RequiredArgsConstructor
 public class StudentDemographicsController {
-
     private final StudentDemographicsService demographicsService;
 
     /**

@@ -21,13 +21,15 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
     private final EduconnectUserDetailsService educonnectUserDetailsService;
     private final JwtFilter jwtfilter;
-
+    private final CustomAccessDeniedHandler accessDeniedHandler;
 
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http)  {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
+                .exceptionHandling(exception->
+                        exception.accessDeniedHandler(accessDeniedHandler))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/v1/auth/**",
@@ -42,7 +44,7 @@ public class SecurityConfig {
                         .requestMatchers("/v1/api/parent/**").hasRole("PARENT")
                         .requestMatchers("/v1/api/assessment/create").hasRole("TEACHER")
                         .requestMatchers("/v1/api/student/**", "/v1/api/attendance/**", "/v1/api/doc/**", "/v1/api/assessment/submit")
-                        .hasRole("STUDENT")
+                        .hasAnyRole("STUDENT","ADMIN")
 
                         .requestMatchers("/v1/api/audits/**").hasRole("ADMIN")
 

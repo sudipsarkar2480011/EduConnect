@@ -59,18 +59,6 @@ public class ParentServiceImpl implements ParentService {
     @Override
     @Transactional
     public void delete(UUID id) throws UserNotFoundException {
-        Parent parent = parentRepo.findById(id)
-                .orElseThrow(() -> new UserNotFoundException("Parent not found: " + id));
-
-        // Unlink children first to avoid FK constraint issues
-//        List<Student> linked = parent.getLinkedStudents();
-//        if (linked != null && !linked.isEmpty()) {
-//            for (Student s : linked) {
-//                s.setParent(null);
-//            }
-//            studentRepo.saveAll(linked);
-//        }
-
         parentRepo.deleteById(id);
     }
 
@@ -81,7 +69,9 @@ public class ParentServiceImpl implements ParentService {
         // Use it for not-found scenarios in this method.
         Parent parent = parentRepo.findById(parentId)
                 .orElseThrow(() -> new NoChildFoundException("Parent not found: " + parentId));
-
+        if(!Boolean.TRUE.equals(parent.getVerified())){
+            throw new RuntimeException("Parent is not verified yet");
+        }
         Student student = studentRepo.findById(studentId)
                 .orElseThrow(() -> new NoChildFoundException("Student not found: " + studentId));
 
@@ -95,29 +85,6 @@ public class ParentServiceImpl implements ParentService {
         return toResponse(refreshed);
     }
 
-    @Override
-    @Transactional
-
-/**
- * Creates a {@link com.educonnect.model.user.Parent} account in an unverified state
- * and sends a verification email containing a time-bound token.
- *
- * Flow:
- *   Create a new {@code Parent} with the provided email and {@code verified=false}
- *   Persist the parent
- *   Generate a verification token (e.g., JWT) tied to the email
- *   Persist a {@link com.educonnect.model.token.ParentVerificationToken} with 24h expiry
- *   Send a verification email containing the token
- *
- * Idempotency note: this method will create a new {@code Parent} row for the same
- * email unless your data model or service layer enforces uniqueness. Consider
- * preventing duplicates at the DB layer and/or short-circuiting if a verified parent
-
- * already exists.
- *
- * @param parentEmail the parent's email address to register and verify
- * @throws RuntimeException if token generation or email dispatch fails (implementation-specific)
- */
 
  public void createParentAndSendVerification(UUID parentId) {
         Parent parent=parentRepo.findById(parentId).orElseThrow(()->new RuntimeException("Parent Not found"));
@@ -132,8 +99,7 @@ public class ParentServiceImpl implements ParentService {
         emailService.sendParentVerificationEmail(parentEmail,token);
     }
 
-    @Override
-    @Transactional
+
 
 /**
  * Verifies a parent account using a previously issued verification token.
@@ -148,7 +114,6 @@ public class ParentServiceImpl implements ParentService {
             *   Delete the used verification token
 
             * <p>Security considerations:
-            *
  *   Reject expired tokens
             *   Ensure tokens are single-use by deleting after success
             *   Consider rotating or invalidating older tokens if multiple are issued
@@ -157,6 +122,8 @@ public class ParentServiceImpl implements ParentService {
  * @throws RuntimeException if the token is invalid (not found) or expired
  */
 
+@Override
+@Transactional
     public void verifyParent(String token) {
         ParentVerificationToken tokenObj=tokenRepo.findByToken(token).orElseThrow(()->new RuntimeException("Invalid token"));
         if(tokenObj.getExpiryDate().isBefore(LocalDateTime.now())){
@@ -176,15 +143,6 @@ public class ParentServiceImpl implements ParentService {
         dto.setId(p.getUserId());
         dto.setName(p.getFullName());
         dto.setContactInfo(p.getPhoneNumber());
-        //dto.setStatus(p.get());
-
-//        List<Student> children = p.getLinkedStudents();
-//        dto.setLinkedStudentIds(
-//                (children == null) ? List.of() :
-//                        children.stream()
-//                                .map(Student::getUserId)
-//                                .collect(Collectors.toList())
-//        );
           return dto;
     }
 
