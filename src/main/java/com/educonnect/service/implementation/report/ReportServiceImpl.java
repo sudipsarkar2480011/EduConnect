@@ -39,7 +39,7 @@ public class ReportServiceImpl {
     private final ReportRepo reportRepo;
 
     private final StudentMapper studentMapper;
-    private final CourseMapper courseMapper = new CourseMapper();
+    private final CourseMapper courseMapper;
 
     // 1. Fetch All Users (Base User Entity)
     public List<UserResponseDTO> getAllUsers() {
@@ -53,7 +53,7 @@ public class ReportServiceImpl {
     public List<StudentResponse> getAllStudents() {
         return studentRepo.findAll()
                 .stream()
-                .map(studentMapper::toResponse)
+                .map(studentMapper::toResponseDTO)
                 .toList();
     }
 
@@ -69,7 +69,7 @@ public class ReportServiceImpl {
     public List<CourseResponseDTO> getAllCourses() {
         return courseRepo.findAll()
                 .stream()
-                .map(courseMapper::toResponseDT)
+                .map(courseMapper::toResponseDTO)
                 .toList();
     }
 
