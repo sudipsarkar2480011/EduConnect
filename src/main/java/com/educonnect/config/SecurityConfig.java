@@ -47,6 +47,7 @@ public class SecurityConfig {
                         .hasAnyRole("STUDENT","ADMIN")
 
                         .requestMatchers("/v1/api/audits/**").hasRole("ADMIN")
+                        .requestMatchers("/v1/api/compliance/**").hasRole("ADMIN")
 
                         .anyRequest().authenticated())
                         .sessionManagement(
