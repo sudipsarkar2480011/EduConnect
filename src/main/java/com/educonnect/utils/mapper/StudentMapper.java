@@ -20,7 +20,8 @@ public class StudentMapper implements Mapper<Student, UserRequestDTO,StudentResp
     public StudentResponse toResponseDTO(Student s) {
         Objects.requireNonNull(s);
         StudentResponse studentResponse = new StudentResponse();
-        UpdateUtil.setIfPresent(s.getUserId(),studentResponse::setUserId);
+        UpdateUtil.setIfPresent(s.getUserId(), studentResponse::setUserId);
+
         UpdateUtil.setIfPresent(s.getFullName(),studentResponse::setFullName);
         UpdateUtil.setIfPresent(s.getEmail(),studentResponse::setEmail);
         UpdateUtil.setIfPresent(s.getRole(),studentResponse::setRole);
