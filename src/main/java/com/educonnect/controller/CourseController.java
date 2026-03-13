@@ -6,15 +6,18 @@ import com.educonnect.dto.course.CourseResponseDTO;
 import com.educonnect.dto.course.ModuleRequestDTO;
 import com.educonnect.dto.course.ModuleResponseDTO;
 import com.educonnect.dto.student.StudentResponse;
+import com.educonnect.exception.custom_exceptions.UserIdDoNothMatchException;
 import com.educonnect.exception.custom_exceptions.UserNotFoundException;
 import com.educonnect.model.course.CourseModule;
 import com.educonnect.model.user.Student;
 import com.educonnect.model.user.Teacher;
 import com.educonnect.service.contract.course.CourseService;
 import com.educonnect.service.contract.course.CourseVideoService;
+import com.educonnect.service.contract.course.CourseVideoInerface;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -39,6 +42,8 @@ import java.util.UUID;
 public class CourseController {
     private final CourseVideoService courseVideoServiceClass;
     private final CourseService courseService;
+
+    private final CourseVideoInerface courseVideoInerface;
 
     @PostMapping("/enrollment/{courseId}/student/{studentId}")
     public ResponseEntity<StudentResponse> enrollStudent(
@@ -67,13 +72,15 @@ public class CourseController {
         );
     }
 
-    @PostMapping("/add-video")
+    @PostMapping("/add-module")
     public ResponseEntity<CourseModule> addVideo(
             @RequestParam MultipartFile file,
             @RequestParam String title,
-            @RequestParam Integer sequenceOrder,
-            @RequestParam UUID courseId) throws IOException, EncoderException {
-        return ResponseEntity.ok(courseVideoServiceClass.uploadVideo(file,title,sequenceOrder,courseId));
+            @RequestParam UUID courseId,
+            @AuthenticationPrincipal UserPrinciples principles
+    ) throws IOException, EncoderException, UserIdDoNothMatchException {
+        UUID teacherId=principles.getUser().getUserId();
+      return ResponseEntity.ok(courseVideoInerface.uploadVideo(file,title,courseId ,teacherId));
     }
 
     /**
@@ -91,10 +98,11 @@ public class CourseController {
             @RequestParam MultipartFile file,
             @PathVariable UUID courseId,
             @RequestParam String title,
-            @PathVariable UUID videoId) throws IOException, EncoderException {
-
+            @PathVariable UUID videoId,
+            @AuthenticationPrincipal UserPrinciples userPrinciples) throws IOException, EncoderException {
+        UUID userId= userPrinciples.getUser().getUserId();
         return ResponseEntity.ok(
-                courseVideoServiceClass.updateVideoResource(file,title,videoId,courseId)
+                courseVideoServiceClass.updateVideoResource(file,title,videoId,courseId,userId)
         );
     }
 
@@ -111,10 +119,13 @@ public class CourseController {
     @DeleteMapping("/{courseId}/video/{videoId}/delete-video")
     public ResponseEntity<String> deleteVideo(
             @PathVariable UUID courseId,
-            @PathVariable UUID videoId) throws IOException, EncoderException {
+            @PathVariable UUID videoId,
+            @AuthenticationPrincipal UserPrinciples userprincipal
+    ) throws IOException, EncoderException, UserIdDoNothMatchException {
 
+        UUID id=userprincipal.getUser().getUserId();
         return ResponseEntity.ok(
-                courseVideoServiceClass.deleteVideoResourceWithids(videoId,courseId)
+                courseVideoServiceClass.deleteVideoResourceWithids(videoId,courseId,id)
         );
     }
 
@@ -126,12 +137,24 @@ public class CourseController {
     }
 
 
-    @GetMapping("/stream/{filename}")
-    public ResponseEntity<Resource> streamVideo(@PathVariable UUID filename) throws IOException
-    {
-        Resource resource= courseVideoServiceClass.LoadVideoAsResource(filename);
+    @GetMapping("/stream/{moduleId}")
+    public ResponseEntity<Resource> streamContent(@PathVariable UUID moduleId) throws IOException {
+        Resource resource = courseVideoServiceClass.LoadVideoAsResource(moduleId);
+        String filename = resource.getFilename();
+        String contentType = "application/octet-stream";
+
+        if (filename != null) {
+            if (filename.endsWith(".pdf")) {
+                contentType = "application/pdf";
+            } else if (filename.endsWith(".mp3")) {
+                contentType = "audio/mpeg";
+            } else if (filename.endsWith(".mp4")) {
+                contentType = "video/mp4";
+            }
+        }
         return ResponseEntity.ok()
-                .contentType(MediaType.parseMediaType("video/mp4"))
+                .contentType(MediaType.parseMediaType(contentType))
+                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + filename + "\"")
                 .body(resource);
     }
 
@@ -143,7 +166,7 @@ public class CourseController {
 
 
 
-    @GetMapping("all-course")
+    @GetMapping("modules")
     public ResponseEntity<List<ModuleResponseDTO>> getAllModulesOfaCourse(@RequestBody ModuleRequestDTO requestDTO)
     {
         return new ResponseEntity<>(courseService.getAllModulesOfACourse(requestDTO.courseId()),HttpStatus.OK);
