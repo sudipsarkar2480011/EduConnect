@@ -82,36 +82,28 @@ public class ResultServiceImpl implements ResultService {
     }
 
     @Override
-    public String evaluateStudent(UUID assessmentId, UUID studentId, Teacher teacher, double givenScore) {
+    public String evaluateStudent(UUID assessmentId, UUID studentId, Teacher teacher, double givenScore) throws BadRequestException, UserNotFoundException {
         Assessment assessment = assessmentRepo.findById(assessmentId)
                 .orElseThrow(() -> new ResourceNotFoundException("Assessment not found"));
 
-        if(assessment.getCourse().getTeacher().getUserId() != teacher.getUserId()){
-            try {
-                throw new BadRequestException("Teacher `" +teacher.getFullName() + "` does not have permission to evaluate");
-            } catch (BadRequestException e) {
-                throw new RuntimeException(e);
-            }
+        if(!assessment.getCourse().getTeacher().getUserId().equals(teacher.getUserId())){
+            throw new BadRequestException("Teacher `" +teacher.getFullName() + "` does not have permission to evaluate");
         }
 
 
-        Student student = null ;
-        try {
-            student = studentRepo.findById(studentId)
+        Student student= studentRepo.findById(studentId)
                     .orElseThrow(() -> new UserNotFoundException("Student not found"));
-        } catch (UserNotFoundException e) {
-            throw new RuntimeException(e);
-        }
+
 
        Submission submission = submissionRepo.findByStudentAndAssessment(student,assessment)
-                .orElseThrow(() -> new ResourceNotFoundException("Submission not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Student " + student.getFullName()
+                        + " has not submitted the assignment yet"));
 
        if(!submission.getSubmissionStatus().toString().equals("SUBMITTED")){
-           try {
-               throw new BadRequestException("Student " + student.getFullName() + " has not submitted the assignment yet");
-           } catch (BadRequestException e) {
-               throw new RuntimeException(e);
-           }
+
+           throw new BadRequestException("Student " + student.getFullName()
+                   + " has not submitted the assignment yet");
+
        }
 
 

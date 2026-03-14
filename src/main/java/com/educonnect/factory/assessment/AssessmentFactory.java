@@ -11,7 +11,9 @@ import lombok.RequiredArgsConstructor;
 import org.apache.coyote.BadRequestException;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -37,19 +39,16 @@ public class AssessmentFactory {
      * @param assessmentRequestDTO the payload
      * @return A success message
      */
-    public String createAssessment(Teacher teacher, CreateAssessmentRequestDTO assessmentRequestDTO){
+    public Map<String, String> createAssessment(Teacher teacher, CreateAssessmentRequestDTO assessmentRequestDTO) throws BadRequestException {
 
-         return assessmentStrategyList.stream()
-                .filter(assessmentStrategy -> assessmentStrategy.supports(assessmentRequestDTO.getAssessmentType()))
-                .map(assessmentStrategy -> {
-                    try {
-                        return assessmentStrategy.createAssessment(teacher, assessmentRequestDTO);
-                    } catch (BadRequestException e) {
-                        throw new RuntimeException(e);
-                    }
-                })
-                .toList().getFirst();
-
+        List<Map<String,String>> list = new ArrayList<>();
+        for (AssessmentStrategy assessmentStrategy : assessmentStrategyList) {
+            if (assessmentStrategy.supports(assessmentRequestDTO.getAssessmentType())) {
+                var assessment = assessmentStrategy.createAssessment(teacher, assessmentRequestDTO);
+                list.add(assessment);
+            }
+        }
+        return list.getFirst();
     }
 
     /**
@@ -58,7 +57,7 @@ public class AssessmentFactory {
      * @param assessmentRequestDTO the payload
      * @return A success message
      */
-    public String submitAssessment(Student user, AssessmentRequestDTO assessmentRequestDTO){
+    public Map<String,String> submitAssessment(Student user, AssessmentRequestDTO assessmentRequestDTO){
 
         return assessmentStrategyList.stream()
                 .filter(assessmentStrategy -> assessmentStrategy.supports(assessmentRequestDTO.getAssessmentType()))

@@ -300,8 +300,6 @@ public class CourseVideoImpl implements CourseVideoService {
 
             Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 
-
-
             course.setDuration(
                     course.getDuration() != null ?
                             course.getDuration() - video.getDuration() + duration : 0
@@ -338,7 +336,7 @@ public class CourseVideoImpl implements CourseVideoService {
      * @throws ResourceNotFoundException If enrollment or module records are missing.
      */
     @Override
-    public Map<String, Object> markModuleAsCompleted(
+    public Map<String, Double> markModuleAsCompleted(
             UUID moduleId,
             UUID courseId,
             Student student
@@ -363,15 +361,14 @@ public class CourseVideoImpl implements CourseVideoService {
 
         enrollment.setProgress(progress);
 
-        Map<String, Object> map = new HashMap<>();
+        Map<String, Double> map = new HashMap<>();
 
         enrollmentRepo.save(enrollment);
 
-        map.put("message",course.getTitle() + " is marked as completed");
         map.put("remainingTime",enrollment.getRemainingDuration());
         map.put("progress",progress);
 
-        return  map;
+        return map;
 
     }
 

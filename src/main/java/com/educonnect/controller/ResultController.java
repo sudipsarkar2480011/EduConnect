@@ -1,11 +1,13 @@
 package com.educonnect.controller;
 
 import com.educonnect.config.UserPrinciples;
+import com.educonnect.exception.custom_exceptions.UserNotFoundException;
 import com.educonnect.model.assessment.Result;
 import com.educonnect.model.user.Teacher;
 import com.educonnect.service.contract.result.ResultService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -61,7 +63,7 @@ public class ResultController {
             @PathVariable("studentId") UUID studentId,
             @RequestParam("givenScore") int givenScore,
             @AuthenticationPrincipal UserPrinciples userPrinciple
-            ){
+            ) throws BadRequestException, UserNotFoundException {
 
         String msg = resultService.evaluateStudent(assessmentId,studentId,(Teacher) userPrinciple.getUser(),givenScore);
 

@@ -3,6 +3,7 @@ package com.educonnect.exception;
 import com.educonnect.dto.error.ErrorResponseDTO;
 import com.educonnect.exception.custom_exceptions.*;
 import com.educonnect.repo.course.CourseRepo;
+import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -124,5 +125,33 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", ex.getMessage()));
     }
 
+
+    @ExceptionHandler(BadRequestException.class)
+    public  ResponseEntity<?> handleBadRequestException(BadRequestException ex){
+        return new ResponseEntity<>(
+                new ErrorResponseDTO(
+                        LocalDateTime.now(),
+                      HttpStatus.BAD_REQUEST.value(),
+                      ex.getMessage(),
+                      ex.getLocalizedMessage()
+                ),
+                HttpStatus.BAD_REQUEST
+        );
+    }
+
+    // ResourceNotFoundException
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public  ResponseEntity<?> handleResourceNotFoundException(ResourceNotFoundException ex){
+        return new ResponseEntity<>(
+                new ErrorResponseDTO(
+                        LocalDateTime.now(),
+                        HttpStatus.BAD_REQUEST.value(),
+                        ex.getMessage(),
+                        ex.getLocalizedMessage()
+                ),
+                HttpStatus.BAD_REQUEST
+        );
+    }
 
 }

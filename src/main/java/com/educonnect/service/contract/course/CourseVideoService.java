@@ -20,5 +20,5 @@ public interface CourseVideoService {
     String deleteVideoResourceWithids(UUID videoId, UUID courseId) throws IOException;
     String deleteVideoResource(CourseModule video, Course course) throws IOException;
     CourseModule updateVideoResource(MultipartFile file,String title,UUID videoId, UUID courseId) throws IOException, EncoderException;
-    Map<String, Object> markModuleAsCompleted(UUID moduleId, UUID courseId, Student student);
+    Map<String, Double> markModuleAsCompleted(UUID moduleId, UUID courseId, Student student);
 }

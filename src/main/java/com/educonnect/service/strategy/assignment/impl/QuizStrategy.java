@@ -30,7 +30,9 @@ import org.apache.coyote.BadRequestException;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -60,7 +62,7 @@ public class QuizStrategy implements AssessmentStrategy {
 
     @Override
     @Transactional
-    public String createAssessment(Teacher teacher, CreateAssessmentRequestDTO assessmentRequestDTO) throws BadRequestException {
+    public Map<String,String> createAssessment(Teacher teacher, CreateAssessmentRequestDTO assessmentRequestDTO) throws BadRequestException {
 
         Course course = courseRepo.findById(assessmentRequestDTO.getCourseId())
                 .orElseThrow(() -> new ResourceNotFoundException("Course not found"));
@@ -121,12 +123,17 @@ public class QuizStrategy implements AssessmentStrategy {
         questionRepo.saveAll(questionList);
         questionOptionRepo.saveAll(questionOptionList);
 
-        return "Quiz with title : " + assessment.getTitle() + " saved Successfully";
+        Map<String,String> map = new HashMap<>();
+        map.put("message","Quiz created successfully");
+        map.put("assessmentId",assessment.getAssessmentId().toString());
+        map.put("quizId", quiz.getQuizId().toString());
+
+        return map;
     }
 
     @Override
     @Transactional
-    public String submitAssessment(Student student, AssessmentRequestDTO assessmentRequestDTO) {
+    public Map<String,String> submitAssessment(Student student, AssessmentRequestDTO assessmentRequestDTO) {
 
         StudentQuizQuestionResponseDTO dto = (StudentQuizQuestionResponseDTO) assessmentRequestDTO;
 
@@ -188,7 +195,13 @@ public class QuizStrategy implements AssessmentStrategy {
         log.info("Message from resultService : {}",msg );
         log.info("Result computed successfully for quiz : {}", quiz.getQuizId());
 
-        return "Quiz submitted successfully";
+        Map<String,String> map = new HashMap<>();
+
+        map.put("message", "Created Assessment of type " + dto.getAssessmentType().toString());
+        map.put("assessmentId", assessment.getAssessmentId().toString());
+        map.put("quizId", quiz.getQuizId().toString());
+
+        return map;
 
     }
 

@@ -1,8 +1,10 @@
 package com.educonnect.service.contract.result;
 
+import com.educonnect.exception.custom_exceptions.UserNotFoundException;
 import com.educonnect.model.assessment.AssessmentType;
 import com.educonnect.model.assessment.Result;
 import com.educonnect.model.user.Teacher;
+import org.apache.coyote.BadRequestException;
 
 import java.util.UUID;
 
@@ -28,7 +30,7 @@ public interface ResultService {
      * @param givenScore The score given by the teacher
      * @return A success message
      */
-    String evaluateStudent(UUID assessmentId, UUID studentId, Teacher teacher, double givenScore);
+    String evaluateStudent(UUID assessmentId, UUID studentId, Teacher teacher, double givenScore) throws BadRequestException, UserNotFoundException;
 
     /**
      * This method returns the result

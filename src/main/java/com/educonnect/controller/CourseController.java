@@ -1,6 +1,7 @@
 package com.educonnect.controller;
 
 import com.educonnect.config.UserPrinciples;
+import com.educonnect.dto.common.GenericResponse;
 import com.educonnect.dto.course.CourseRequestDTO;
 import com.educonnect.dto.course.CourseResponseDTO;
 import com.educonnect.dto.course.ModuleRequestDTO;
@@ -25,6 +26,7 @@ import ws.schild.jave.EncoderException;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -150,16 +152,21 @@ public class CourseController {
     }
 
     @PostMapping("/{courseId}/module/{moduleId}/mark-as-complete")
-    public ResponseEntity<Object> markModuleAsCompleted(
+    public ResponseEntity<GenericResponse<Map<String,Double>>> markModuleAsCompleted(
             @PathVariable("moduleId") UUID moduleId,
             @PathVariable("courseId") UUID courseId,
             @AuthenticationPrincipal UserPrinciples userPrinciple
     ){
+        var resp = courseVideoServiceClass.markModuleAsCompleted(
+                moduleId,
+                courseId,
+                (Student) userPrinciple.getUser());
         return new ResponseEntity<>(
-                courseVideoServiceClass.markModuleAsCompleted(
-                        moduleId,
-                        courseId,
-                        (Student) userPrinciple.getUser()),
+                new GenericResponse<>(
+                        resp,
+                        "Module with id " + moduleId+" marked as done",
+                        HttpStatus.OK.value()
+                ),
                 HttpStatus.OK
         );
     }

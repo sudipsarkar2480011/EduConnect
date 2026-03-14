@@ -67,7 +67,7 @@ public class AssignmentStrategy implements AssessmentStrategy {
 
     @Override
     @Transactional
-    public String submitAssessment(Student student, AssessmentRequestDTO dto)  {
+    public Map<String,String> submitAssessment(Student student, AssessmentRequestDTO dto)  {
 
         List<MultipartFile> files = ((AssignmentRequestDTO)dto).getFiles();
 
@@ -75,6 +75,7 @@ public class AssignmentStrategy implements AssessmentStrategy {
             try {
                 throw new DocumentProcessingException("No files were attached to the submission.");
             } catch (DocumentProcessingException e) {
+                e.printStackTrace();
                 log.error(e.getMessage());
                 throw new RuntimeException(e);
             }
@@ -160,13 +161,17 @@ public class AssignmentStrategy implements AssessmentStrategy {
 
         assignmentAttachmentRepo.saveAll(attachmentList);
 
-        return "Assessment submitted successfully";
+        Map<String,String> map = new HashMap<>();
+        map.put("message","Assignment submitted successfully");
+        map.put("submissionId",submission.getSubmissionId().toString());
+
+        return map;
     }
 
 
     @Override
     @Transactional
-    public String createAssessment(Teacher teacher, CreateAssessmentRequestDTO dto) throws BadRequestException {
+    public Map<String,String> createAssessment(Teacher teacher, CreateAssessmentRequestDTO dto) throws BadRequestException {
 
             Course course = courseRepo.findById(dto.getCourseId())
                     .orElseThrow(() -> new ResourceNotFoundException("Course not found"));
@@ -199,6 +204,12 @@ public class AssignmentStrategy implements AssessmentStrategy {
             assessmentRepo.save(assessment);
             assignmentRepo.save(assignment);
 
-            return "Created Assessment of type " + dto.getAssessmentType().toString();
+            Map<String,String> map = new HashMap<>();
+
+            map.put("message","Created Assessment of type " + dto.getAssessmentType().toString());
+            map.put("assessmentId",assessment.getAssessmentId().toString());
+            map.put("assignmentId",assignment.getAssignmentId().toString());
+
+            return map;
     }
 }

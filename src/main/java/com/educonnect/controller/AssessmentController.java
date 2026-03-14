@@ -1,17 +1,21 @@
 package com.educonnect.controller;
 
 import com.educonnect.config.UserPrinciples;
+import com.educonnect.dto.assessment.serve.quiz.QuizServeDTO;
 import com.educonnect.dto.assessment.submit.AssessmentRequestDTO;
 import com.educonnect.dto.assessment.submit.assignment.AssignmentRequestDTO;
 import com.educonnect.dto.assessment.create.CreateAssessmentRequestDTO;
+import com.educonnect.dto.common.GenericResponse;
 import com.educonnect.factory.assessment.AssessmentFactory;
 import com.educonnect.model.user.Student;
 import com.educonnect.model.user.Teacher;
+import com.educonnect.service.contract.quiz.QuizService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -19,6 +23,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Arrays;
+import java.util.Map;
+import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -30,6 +36,7 @@ import java.util.Arrays;
  */
 public class AssessmentController {
     private final AssessmentFactory assessmentFactory;
+    private final QuizService quizService;
 
     /**
      *
@@ -39,7 +46,7 @@ public class AssessmentController {
      */
 
     @PostMapping("/create")
-    public ResponseEntity<String> createAssignment(
+    public ResponseEntity<Map<String,String>> createAssignment(
             @RequestBody CreateAssessmentRequestDTO dto,
             @AuthenticationPrincipal UserPrinciples userPrinciple
             ) throws BadRequestException{
@@ -61,7 +68,7 @@ public class AssessmentController {
      * @throws BadRequestException
      */
     @PostMapping("/submit")
-    public ResponseEntity<String> submitAssignment(
+    public ResponseEntity<Map<String,String>> submitAssignment(
             @RequestPart("request") AssessmentRequestDTO dto ,
             @AuthenticationPrincipal UserPrinciples userPrinciple,
             @RequestPart("files") @Nullable  MultipartFile[] files
@@ -78,6 +85,19 @@ public class AssessmentController {
                         (Student)userPrinciple.getUser(),
                         dto),
                 HttpStatus.CREATED
+        );
+    }
+
+    @GetMapping("/quiz/{assessmentId}")
+    public ResponseEntity<GenericResponse<QuizServeDTO>> serveQuiz(
+            @PathVariable("assessmentId") UUID assessmentId
+            ){
+        return ResponseEntity.ok(
+                new GenericResponse<>(
+                        quizService.getQuiz(assessmentId),
+                        "Quiz retrieved successfully",
+                        HttpStatus.OK.value()
+                )
         );
     }
 }
