@@ -6,13 +6,12 @@ import com.educonnect.dto.student.StudentResponse;
 import com.educonnect.dto.teacher.TeacherResponseDTO;
 import com.educonnect.dto.user.UserResponseDTO;
 import com.educonnect.model.report.Report;
-import com.educonnect.model.user.Admin;
 import com.educonnect.model.user.Parent;
 import com.educonnect.model.user.Role;
 import com.educonnect.model.user.Teacher;
 import com.educonnect.model.user.User;
 import com.educonnect.repo.AdminRepo;
-import com.educonnect.repo.ParentRepo;
+import com.educonnect.repo.parent.ParentRepo;
 import com.educonnect.repo.StudentRepo;
 import com.educonnect.repo.TeacherRepo;
 import com.educonnect.repo.course.CourseRepo;
@@ -53,7 +52,7 @@ public class ReportServiceImpl {
     public List<StudentResponse> getAllStudents() {
         return studentRepo.findAll()
                 .stream()
-                .map(studentMapper::toResponse)
+                .map(studentMapper::toResponseDTO)
                 .toList();
     }
 
@@ -69,7 +68,7 @@ public class ReportServiceImpl {
     public List<CourseResponseDTO> getAllCourses() {
         return courseRepo.findAll()
                 .stream()
-                .map(courseMapper::toResponseDT)
+                .map(courseMapper::toResponseDTO)
                 .toList();
     }
 
