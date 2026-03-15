@@ -1,7 +1,9 @@
 package com.educonnect.service.implementation.course;
 
 import com.educonnect.config.UserPrinciples;
+import com.educonnect.exception.custom_exceptions.ModuleNotFoundException;
 import com.educonnect.exception.custom_exceptions.ResourceNotFoundException;
+import com.educonnect.exception.custom_exceptions.UserIdDoNothMatchException;
 import com.educonnect.model.course.Course;
 import com.educonnect.model.course.CourseModule;
 import com.educonnect.model.course.Enrollment;
@@ -54,6 +56,13 @@ public class CourseVideoImpl implements CourseVideoService {
 
     @Value("${file.tempUpload-dir}")
     private String tempUploadDir;
+
+    @Value("${file.upload-dir-one}")
+    private String uploadDirOne;
+
+    @Value("${file.tempUpload-dir-one}")
+    private String tempUploadDirOne;
+
 
 
     private final CourseModuleRepo courseModuleRepo;
@@ -146,6 +155,7 @@ public class CourseVideoImpl implements CourseVideoService {
            log.error(e.getMessage());
            throw e;
        }finally {
+            System.out.println("finally");
             if(tempFile != null) {
                 Files.deleteIfExists(tempFile.toPath());
             }
@@ -176,8 +186,10 @@ public class CourseVideoImpl implements CourseVideoService {
         CourseModule video = courseModuleRepo.findById(moduleId)
                 .orElseThrow(() -> new RuntimeException("Video record not found"));
 
-        Path path = Paths.get(uploadDir).resolve(video.getContentUrl()).normalize();
-
+        Path path = Paths.get(uploadDirOne)
+                .resolve(video.getModuleType().toString().toLowerCase())
+                .resolve(video.getContentUrl()).normalize();
+        System.out.println(path.toUri());
         if (!Files.exists(path)) throw new RuntimeException("File not found on disk");
 
         return new UrlResource(path.toUri());
@@ -191,15 +203,21 @@ public class CourseVideoImpl implements CourseVideoService {
      * @throws IOException If physical file deletion fails.
      */
     @Override
-    public String deleteVideoResourceWithids(UUID videoId, UUID courseId) throws IOException {
+    public String deleteVideoResourceWithids(UUID videoId, UUID courseId , UUID userId) throws IOException, UserIdDoNothMatchException {
         CourseModule video = courseModuleRepo.findById(videoId)
                 .orElseThrow(() -> new ResourceNotFoundException("Video record not found"));
 
         Course course = courseRepo.findById(courseId)
                 .orElseThrow(() -> new ResourceNotFoundException("Course not found"));
-
-
+    if(!course.getTeacher().getUserId().equals(userId))
+    {
+        System.out.println("teacher id "+course.getTeacher().getUserId());
+        System.out.println("login user id "+userId);
+        throw new UserIdDoNothMatchException("TeacherId who uploaded the course do not match with loginId");
+    }
+    courseModuleRepo.deleteById(videoId);
         return deleteVideoResource(video,course);
+
     }
 
     /**
@@ -213,7 +231,8 @@ public class CourseVideoImpl implements CourseVideoService {
      */
     @Override
     public String deleteVideoResource(CourseModule video, Course course) throws IOException {
-        Path path = Paths.get(uploadDir).resolve(video.getContentUrl()).normalize();
+        Path path = Paths.get(uploadDirOne).resolve(video.getModuleType().toString().toLowerCase()).resolve(video.getContentUrl()).normalize();
+        System.out.println("this is the path to be deleted " +path);
         if(!Files.exists(path)){
             throw new ResourceNotFoundException("Video not found [on disk]");
         }
@@ -223,13 +242,13 @@ public class CourseVideoImpl implements CourseVideoService {
         course.setDuration(
                 course.getDuration() != null? course.getDuration() - video.getDuration() : 0
         );
-
         courseRepo.save(course);
         log.info("video deleted successfully course table");
         try {
             Files.deleteIfExists(path);
         } catch (IOException e) {
             log.error(e.getMessage());
+            System.out.println(e.getMessage());
             throw new IOException(e);
         }
         courseModuleRepo.deleteById(video.getModuleId());
@@ -250,7 +269,7 @@ public class CourseVideoImpl implements CourseVideoService {
      * @throws EncoderException If duration extraction for the new file fails.
      */
     @Override
-    public CourseModule updateVideoResource(MultipartFile file, String title, UUID videoId, UUID courseId) throws IOException, EncoderException {
+    public CourseModule updateVideoResource(MultipartFile file, String title, UUID videoId, UUID courseId, UUID userId) throws IOException, EncoderException {
 
         Path tempFilePath = null;
         try{
@@ -260,14 +279,18 @@ public class CourseVideoImpl implements CourseVideoService {
 
             Course course = courseRepo.findById(courseId)
                     .orElseThrow(() -> new ResourceNotFoundException("Course not found"));
+            if(userId!=course.getTeacher().getUserId())
+            {
+                throw new UserIdDoNothMatchException("author of this course  do not match with the logged in User: ");
+            }
+            CourseModule module=courseModuleRepo.findById(videoId).orElseThrow(()->new ModuleNotFoundException("Module do not exists: "));
 
-
-            Path path = Paths.get(uploadDir).resolve(video.getContentUrl()).normalize();
+            Path path = Paths.get(uploadDirOne).resolve(module.getModuleType().toString().toLowerCase()).resolve(video.getContentUrl()).normalize();
 
             Files.deleteIfExists(path);
 
-            File directory = new File(uploadDir);
-            File tempDirectory = new File(tempUploadDir);
+            File directory = new File(uploadDirOne);
+            File tempDirectory = new File(tempUploadDirOne);
 
             if(!directory.exists()) {
                 directory.mkdirs();
@@ -280,13 +303,18 @@ public class CourseVideoImpl implements CourseVideoService {
                     .substring(file.getOriginalFilename()
                             .lastIndexOf("."));
 
-            String filename = video.getModuleId() + extension;
-
-            Path filePath = Paths.get(uploadDir).resolve(filename);
+//            String filename = video.getModuleId() + extension;
+//
+//            Path filePath = Paths.get(uploadDirOne)
+//                    .resolve(module.getModuleType()
+//                            .toString()
+//                            .toLowerCase())
+//                    .resolve(filename);
 
             tempFilePath =
                     Files.createTempFile(
-                            tempDirectory.toPath(),
+                            tempDirectory.toPath().resolve(module.getModuleType().toString().toLowerCase()),
+
                             "temp-video-" + video.getModuleId() ,
                             extension);
 
@@ -298,9 +326,18 @@ public class CourseVideoImpl implements CourseVideoService {
 
             var duration = VideoUtil.getVideoDuration(tempFile);
 
-            Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+            Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
 
 
+
+            System.out.println();
+            System.out.println();
+            System.out.println();
+            System.out.println("duration "+ duration);
+            System.out.println("video.getDuration() "+ video.getDuration());
+            System.out.println("course.getDuration() "+ course.getDuration());
+            System.out.println();
+            System.out.println();;
 
             course.setDuration(
                     course.getDuration() != null ?
@@ -316,6 +353,7 @@ public class CourseVideoImpl implements CourseVideoService {
             courseRepo.save(course);
 
             log.info("video deleted successfully course table");
+            System.out.println("video deleted successfully from course table");
             return video;
 
         } catch (Exception e) {
