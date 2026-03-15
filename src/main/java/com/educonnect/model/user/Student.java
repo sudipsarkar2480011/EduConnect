@@ -28,7 +28,6 @@ import java.util.List;
 @PrimaryKeyJoinColumn(name = "student_id")
 public class Student extends User {
 
-
     private LocalDate dateOfBirth;
     private String enrollmentNumber;
 

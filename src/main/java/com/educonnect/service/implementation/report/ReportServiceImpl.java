@@ -16,7 +16,7 @@ import com.educonnect.repo.ParentRepo;
 import com.educonnect.repo.StudentRepo;
 import com.educonnect.repo.TeacherRepo;
 import com.educonnect.repo.course.CourseRepo;
-import com.educonnect.repo.report.ReportRepo; // Ensure you have this repo
+import com.educonnect.repo.report.ReportRepo;
 import com.educonnect.config.UserRepo;
 import com.educonnect.utils.mapper.CourseMapper;
 import com.educonnect.utils.mapper.StudentMapper;
@@ -53,7 +53,7 @@ public class ReportServiceImpl {
     public List<StudentResponse> getAllStudents() {
         return studentRepo.findAll()
                 .stream()
-                .map(studentMapper::toResponse)
+                .map(studentMapper::toResponseDTO)
                 .toList();
     }
 
@@ -69,7 +69,7 @@ public class ReportServiceImpl {
     public List<CourseResponseDTO> getAllCourses() {
         return courseRepo.findAll()
                 .stream()
-                .map(courseMapper::toResponseDT)
+                .map(courseMapper::toResponseDTO)
                 .toList();
     }
 
