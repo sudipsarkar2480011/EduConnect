@@ -1,12 +1,10 @@
 package com.educonnect.model.assessment;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -22,10 +20,13 @@ public class Quiz {
 
     @OneToOne
     @JoinColumn(name = "assessment_id")
+    @EqualsAndHashCode.Exclude
     private Assessment assessment ;
 
     @OneToMany(mappedBy = "quiz")
-    private List<Question> questionList;
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    private Set<Question> questionList;
 
 
     @OneToMany(mappedBy = "quiz")
