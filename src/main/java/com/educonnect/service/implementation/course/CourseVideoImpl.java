@@ -186,8 +186,10 @@ public class CourseVideoImpl implements CourseVideoService {
         CourseModule video = courseModuleRepo.findById(moduleId)
                 .orElseThrow(() -> new RuntimeException("Video record not found"));
 
-        Path path = Paths.get(uploadDir).resolve(video.getContentUrl()).normalize();
-
+        Path path = Paths.get(uploadDirOne)
+                .resolve(video.getModuleType().toString().toLowerCase())
+                .resolve(video.getContentUrl()).normalize();
+        System.out.println(path.toUri());
         if (!Files.exists(path)) throw new RuntimeException("File not found on disk");
 
         return new UrlResource(path.toUri());
