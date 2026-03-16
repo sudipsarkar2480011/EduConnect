@@ -23,6 +23,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.UUID;
@@ -98,7 +99,8 @@ public class AssessmentController {
                 new GenericResponse<>(
                         assessmentFactory.serveAssessment(assessmentId,assessmentType),
                         "Assessment [" +assessmentType.toLowerCase()+ "] retrieved successfully",
-                        HttpStatus.OK.value()
+                        HttpStatus.OK.value(),
+                        LocalDateTime.now()
                 )
         );
     }
@@ -113,7 +115,8 @@ public class AssessmentController {
                 new GenericResponse<>(
                         assessmentFactory.getReport(submissionId, userPrinciple.getUser(),assessmentType),
                         "Assessment [" +assessmentType.toLowerCase()+ "] report retrieved successfully",
-                        HttpStatus.OK.value()
+                        HttpStatus.OK.value(),
+                        LocalDateTime.now()
                 )
         );
     }

@@ -28,6 +28,8 @@ import org.springframework.web.multipart.MultipartFile;
 import ws.schild.jave.EncoderException;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -175,7 +177,7 @@ public class CourseController {
     }
 
     @PostMapping("/{courseId}/module/{moduleId}/mark-as-complete")
-    public ResponseEntity<GenericResponse<Map<String,Double>>> markModuleAsCompleted(
+    public ResponseEntity<GenericResponse<Map<String,String>>> markModuleAsCompleted(
             @PathVariable("moduleId") UUID moduleId,
             @PathVariable("courseId") UUID courseId,
             @AuthenticationPrincipal UserPrinciples userPrinciple
@@ -184,11 +186,13 @@ public class CourseController {
                 moduleId,
                 courseId,
                 (Student) userPrinciple.getUser());
-        return new ResponseEntity<>(
+        return new ResponseEntity<>
+                (
                 new GenericResponse<>(
                         resp,
                         "Module with id " + moduleId+" marked as done",
-                        HttpStatus.OK.value()
+                        HttpStatus.OK.value(),
+                        LocalDateTime.now()
                 ),
                 HttpStatus.OK
         );

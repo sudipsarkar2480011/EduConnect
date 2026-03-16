@@ -376,7 +376,7 @@ public class CourseVideoImpl implements CourseVideoService {
      * @throws ResourceNotFoundException If enrollment or module records are missing.
      */
     @Override
-    public Map<String, Object> markModuleAsCompleted(
+    public Map<String, String> markModuleAsCompleted(
             UUID moduleId,
             UUID courseId,
             Student student
@@ -401,13 +401,13 @@ public class CourseVideoImpl implements CourseVideoService {
 
         enrollment.setProgress(progress);
 
-        Map<String, Object> map = new HashMap<>();
+        Map<String, String> map = new HashMap<>();
 
         enrollmentRepo.save(enrollment);
 
         map.put("message",course.getTitle() + " is marked as completed");
-        map.put("remainingTime",enrollment.getRemainingDuration());
-        map.put("progress",progress);
+        map.put("remainingTime",enrollment.getRemainingDuration() + "");
+        map.put("progress",progress + "");
 
         return  map;
 
