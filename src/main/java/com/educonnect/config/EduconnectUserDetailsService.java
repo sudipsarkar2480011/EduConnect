@@ -11,7 +11,7 @@ import com.educonnect.model.user.User;
 @Service
 @RequiredArgsConstructor
 public class EduconnectUserDetailsService implements UserDetailsService {
-    private final UserRepo repo;
+    private final UserRepo repo ;
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
