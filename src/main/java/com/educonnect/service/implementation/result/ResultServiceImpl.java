@@ -86,14 +86,18 @@ public class ResultServiceImpl implements ResultService {
     @Override
     public String evaluateStudent(UUID assessmentId, UUID studentId, Teacher teacher, double givenScore) throws BadRequestException, UserNotFoundException {
 
+        Assessment assessment = assessmentRepo.findById(assessmentId)
+                .orElseThrow(() -> new ResourceNotFoundException("Assessment not found"));
+
+        if(!assessment.getCourse().getTeacher().getUserId().equals(teacher.getUserId())){
+            throw new BadRequestException("Teacher `" +teacher.getFullName() + "` does not have permission to evaluate");
+        }
+
         if(resultRepo.existsByAssessmentAssessmentId(assessmentId)){
             log.info("Overwriting the assignment score...");
 
             Result result = resultRepo.findByAssessmentAssessmentId(assessmentId)
                     .orElseThrow(() -> new ResourceNotFoundException("Result not found"));
-
-            Assessment assessment = assessmentRepo.findById(assessmentId)
-                    .orElseThrow(() -> new ResourceNotFoundException("Assessment not found"));
 
             double score = (assessment.getMaxScore() == 0) ? 0.0
                     : (double) givenScore / assessment.getMaxScore();
@@ -106,13 +110,6 @@ public class ResultServiceImpl implements ResultService {
             resultRepo.save(result);
 
             return "Updated the score of the assignment";
-        }
-
-        Assessment assessment = assessmentRepo.findById(assessmentId)
-                .orElseThrow(() -> new ResourceNotFoundException("Assessment not found"));
-
-        if(!assessment.getCourse().getTeacher().getUserId().equals(teacher.getUserId())){
-            throw new BadRequestException("Teacher `" +teacher.getFullName() + "` does not have permission to evaluate");
         }
 
 
@@ -138,6 +135,7 @@ public class ResultServiceImpl implements ResultService {
 
         result.setAssessment(assessment);
         result.setStudent(student);
+        result.setSubmission(submission);
 
 
         double score = (assessment.getMaxScore() == 0) ? 0.0
@@ -155,8 +153,8 @@ public class ResultServiceImpl implements ResultService {
     }
 
     @Override
-    public Result getResultWithId(UUID assessmentId) {
-        return resultRepo.findByAssessmentAssessmentId(assessmentId)
+    public Result getResultWithId(UUID submissionId) {
+        return resultRepo.findBySubmissionSubmissionId(submissionId)
                 .orElseThrow(() -> new ResourceNotFoundException("Result not found"));
     }
 

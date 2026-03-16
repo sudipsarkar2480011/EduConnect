@@ -181,8 +181,9 @@ public class QuizStrategy implements AssessmentStrategy {
         List<StudentQuizQuestionResponse> studentResponseList
                 = studentQuizQuestionResponseRepo.findStudentQuizResponse(submissionId);
 
-        System.out.println(user.getUserId());
-        System.out.println();
+        if(studentResponseList == null || studentResponseList.isEmpty()){
+            throw new ResourceNotFoundException("Student response not found");
+        }
 
         if(!(user.getRole().equals(Role.ADMIN)
                 ||
@@ -192,9 +193,6 @@ public class QuizStrategy implements AssessmentStrategy {
                     + " is not authorized to access this report");
         }
 
-        if(studentResponseList == null){
-            throw new ResourceNotFoundException("Student response not found");
-        }
 
         StudentQuizReportDTO studentQuizReportDTO = new StudentQuizReportDTO();
 

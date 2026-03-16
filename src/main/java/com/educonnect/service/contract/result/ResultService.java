@@ -30,12 +30,14 @@ public interface ResultService {
      * @param givenScore The score given by the teacher
      * @return A success message
      */
-    String evaluateStudent(UUID assessmentId, UUID studentId, Teacher teacher, double givenScore) throws BadRequestException, UserNotFoundException;
+    String evaluateStudent(UUID assessmentId, UUID studentId,
+                           Teacher teacher, double givenScore)
+            throws BadRequestException, UserNotFoundException;
 
     /**
      * This method returns the result
-     * @param resultId The unique identifier of the Result
+     * @param submissionId The unique identifier of the Submission
      * @return The {@link Result}
      */
-    Result getResultWithId(UUID resultId);
+    Result getResultWithId(UUID submissionId);
 }
