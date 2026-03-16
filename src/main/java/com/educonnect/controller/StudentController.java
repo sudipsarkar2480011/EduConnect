@@ -44,7 +44,7 @@ public class StudentController {
         return ResponseEntity.ok(studentService.getById(studentId));
     }
 
-    @PostMapping("{id}/update")
+    @PutMapping("{id}/update")
     public ResponseEntity<StudentResponse> update(
             @PathVariable("id") UUID studentId,
             @Valid @RequestBody StudentUpdateRequest request,
@@ -70,5 +70,6 @@ public class StudentController {
     public ResponseEntity<StudentResponse> studentEnrollToCourse(@RequestParam UUID studentId, @RequestParam UUID courseId) throws UserNotFoundException {
         return new ResponseEntity<>(courseService.addStudentToCourse(studentId,courseId), HttpStatus.OK);
     }
+
 
 }
