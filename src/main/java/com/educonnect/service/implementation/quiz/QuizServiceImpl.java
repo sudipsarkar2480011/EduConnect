@@ -1,5 +1,6 @@
 package com.educonnect.service.implementation.quiz;
 
+import com.educonnect.dto.assessment.report.quiz.StudentQuizReportDTO;
 import com.educonnect.dto.assessment.serve.quiz.QuestionOptionDTO;
 import com.educonnect.dto.assessment.serve.quiz.QuizQuestionDTO;
 import com.educonnect.dto.assessment.serve.quiz.QuizServeDTO;
@@ -72,6 +73,11 @@ public class QuizServiceImpl implements QuizService {
                 quizQuestionDTOList
         );
 
+    }
+
+    @Override
+    public StudentQuizReportDTO getQuizReport(UUID submissionId) {
+        return null;
     }
 
     private QuizQuestionDTO getQuizQuestionDTO(Question question, List<QuestionOption> questionOptionList) {

@@ -1,6 +1,7 @@
 package com.educonnect.controller;
 
 import com.educonnect.config.UserPrinciples;
+import com.educonnect.dto.assessment.report.quiz.StudentQuizReportDTO;
 import com.educonnect.dto.assessment.serve.quiz.QuizServeDTO;
 import com.educonnect.dto.assessment.submit.AssessmentRequestDTO;
 import com.educonnect.dto.assessment.submit.assignment.AssignmentRequestDTO;
@@ -96,6 +97,19 @@ public class AssessmentController {
                 new GenericResponse<>(
                         quizService.getQuiz(assessmentId),
                         "Quiz retrieved successfully",
+                        HttpStatus.OK.value()
+                )
+        );
+    }
+
+    @GetMapping("/quiz/report/{submissionId}")
+    private ResponseEntity<GenericResponse<StudentQuizReportDTO>> getReport(
+            @PathVariable("submissionId") UUID submissionId
+    ){
+        return ResponseEntity.ok(
+                new GenericResponse<>(
+                        quizService.getQuizReport(submissionId),
+                        "Quiz report retrieved successfully",
                         HttpStatus.OK.value()
                 )
         );
