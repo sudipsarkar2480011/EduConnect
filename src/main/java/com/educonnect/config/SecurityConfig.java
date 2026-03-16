@@ -47,11 +47,11 @@ public class SecurityConfig {
                                 "/v1/api/student/**",
                                 "/v1/api/attendance/**",
                                 "/v1/api/doc/**",
-                                "/v1/api/assessment/submit",
                                 "/v1/api/assessment/report/**",
                                 "/v1/api/assessment/get-assessment/**"
                         )
                         .hasAnyRole("STUDENT","ADMIN", "TEACHER")
+                        .requestMatchers("/v1/api/assessment/submit").hasRole("STUDENT")
 
                         .requestMatchers("/v1/api/audits/**","/v1/api/compliance/**").hasRole("ADMIN")
 
