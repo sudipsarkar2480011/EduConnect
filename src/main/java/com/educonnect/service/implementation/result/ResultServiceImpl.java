@@ -12,6 +12,7 @@ import com.educonnect.repo.assessment.quiz.StudentQuizQuestionResponseRepo;
 import com.educonnect.repo.result.ResultRepo;
 import com.educonnect.service.contract.result.ResultService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.BadRequestException;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +21,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ResultServiceImpl implements ResultService {
 
     private final SubmissionRepo submissionRepo;
@@ -83,6 +85,29 @@ public class ResultServiceImpl implements ResultService {
 
     @Override
     public String evaluateStudent(UUID assessmentId, UUID studentId, Teacher teacher, double givenScore) throws BadRequestException, UserNotFoundException {
+
+        if(resultRepo.existsByAssessmentAssessmentId(assessmentId)){
+            log.info("Overwriting the assignment score...");
+
+            Result result = resultRepo.findByAssessmentAssessmentId(assessmentId)
+                    .orElseThrow(() -> new ResourceNotFoundException("Result not found"));
+
+            Assessment assessment = assessmentRepo.findById(assessmentId)
+                    .orElseThrow(() -> new ResourceNotFoundException("Assessment not found"));
+
+            double score = (assessment.getMaxScore() == 0) ? 0.0
+                    : (double) givenScore / assessment.getMaxScore();
+
+
+            result.setPercentageScore(score);
+
+            result.setStatus(score >= 0.4 ? ResultStatus.PASSED : ResultStatus.FAILED);
+
+            resultRepo.save(result);
+
+            return "Updated the score of the assignment";
+        }
+
         Assessment assessment = assessmentRepo.findById(assessmentId)
                 .orElseThrow(() -> new ResourceNotFoundException("Assessment not found"));
 
@@ -105,6 +130,8 @@ public class ResultServiceImpl implements ResultService {
                    + " has not submitted the assignment yet");
 
        }
+
+
 
 
         Result result = new Result();

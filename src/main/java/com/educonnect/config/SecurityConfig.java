@@ -37,14 +37,13 @@ public class SecurityConfig {
                                 "/v1/api/attachment/view/**",
                                 "/v3/api-docs/**",
                                 "/swagger-ui/index.html",
-                                "/swagger-ui/**",
-                                "/v1/api/assessment/quiz/**"
+                                "/swagger-ui/**"
 
                 ).permitAll()
-                        .requestMatchers("/v1/api/result/**","/v1/api/teachers/**").hasRole("TEACHER")
+                        .requestMatchers("/v1/api/result/**","/v1/api/teachers/**").hasAnyRole("TEACHER","ADMIN")
                         .requestMatchers("/v1/api/parent/**").hasRole("PARENT")
                         .requestMatchers("/v1/api/assessment/create").hasRole("TEACHER")
-                        .requestMatchers("/v1/api/student/**", "/v1/api/attendance/**", "/v1/api/doc/**", "/v1/api/assessment/submit")
+                        .requestMatchers("/v1/api/student/**", "/v1/api/attendance/**", "/v1/api/doc/**", "/v1/api/assessment/submit","/v1/api/assessment/report/**","/v1/api/assessment/get-assessment/**")
                         .hasAnyRole("STUDENT","ADMIN")
 
                         .requestMatchers("/v1/api/audits/**").hasRole("ADMIN")

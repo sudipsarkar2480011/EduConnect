@@ -1,12 +1,14 @@
-package com.educonnect.service.strategy.assignment;
+package com.educonnect.service.strategy.assessment;
 
-import com.educonnect.dto.assessment.serve.quiz.QuizServeDTO;
+import com.educonnect.dto.assessment.report.AssessmentReportDTO;
+import com.educonnect.dto.assessment.serve.AssessmentServeDTO;
 import com.educonnect.dto.assessment.submit.AssessmentRequestDTO;
 import com.educonnect.dto.assessment.create.CreateAssessmentRequestDTO;
 import com.educonnect.model.assessment.AssessmentType;
 import com.educonnect.model.course.Course;
 import com.educonnect.model.user.Student;
 import com.educonnect.model.user.Teacher;
+import com.educonnect.model.user.User;
 import org.apache.coyote.BadRequestException;
 
 import java.util.Map;
@@ -47,4 +49,9 @@ public interface AssessmentStrategy {
     default boolean canCreateAssessment(Teacher teacher, Course course){
         return teacher.getUserId().equals(course.getTeacher().getUserId());
     }
+
+    AssessmentServeDTO serveAssessment(UUID assessmentId);
+
+    AssessmentReportDTO getReport(UUID submissionId, User user) throws BadRequestException;
+
 }

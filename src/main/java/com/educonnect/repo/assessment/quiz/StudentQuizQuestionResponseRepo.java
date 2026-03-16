@@ -17,6 +17,7 @@ public interface StudentQuizQuestionResponseRepo extends JpaRepository<StudentQu
     @Query(
             """
                  SELECT qr FROM StudentQuizQuestionResponse qr
+                 JOIN FETCH qr.submission s
                  JOIN FETCH qr.question q
                  JOIN FETCH q.questionOptionList ol
                  JOIN FETCH qr.questionOption uo

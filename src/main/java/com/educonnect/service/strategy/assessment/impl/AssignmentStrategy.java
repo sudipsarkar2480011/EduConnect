@@ -1,5 +1,9 @@
-package com.educonnect.service.strategy.assignment.impl;
+package com.educonnect.service.strategy.assessment.impl;
 
+import com.educonnect.dto.assessment.report.AssessmentReportDTO;
+import com.educonnect.dto.assessment.report.assignment.StudentAssignmentReportDTO;
+import com.educonnect.dto.assessment.serve.AssessmentServeDTO;
+import com.educonnect.dto.assessment.serve.assignment.AssignmentServeDTO;
 import com.educonnect.dto.assessment.submit.AssessmentRequestDTO;
 import com.educonnect.dto.assessment.submit.assignment.AssignmentRequestDTO;
 import com.educonnect.dto.assessment.create.CreateAssessmentRequestDTO;
@@ -9,14 +13,17 @@ import com.educonnect.exception.custom_exceptions.ResourceNotFoundException;
 import com.educonnect.model.assessment.*;
 import com.educonnect.model.course.Course;
 import com.educonnect.model.document.FileTypeEnum;
+import com.educonnect.model.document.attachment.Attachment;
+import com.educonnect.model.user.Role;
 import com.educonnect.model.user.Student;
 import com.educonnect.model.user.Teacher;
+import com.educonnect.model.user.User;
 import com.educonnect.repo.assessment.AssessmentRepo;
 import com.educonnect.repo.assessment.assignment.AssignmentRepo;
 import com.educonnect.repo.assessment.SubmissionRepo;
 import com.educonnect.repo.attachment.AssignmentAttachmentRepo;
 import com.educonnect.repo.course.CourseRepo;
-import com.educonnect.service.strategy.assignment.AssessmentStrategy;
+import com.educonnect.service.strategy.assessment.AssessmentStrategy;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -50,8 +57,8 @@ public class AssignmentStrategy implements AssessmentStrategy {
     private final Map<String, FileTypeEnum> allowedTypes =
             new HashMap<>(Map.of(
                     ".pdf",FileTypeEnum.PDF,
-                    "jpeg",FileTypeEnum.JPEG,
-                    "jpg",FileTypeEnum.JPEG
+                    ".jpeg",FileTypeEnum.JPEG,
+                    ".jpg",FileTypeEnum.JPEG
             ));
 
     private FileTypeEnum getFileType(String filename){
@@ -197,7 +204,7 @@ public class AssignmentStrategy implements AssessmentStrategy {
                     ((CreateAssignmentRequestDTO)dto).getNoOfDocumentsToBeUploaded() == null?
                             10 : ((CreateAssignmentRequestDTO)dto).getNoOfDocumentsToBeUploaded()
             );
-
+            assignment.setInstruction(((CreateAssignmentRequestDTO) dto).getInstruction());
             assignment.setAssessment(assessment);
             assessment.setAssignment(assignment);
 
@@ -211,5 +218,52 @@ public class AssignmentStrategy implements AssessmentStrategy {
             map.put("assignmentId",assignment.getAssignmentId().toString());
 
             return map;
+    }
+
+    @Override
+    public AssessmentServeDTO serveAssessment(UUID assessmentId) {
+        Assignment assignment = assignmentRepo.findAssignmentAndAssessment(assessmentId)
+                .orElseThrow(() -> new ResourceNotFoundException("Assignment not found!!!!"));
+
+        Assessment assessment = assignment.getAssessment();
+
+        AssignmentServeDTO assignmentServeDTO = new AssignmentServeDTO();
+
+        assignmentServeDTO.setInstruction(assignment.getInstruction());
+        assignmentServeDTO.setTitle(assessment.getTitle());
+        assignmentServeDTO.setNoOfDocumentsToBeUploaded(assignment.getNoOfDocumentsToBeUploaded());
+        assignmentServeDTO.setAssessmentType(AssessmentType.ASSIGNMENT);
+
+        return assignmentServeDTO;
+    }
+
+    @Override
+    public AssessmentReportDTO getReport(UUID submissionId, User user) throws BadRequestException {
+
+        Submission submission = submissionRepo.findAssignmentAndAssessmentAndAttachments(submissionId)
+                .orElseThrow(() -> new ResourceNotFoundException("Submission not found"));
+
+        if(!(
+                user.getRole().equals(Role.ADMIN)
+                || submission.getStudent().getUserId().equals(user.getUserId())
+                )){
+            throw new BadRequestException("Student " + user.getFullName()
+                    + " is not authorized to access this report");
+        }
+
+        StudentAssignmentReportDTO assignmentReportDTO = new StudentAssignmentReportDTO();
+
+        List<String> uriList = new ArrayList<>();
+        for (AssignmentAttachment assignmentAttachment : submission.getAssignmentAttachmentList()){
+            uriList.add(assignmentAttachment.getUri());
+        }
+        assignmentReportDTO.setAttachmentUriList(uriList);
+
+        assignmentReportDTO.setTitle(submission.getAssessment().getTitle());
+        assignmentReportDTO.setAssessmentType(AssessmentType.ASSIGNMENT);
+        assignmentReportDTO.setNoOfDocumentsUploaded(submission.getAssessment().getAssignment().getNoOfDocumentsToBeUploaded());
+
+        return assignmentReportDTO;
+
     }
 }
