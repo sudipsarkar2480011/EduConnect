@@ -11,4 +11,6 @@ import java.util.UUID;
 @Repository
 public interface ResultRepo extends JpaRepository<Result, UUID> {
     Optional<Result> findByAssessmentAssessmentId(UUID assessmentId);
+    Optional<Result> findBySubmissionSubmissionId(UUID submissionId);
+    boolean existsByAssessmentAssessmentId(UUID assessmentId);
 }

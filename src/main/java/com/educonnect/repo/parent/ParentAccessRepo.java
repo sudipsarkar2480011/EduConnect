@@ -1,4 +1,4 @@
-package com.educonnect.repo;
+package com.educonnect.repo.parent;
 
 import com.educonnect.model.access.ParentAccess;
 import org.springframework.data.jpa.repository.JpaRepository;

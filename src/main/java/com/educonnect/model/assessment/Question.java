@@ -1,12 +1,10 @@
 package com.educonnect.model.assessment;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -26,7 +24,9 @@ public class Question {
     private Quiz quiz;
 
     @OneToMany(mappedBy = "question")
-    private List<QuestionOption> questionOptionList;
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    private Set<QuestionOption> questionOptionList;
 
     @OneToMany(mappedBy = "question")
     private List<StudentQuizQuestionResponse> studentQuizQuestionResponseList;

@@ -6,6 +6,7 @@ import com.educonnect.repo.StudentRepo;
 import com.educonnect.service.contract.StudentService;
 import com.educonnect.dto.student.StudentResponse;
 import com.educonnect.dto.student.StudentUpdateRequest;
+import com.educonnect.service.contract.parent.ParentService;
 import com.educonnect.utils.UpdateUtil;
 import com.educonnect.utils.mapper.StudentMapper;
 import com.educonnect.service.strategy.impl.StudentAuthStrategy;
@@ -26,7 +27,7 @@ import java.util.UUID;
 @Service
 @Transactional
 public class StudentServiceImpl implements StudentService {
-
+    private final ParentService parentService;
     private final StudentRepo studentRepo;
     private final StudentMapper mapper;
     private final StudentAuthStrategy studentAuthStrategy;
@@ -79,7 +80,10 @@ public class StudentServiceImpl implements StudentService {
         UpdateUtil.setIfPresent(request.getDateOfBirth(), student::setDateOfBirth);
         UpdateUtil.setIfPresent(request.getActive(), student::setActive);
         UpdateUtil.setIfPresent(request.getEnrollmentNumber(), student::setEnrollmentNumber);
-
+        UpdateUtil.setIfPresent(request.getParentEmail(),student::setParentEmail);
+        if(request.getParentEmail()!=null && !request.getParentEmail().isEmpty()){
+            parentService.createParentAndSendVerification(student.getParent().getUserId());
+        }
         return mapper.toResponseDTO(studentRepo.save(student));
     }
 

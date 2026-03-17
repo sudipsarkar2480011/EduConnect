@@ -1,4 +1,4 @@
-package com.educonnect.service.contract;
+package com.educonnect.service.contract.parent;
 
 import com.educonnect.dto.parent.ParentAccessRequestDTO;
 import com.educonnect.dto.parent.ParentAccessResponseDTO;

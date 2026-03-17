@@ -186,8 +186,10 @@ public class CourseVideoImpl implements CourseVideoService {
         CourseModule video = courseModuleRepo.findById(moduleId)
                 .orElseThrow(() -> new RuntimeException("Video record not found"));
 
-        Path path = Paths.get(uploadDir).resolve(video.getContentUrl()).normalize();
-
+        Path path = Paths.get(uploadDirOne)
+                .resolve(video.getModuleType().toString().toLowerCase())
+                .resolve(video.getContentUrl()).normalize();
+        System.out.println(path.toUri());
         if (!Files.exists(path)) throw new RuntimeException("File not found on disk");
 
         return new UrlResource(path.toUri());
@@ -374,7 +376,7 @@ public class CourseVideoImpl implements CourseVideoService {
      * @throws ResourceNotFoundException If enrollment or module records are missing.
      */
     @Override
-    public Map<String, Object> markModuleAsCompleted(
+    public Map<String, String> markModuleAsCompleted(
             UUID moduleId,
             UUID courseId,
             Student student
@@ -399,13 +401,13 @@ public class CourseVideoImpl implements CourseVideoService {
 
         enrollment.setProgress(progress);
 
-        Map<String, Object> map = new HashMap<>();
+        Map<String, String> map = new HashMap<>();
 
         enrollmentRepo.save(enrollment);
 
         map.put("message",course.getTitle() + " is marked as completed");
-        map.put("remainingTime",enrollment.getRemainingDuration());
-        map.put("progress",progress);
+        map.put("remainingTime",enrollment.getRemainingDuration() + "");
+        map.put("progress",progress + "");
 
         return  map;
 
