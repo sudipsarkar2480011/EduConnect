@@ -66,6 +66,7 @@ public class ResultServiceImpl implements ResultService {
 
         result.setAssessment(assessment);
         result.setStudent(student);
+        result.setSubmission(submission);
 
 
         double score = (totalResponse == 0) ? 0.0
