@@ -28,6 +28,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@Table(name="parent_verification_token")
 public class ParentVerificationToken {
     @Id
     @GeneratedValue
