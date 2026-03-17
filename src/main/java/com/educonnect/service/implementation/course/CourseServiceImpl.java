@@ -5,6 +5,7 @@ import com.educonnect.dto.course.CourseResponseDTO;
 import com.educonnect.dto.course.ModuleResponseDTO;
 import com.educonnect.dto.student.StudentResponse;
 import com.educonnect.exception.custom_exceptions.CourseNotFoundException;
+import com.educonnect.exception.custom_exceptions.UserIdDoNothMatchException;
 import com.educonnect.exception.custom_exceptions.UserNotFoundException;
 import com.educonnect.model.course.Course;
 import com.educonnect.model.course.Enrollment;
@@ -111,7 +112,11 @@ public class CourseServiceImpl implements CourseService {
      */
     @Override
     @Transactional
-    public StudentResponse addStudentToCourse(UUID userId, UUID courseId) throws UserNotFoundException {
+    public StudentResponse addStudentToCourse(UUID userId, UUID courseId , UUID studentId) throws UserNotFoundException, UserIdDoNothMatchException {
+        if(userId!=studentId)
+        {
+            throw new UserIdDoNothMatchException("User Id do not match : ");
+        }
         if (enrollmentRepo.existsByStudentUserIdAndCourseCourseId(userId, courseId)) {
             throw new IllegalStateException("Student is already enrolled in this course");
         }
