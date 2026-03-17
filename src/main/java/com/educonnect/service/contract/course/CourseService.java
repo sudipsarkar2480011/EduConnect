@@ -17,6 +17,6 @@ public interface CourseService{
     public List<CourseResponseDTO> getAllCourse();
     public CourseResponseDTO getByIdCourse(UUID id) throws Exception;
     public String deleteById(UUID id);
-    StudentResponse addStudentToCourse(UUID userId, UUID courseId, UUID studentId)  throws UserNotFoundException, UserIdDoNothMatchException;
+    StudentResponse addStudentToCourse( UUID courseId, UUID studentId)  throws UserNotFoundException, UserIdDoNothMatchException;
 List<ModuleResponseDTO> getAllModulesOfACourse(UUID courseId );
 }

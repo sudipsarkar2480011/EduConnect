@@ -112,11 +112,7 @@ public class CourseServiceImpl implements CourseService {
      */
     @Override
     @Transactional
-    public StudentResponse addStudentToCourse(UUID userId, UUID courseId , UUID studentId) throws UserNotFoundException, UserIdDoNothMatchException {
-        if(userId!=studentId)
-        {
-            throw new UserIdDoNothMatchException("User Id do not match : ");
-        }
+    public StudentResponse addStudentToCourse(UUID userId, UUID courseId) throws UserNotFoundException, UserIdDoNothMatchException {
         if (enrollmentRepo.existsByStudentUserIdAndCourseCourseId(userId, courseId)) {
             throw new IllegalStateException("Student is already enrolled in this course");
         }

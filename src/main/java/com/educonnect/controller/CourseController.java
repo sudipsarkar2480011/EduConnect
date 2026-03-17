@@ -130,7 +130,7 @@ public class CourseController {
     }
 
 
-    @GetMapping("/get-video/{id}")
+    @GetMapping("/get-module/{id}")
     public ResponseEntity<String> getVideo(@PathVariable UUID id) throws IOException {
         String url=courseVideoServiceClass.getVideoUrl(id);
         return ResponseEntity.ok(url);
