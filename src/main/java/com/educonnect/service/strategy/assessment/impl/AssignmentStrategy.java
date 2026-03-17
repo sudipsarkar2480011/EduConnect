@@ -18,6 +18,7 @@ import com.educonnect.model.user.Role;
 import com.educonnect.model.user.Student;
 import com.educonnect.model.user.Teacher;
 import com.educonnect.model.user.User;
+import com.educonnect.repo.EnrollmentRepo;
 import com.educonnect.repo.assessment.AssessmentRepo;
 import com.educonnect.repo.assessment.assignment.AssignmentRepo;
 import com.educonnect.repo.assessment.SubmissionRepo;
@@ -53,6 +54,7 @@ public class AssignmentStrategy implements AssessmentStrategy {
     private final AssignmentAttachmentRepo assignmentAttachmentRepo;
     private final SubmissionRepo submissionRepo;
     private final CourseRepo courseRepo;
+    private final EnrollmentRepo enrollmentRepo;
 
     private final Map<String, FileTypeEnum> allowedTypes =
             new HashMap<>(Map.of(
@@ -74,7 +76,14 @@ public class AssignmentStrategy implements AssessmentStrategy {
 
     @Override
     @Transactional
-    public Map<String,String> submitAssessment(Student student, AssessmentRequestDTO dto)  {
+    public Map<String,String> submitAssessment(Student student, AssessmentRequestDTO dto) throws BadRequestException {
+
+        Assessment assessment = assessmentRepo.findById(dto.getAssessmentId())
+                .orElseThrow(() -> new ResourceNotFoundException("Assessment not found"));
+
+        if(!enrollmentRepo.existsByStudentUserIdAndCourseCourseId(student.getUserId(),assessment.getCourse().getCourseId())){
+            throw new BadRequestException("Student `" + student.getFullName() + "` did not enroll to the course" );
+        }
 
         List<MultipartFile> files = ((AssignmentRequestDTO)dto).getFiles();
 
@@ -90,9 +99,6 @@ public class AssignmentStrategy implements AssessmentStrategy {
 
         Assignment assignment = assignmentRepo.findById(((AssignmentRequestDTO)dto).getAssignmentId())
                 .orElseThrow(() -> new ResourceNotFoundException("Assignment not found"));
-
-        Assessment assessment = assessmentRepo.findById(dto.getAssessmentId())
-                .orElseThrow(() -> new ResourceNotFoundException("Assessment not found"));
 
         int uploadedCount = files.size();
         int requiredCount = assignment.getNoOfDocumentsToBeUploaded();
@@ -221,11 +227,17 @@ public class AssignmentStrategy implements AssessmentStrategy {
     }
 
     @Override
-    public AssessmentServeDTO serveAssessment(UUID assessmentId) {
+    public AssessmentServeDTO serveAssessment(UUID assessmentId,User user) throws BadRequestException {
         Assignment assignment = assignmentRepo.findAssignmentAndAssessment(assessmentId)
                 .orElseThrow(() -> new ResourceNotFoundException("Assignment not found!!!!"));
 
         Assessment assessment = assignment.getAssessment();
+
+
+        if(user.getRole().equals(Role.STUDENT) &&
+                !enrollmentRepo.existsByStudentUserIdAndCourseCourseId(user.getUserId(),assessment.getCourse().getCourseId())){
+            throw new BadRequestException("Student `" + user.getFullName() + "` did not enroll to the course" );
+        }
 
         AssignmentServeDTO assignmentServeDTO = new AssignmentServeDTO();
 
@@ -243,10 +255,9 @@ public class AssignmentStrategy implements AssessmentStrategy {
         Submission submission = submissionRepo.findAssignmentAndAssessmentAndAttachments(submissionId)
                 .orElseThrow(() -> new ResourceNotFoundException("Submission not found"));
 
-        if(!(
-                user.getRole().equals(Role.ADMIN)
-                || submission.getStudent().getUserId().equals(user.getUserId())
-                )){
+        if(user.getRole().equals(Role.STUDENT)
+                && !submission.getStudent().getUserId().equals(user.getUserId())
+                ){
             throw new BadRequestException("Student " + user.getFullName()
                     + " is not authorized to access this report");
         }

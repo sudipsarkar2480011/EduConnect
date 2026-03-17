@@ -60,19 +60,27 @@ public class AssessmentFactory {
      * @param assessmentRequestDTO the payload
      * @return A success message
      */
-    public Map<String,String> submitAssessment(Student user, AssessmentRequestDTO assessmentRequestDTO){
+    public Map<String,String> submitAssessment(Student user, AssessmentRequestDTO assessmentRequestDTO) throws BadRequestException {
 
-        return assessmentStrategyList.stream()
-                .filter(assessmentStrategy -> assessmentStrategy.supports(assessmentRequestDTO.getAssessmentType()))
-                .map(assessmentStrategy -> assessmentStrategy.submitAssessment(user,assessmentRequestDTO))
-                .toList().getFirst();
+        List<Map<String, String>> list = new ArrayList<>();
+        for (AssessmentStrategy assessmentStrategy : assessmentStrategyList) {
+            if (assessmentStrategy.supports(assessmentRequestDTO.getAssessmentType())) {
+                Map<String, String> stringStringMap = assessmentStrategy.submitAssessment(user, assessmentRequestDTO);
+                list.add(stringStringMap);
+            }
+        }
+        return list.getFirst();
     }
 
-    public AssessmentServeDTO serveAssessment(UUID assessmentId, String assessmentType){
-        return assessmentStrategyList.stream()
-                .filter(assessmentStrategy -> assessmentStrategy.supports(AssessmentType.valueOf(assessmentType.toUpperCase())))
-                .map(assessmentStrategy -> assessmentStrategy.serveAssessment(assessmentId))
-                .toList().getFirst();
+    public AssessmentServeDTO serveAssessment(UUID assessmentId, String assessmentType , User user) throws BadRequestException {
+        List<AssessmentServeDTO> list = new ArrayList<>();
+        for (AssessmentStrategy assessmentStrategy : assessmentStrategyList) {
+            if (assessmentStrategy.supports(AssessmentType.valueOf(assessmentType.toUpperCase()))) {
+                AssessmentServeDTO assessmentServeDTO = assessmentStrategy.serveAssessment(assessmentId, user);
+                list.add(assessmentServeDTO);
+            }
+        }
+        return list.getFirst();
     }
 
     public AssessmentReportDTO getReport(UUID submissionId, User user, String assessmentType) throws BadRequestException {

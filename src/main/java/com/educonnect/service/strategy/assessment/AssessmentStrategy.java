@@ -35,7 +35,7 @@ public interface AssessmentStrategy {
      * @param assessmentRequestDTO The payload
      * @return A success message (Might change in future)
      */
-    Map<String,String> submitAssessment(Student student , AssessmentRequestDTO assessmentRequestDTO);
+    Map<String,String> submitAssessment(Student student , AssessmentRequestDTO assessmentRequestDTO) throws BadRequestException;
 
     /**
      * Handles assessment creation
@@ -50,7 +50,7 @@ public interface AssessmentStrategy {
         return teacher.getUserId().equals(course.getTeacher().getUserId());
     }
 
-    AssessmentServeDTO serveAssessment(UUID assessmentId);
+    AssessmentServeDTO serveAssessment(UUID assessmentId,User user) throws BadRequestException;
 
     AssessmentReportDTO getReport(UUID submissionId, User user) throws BadRequestException;
 

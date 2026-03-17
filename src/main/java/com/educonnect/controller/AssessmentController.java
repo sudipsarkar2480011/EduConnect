@@ -93,11 +93,12 @@ public class AssessmentController {
     @GetMapping("/get-assessment/{assessmentType}/{assessmentId}")
     public ResponseEntity<GenericResponse<AssessmentServeDTO>> serveAssessment(
             @PathVariable("assessmentId") UUID assessmentId,
-            @PathVariable("assessmentType") String assessmentType
-            ){
+            @PathVariable("assessmentType") String assessmentType,
+            @AuthenticationPrincipal UserPrinciples userPrinciple
+            ) throws BadRequestException {
         return ResponseEntity.ok(
                 new GenericResponse<>(
-                        assessmentFactory.serveAssessment(assessmentId,assessmentType),
+                        assessmentFactory.serveAssessment(assessmentId,assessmentType,userPrinciple.getUser()),
                         "Assessment [" +assessmentType.toLowerCase()+ "] retrieved successfully",
                         HttpStatus.OK.value(),
                         LocalDateTime.now()

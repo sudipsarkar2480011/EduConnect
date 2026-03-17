@@ -20,8 +20,10 @@ import com.educonnect.model.user.Role;
 import com.educonnect.model.user.Student;
 import com.educonnect.model.user.Teacher;
 import com.educonnect.model.user.User;
+import com.educonnect.repo.EnrollmentRepo;
 import com.educonnect.repo.assessment.AssessmentRepo;
 import com.educonnect.repo.assessment.SubmissionRepo;
+import com.educonnect.repo.assessment.assignment.AssignmentRepo;
 import com.educonnect.repo.assessment.quiz.QuestionOptionRepo;
 import com.educonnect.repo.assessment.quiz.QuestionRepo;
 import com.educonnect.repo.assessment.quiz.QuizRepo;
@@ -56,6 +58,8 @@ public class QuizStrategy implements AssessmentStrategy {
     private final SubmissionRepo submissionRepo;
     private final StudentQuizQuestionResponseRepo studentQuizQuestionResponseRepo;
     private final ResultService resultService;
+    private final EnrollmentRepo enrollmentRepo;
+    private final AssignmentRepo assignmentRepo;
 
     @Override
     public boolean supports(AssessmentType type) {
@@ -135,9 +139,19 @@ public class QuizStrategy implements AssessmentStrategy {
     }
 
     @Override
-    public AssessmentServeDTO serveAssessment(UUID assessmentId) {
+    public AssessmentServeDTO serveAssessment(UUID assessmentId,User user) throws BadRequestException {
         Quiz quiz = quizRepo.findQuizWithQuestionAndOptions(assessmentId)
                 .orElseThrow(()-> new ResourceNotFoundException("Quiz not found"));
+
+        Assessment assessment = assessmentRepo.findById(assessmentId)
+                .orElseThrow(() -> new ResourceNotFoundException("Assessment not found"));
+
+
+        if(user.getRole().equals(Role.STUDENT) &&
+                !enrollmentRepo.existsByStudentUserIdAndCourseCourseId(user.getUserId(),assessment.getCourse().getCourseId())){
+            throw new BadRequestException("Student `" + user.getFullName() + "` did not enroll to the course" );
+        }
+
         return mapToQuizServeDTO(quiz);
     }
 
@@ -185,10 +199,9 @@ public class QuizStrategy implements AssessmentStrategy {
             throw new ResourceNotFoundException("Student response not found");
         }
 
-        if(!(user.getRole().equals(Role.ADMIN)
-                ||
-                user.getUserId()
-                        .equals(studentResponseList.getFirst().getSubmission().getStudent().getUserId()))){
+        if(user.getRole().equals(Role.STUDENT)
+                && !user.getUserId().equals(studentResponseList.getFirst().getSubmission().getStudent().getUserId())
+        ){
             throw new BadRequestException("Student " + user.getFullName()
                     + " is not authorized to access this report");
         }
@@ -239,12 +252,17 @@ public class QuizStrategy implements AssessmentStrategy {
 
     @Override
     @Transactional
-    public Map<String,String> submitAssessment(Student student, AssessmentRequestDTO assessmentRequestDTO) {
+    public Map<String,String> submitAssessment(Student student, AssessmentRequestDTO assessmentRequestDTO) throws BadRequestException {
 
         StudentQuizQuestionResponseDTO dto = (StudentQuizQuestionResponseDTO) assessmentRequestDTO;
 
         Assessment assessment = assessmentRepo.findById(dto.getAssessmentId())
                 .orElseThrow(()-> new ResourceNotFoundException("Assessment not found"));
+
+
+        if(!enrollmentRepo.existsByStudentUserIdAndCourseCourseId(student.getUserId(),assessment.getCourse().getCourseId())){
+            throw new BadRequestException("Student `" + student.getFullName() + "` did not enroll to the course" );
+        }
 
         if(submissionRepo.existsByStudentAndAssessment(student, assessment)){
             try {
@@ -306,6 +324,7 @@ public class QuizStrategy implements AssessmentStrategy {
         map.put("message", "Attempted the Quiz with id" + quiz.getQuizId());
         map.put("assessmentId", assessment.getAssessmentId().toString());
         map.put("quizId", quiz.getQuizId().toString());
+        map.put("submissionId",submission.getSubmissionId().toString());
 
         return map;
 

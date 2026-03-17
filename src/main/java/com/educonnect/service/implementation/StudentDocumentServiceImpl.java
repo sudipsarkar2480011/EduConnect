@@ -51,7 +51,7 @@ public class StudentDocumentServiceImpl implements StudentDocumentService {
 
 
     @Override
-    public String saveStudentDocument(UUID studentUuid, MultipartFile file, DocTypeEnum docTypeEnum) {
+    public String saveStudentDocument(UUID studentUuid, MultipartFile file, DocTypeEnum docTypeEnum) throws IOException {
 
         if(file == null || file.isEmpty()){
             throw new RuntimeException("file not found");
@@ -80,11 +80,8 @@ public class StudentDocumentServiceImpl implements StudentDocumentService {
         document.setDocType(docType);
         document.setFileType(fileType);
 
-        try {
-            document.setFileData(file.getBytes());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        document.setFileData(file.getBytes());
+
         document.setStudentDocumentId(UUID.randomUUID());
         String uri =  ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path("/v1/api/doc/view/")
