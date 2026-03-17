@@ -36,9 +36,10 @@ public class ResultController {
      */
     @GetMapping("{submissionId}")
     public ResponseEntity<Map<String, String>> getResult(
-            @PathVariable("submissionId")UUID submissionId
-            ){
-        Result result = resultService.getResultWithId(submissionId);
+            @PathVariable("submissionId")UUID submissionId,
+            @AuthenticationPrincipal UserPrinciples userPrinciple
+            ) throws BadRequestException {
+        Result result = resultService.getResultWithId(submissionId, userPrinciple.getUser());
 
         Map<String,String> map = new HashMap<>();
 

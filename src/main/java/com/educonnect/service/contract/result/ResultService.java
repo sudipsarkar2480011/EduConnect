@@ -4,6 +4,7 @@ import com.educonnect.exception.custom_exceptions.UserNotFoundException;
 import com.educonnect.model.assessment.AssessmentType;
 import com.educonnect.model.assessment.Result;
 import com.educonnect.model.user.Teacher;
+import com.educonnect.model.user.User;
 import org.apache.coyote.BadRequestException;
 
 import java.util.UUID;
@@ -39,5 +40,5 @@ public interface ResultService {
      * @param submissionId The unique identifier of the Submission
      * @return The {@link Result}
      */
-    Result getResultWithId(UUID submissionId);
+    Result getResultWithId(UUID submissionId, User user) throws BadRequestException;
 }

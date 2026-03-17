@@ -3,8 +3,10 @@ package com.educonnect.service.implementation.result;
 import com.educonnect.exception.custom_exceptions.ResourceNotFoundException;
 import com.educonnect.exception.custom_exceptions.UserNotFoundException;
 import com.educonnect.model.assessment.*;
+import com.educonnect.model.user.Role;
 import com.educonnect.model.user.Student;
 import com.educonnect.model.user.Teacher;
+import com.educonnect.model.user.User;
 import com.educonnect.repo.StudentRepo;
 import com.educonnect.repo.assessment.AssessmentRepo;
 import com.educonnect.repo.assessment.SubmissionRepo;
@@ -154,7 +156,19 @@ public class ResultServiceImpl implements ResultService {
     }
 
     @Override
-    public Result getResultWithId(UUID submissionId) {
+    public Result getResultWithId(UUID submissionId, User user) throws BadRequestException {
+
+        Submission submission = submissionRepo.findById(submissionId)
+                .orElseThrow(() -> new ResourceNotFoundException("Submission not found"));
+
+        if(
+                user.getRole().equals(Role.STUDENT) &&
+                submission.getStudent().getUserId()
+                        .equals(user.getUserId())
+        ){
+            throw new BadRequestException("Student +[" + user.getFullName() +"] is not aut" );
+        }
+
         return resultRepo.findBySubmissionSubmissionId(submissionId)
                 .orElseThrow(() -> new ResourceNotFoundException("Result not found"));
     }
