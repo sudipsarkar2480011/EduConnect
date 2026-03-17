@@ -31,6 +31,7 @@ public class Student extends User {
 
     private LocalDate dateOfBirth;
     private String enrollmentNumber;
+    private String parentEmail;
 
     // Links to Parent
     @ManyToOne

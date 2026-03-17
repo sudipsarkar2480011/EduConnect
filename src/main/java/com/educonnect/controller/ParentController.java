@@ -54,9 +54,11 @@ public class ParentController {
         ParentResponseDTO response=parentService.update(id, dto);
         return ResponseEntity.ok(response);
     }
-    @PostMapping("/link")
+    @PostMapping("action/link")
     public ResponseEntity<ParentResponseDTO> linkStudent(@RequestParam UUID parentId,@RequestParam UUID studentId) throws NoChildFoundException {
-        ParentResponseDTO response=parentService.linkStudent(parentId,studentId);
+        ParentResponseDTO response=parentService.linkStudent(
+                parentId,
+               studentId);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 }

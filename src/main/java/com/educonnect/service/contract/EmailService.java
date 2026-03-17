@@ -44,6 +44,7 @@ configuration issues
  */
 
 public void sendParentVerificationEmail(String email,String token) {
+        System.out.println(email);
         String verifyUrl = "http://localhost:8081/v1/api/parent/verify?token=" + token;
         SimpleMailMessage  message=new SimpleMailMessage();
         message.setTo(email);

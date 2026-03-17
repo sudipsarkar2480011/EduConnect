@@ -60,6 +60,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public  ResponseEntity<ErrorResponseDTO> handleException(Exception ex){
+        ex.printStackTrace();
         ErrorResponseDTO dto = new ErrorResponseDTO(
                 LocalDateTime.now(),
                 HttpStatus.BAD_REQUEST.value(),

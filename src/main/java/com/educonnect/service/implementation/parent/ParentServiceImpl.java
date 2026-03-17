@@ -92,8 +92,7 @@ public class ParentServiceImpl implements ParentService {
                 parent(parent).
                 expiryDate(LocalDateTime.now().plusHours(24)).
                 build();
-        tokenRepo.save(verificationToken);
-        emailService.sendParentVerificationEmail(parentEmail,token);
+             tokenRepo.save(verificationToken);
     }
 
 
