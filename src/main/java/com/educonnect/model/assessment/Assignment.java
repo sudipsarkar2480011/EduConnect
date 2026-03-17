@@ -30,6 +30,8 @@ public class Assignment {
 
     private Integer noOfDocumentsToBeUploaded ;
 
+    private String instruction;
+
     @OneToMany(mappedBy = "assignment")
     List<AssignmentAttachment> assignmentAttachmentList;
 

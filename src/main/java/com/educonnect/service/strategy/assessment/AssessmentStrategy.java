@@ -1,12 +1,18 @@
-package com.educonnect.service.strategy.assignment;
+package com.educonnect.service.strategy.assessment;
 
+import com.educonnect.dto.assessment.report.AssessmentReportDTO;
+import com.educonnect.dto.assessment.serve.AssessmentServeDTO;
 import com.educonnect.dto.assessment.submit.AssessmentRequestDTO;
 import com.educonnect.dto.assessment.create.CreateAssessmentRequestDTO;
 import com.educonnect.model.assessment.AssessmentType;
 import com.educonnect.model.course.Course;
 import com.educonnect.model.user.Student;
 import com.educonnect.model.user.Teacher;
+import com.educonnect.model.user.User;
 import org.apache.coyote.BadRequestException;
+
+import java.util.Map;
+import java.util.UUID;
 
 /**
  * Defines the contract for assessment operations
@@ -29,7 +35,7 @@ public interface AssessmentStrategy {
      * @param assessmentRequestDTO The payload
      * @return A success message (Might change in future)
      */
-    String submitAssessment(Student student , AssessmentRequestDTO assessmentRequestDTO);
+    Map<String,String> submitAssessment(Student student , AssessmentRequestDTO assessmentRequestDTO) throws BadRequestException;
 
     /**
      * Handles assessment creation
@@ -37,9 +43,15 @@ public interface AssessmentStrategy {
      * @param assessmentRequestDTO The payload
      * @return A success message (Might change in future)
      */
-    String createAssessment(Teacher teacher, CreateAssessmentRequestDTO assessmentRequestDTO) throws BadRequestException;
+    Map<String,String> createAssessment(Teacher teacher, CreateAssessmentRequestDTO assessmentRequestDTO) throws BadRequestException;
+
 
     default boolean canCreateAssessment(Teacher teacher, Course course){
-        return teacher.getUserId() == course.getTeacher().getUserId();
+        return teacher.getUserId().equals(course.getTeacher().getUserId());
     }
+
+    AssessmentServeDTO serveAssessment(UUID assessmentId,User user) throws BadRequestException;
+
+    AssessmentReportDTO getReport(UUID submissionId, User user) throws BadRequestException;
+
 }

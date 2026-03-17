@@ -1,6 +1,7 @@
 package com.educonnect.controller;
 
 import com.educonnect.config.UserPrinciples;
+import com.educonnect.dto.common.GenericResponse;
 import com.educonnect.dto.course.CourseRequestDTO;
 import com.educonnect.dto.course.CourseResponseDTO;
 import com.educonnect.dto.course.ModuleRequestDTO;
@@ -27,7 +28,10 @@ import org.springframework.web.multipart.MultipartFile;
 import ws.schild.jave.EncoderException;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -45,16 +49,16 @@ public class CourseController {
 
     private final CourseVideoInerface courseVideoInerface;
 
-    @PostMapping("/enrollment/{courseId}/student/{studentId}")
-    public ResponseEntity<StudentResponse> enrollStudent(
-            @PathVariable("courseId") UUID courseId,
-            @PathVariable("studentId") UUID studentId
-    ) throws UserNotFoundException {
-        return new ResponseEntity<>(
-                courseService.addStudentToCourse(studentId,courseId),
-                HttpStatus.OK
-        );
-    }
+//    @PostMapping("/enrollment/{courseId}/student/{studentId}")
+//    public ResponseEntity<StudentResponse> enrollStudent(
+//            @PathVariable("courseId") UUID courseId,
+//            @PathVariable("studentId") UUID studentId
+//    ) throws UserNotFoundException {
+//        return new ResponseEntity<>(
+//                courseService.addStudentToCourse(studentId,courseId),
+//                HttpStatus.OK
+//        );
+//    }
 
     /**
      * handles adding the course
@@ -130,7 +134,7 @@ public class CourseController {
     }
 
 
-    @GetMapping("/get-video/{id}")
+    @GetMapping("/get-module/{id}")
     public ResponseEntity<String> getVideo(@PathVariable UUID id) throws IOException {
         String url=courseVideoServiceClass.getVideoUrl(id);
         return ResponseEntity.ok(url);
@@ -173,16 +177,23 @@ public class CourseController {
     }
 
     @PostMapping("/{courseId}/module/{moduleId}/mark-as-complete")
-    public ResponseEntity<Object> markModuleAsCompleted(
+    public ResponseEntity<GenericResponse<Map<String,String>>> markModuleAsCompleted(
             @PathVariable("moduleId") UUID moduleId,
             @PathVariable("courseId") UUID courseId,
             @AuthenticationPrincipal UserPrinciples userPrinciple
     ){
-        return new ResponseEntity<>(
-                courseVideoServiceClass.markModuleAsCompleted(
-                        moduleId,
-                        courseId,
-                        (Student) userPrinciple.getUser()),
+        var resp = courseVideoServiceClass.markModuleAsCompleted(
+                moduleId,
+                courseId,
+                (Student) userPrinciple.getUser());
+        return new ResponseEntity<>
+                (
+                new GenericResponse<>(
+                        resp,
+                        "Module with id " + moduleId+" marked as done",
+                        HttpStatus.OK.value(),
+                        LocalDateTime.now()
+                ),
                 HttpStatus.OK
         );
     }

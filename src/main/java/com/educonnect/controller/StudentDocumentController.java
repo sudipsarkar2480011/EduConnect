@@ -56,15 +56,12 @@ public class StudentDocumentController {
             @RequestParam MultipartFile file,
             @RequestParam DocTypeEnum docType,
             @AuthenticationPrincipal UserPrinciples userPrinciple
-            ){
-        try{
-            return ResponseEntity.ok(
+            ) throws IOException {
+
+        return ResponseEntity.ok(
                     studentDocumentService.saveStudentDocument(userPrinciple.getUser().getUserId(), file,docType)
             ) ;
-        } catch (Exception e) {
-            log.error(e.getMessage());
-            throw new RuntimeException(e);
-        }
+
     }
 
 
@@ -80,7 +77,7 @@ public class StudentDocumentController {
      *
      */
     @GetMapping(path = "view/{documentUuid}")
-    public void viewImage(
+    public void viewDoc(
             @PathVariable("documentUuid") UUID documentUuid,
             HttpServletResponse response
     ) throws IOException {

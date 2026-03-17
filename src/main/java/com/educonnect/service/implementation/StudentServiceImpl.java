@@ -27,11 +27,10 @@ import java.util.UUID;
 @Service
 @Transactional
 public class StudentServiceImpl implements StudentService {
-
+    private final ParentService parentService;
     private final StudentRepo studentRepo;
     private final StudentMapper mapper;
     private final StudentAuthStrategy studentAuthStrategy;
-    private final ParentService parentService;
 
     /**
      * Retrieves a specific student by their unique user identifier.
@@ -82,15 +81,6 @@ public class StudentServiceImpl implements StudentService {
         UpdateUtil.setIfPresent(request.getActive(), student::setActive);
         UpdateUtil.setIfPresent(request.getEnrollmentNumber(), student::setEnrollmentNumber);
         UpdateUtil.setIfPresent(request.getParentEmail(),student::setParentEmail);
-
-        try{
-            if(request.getParentEmail()!=null && !request.getParentEmail().isEmpty()){
-                parentService.createParentAndSendVerification(student.getParent().getUserId());
-            }
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-
         return mapper.toResponseDTO(studentRepo.save(student));
     }
 
