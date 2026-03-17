@@ -12,6 +12,7 @@ import com.educonnect.repo.assessment.quiz.StudentQuizQuestionResponseRepo;
 import com.educonnect.repo.result.ResultRepo;
 import com.educonnect.service.contract.result.ResultService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.BadRequestException;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +21,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ResultServiceImpl implements ResultService {
 
     private final SubmissionRepo submissionRepo;
@@ -82,43 +84,58 @@ public class ResultServiceImpl implements ResultService {
     }
 
     @Override
-    public String evaluateStudent(UUID assessmentId, UUID studentId, Teacher teacher, double givenScore) {
+    public String evaluateStudent(UUID assessmentId, UUID studentId, Teacher teacher, double givenScore) throws BadRequestException, UserNotFoundException {
+
         Assessment assessment = assessmentRepo.findById(assessmentId)
                 .orElseThrow(() -> new ResourceNotFoundException("Assessment not found"));
 
-        if(assessment.getCourse().getTeacher().getUserId() != teacher.getUserId()){
-            try {
-                throw new BadRequestException("Teacher `" +teacher.getFullName() + "` does not have permission to evaluate");
-            } catch (BadRequestException e) {
-                throw new RuntimeException(e);
-            }
+        if(!assessment.getCourse().getTeacher().getUserId().equals(teacher.getUserId())){
+            throw new BadRequestException("Teacher `" +teacher.getFullName() + "` does not have permission to evaluate");
+        }
+
+        if(resultRepo.existsByAssessmentAssessmentId(assessmentId)){
+            log.info("Overwriting the assignment score...");
+
+            Result result = resultRepo.findByAssessmentAssessmentId(assessmentId)
+                    .orElseThrow(() -> new ResourceNotFoundException("Result not found"));
+
+            double score = (assessment.getMaxScore() == 0) ? 0.0
+                    : (double) givenScore / assessment.getMaxScore();
+
+
+            result.setPercentageScore(score);
+
+            result.setStatus(score >= 0.4 ? ResultStatus.PASSED : ResultStatus.FAILED);
+
+            resultRepo.save(result);
+
+            return "Updated the score of the assignment";
         }
 
 
-        Student student = null ;
-        try {
-            student = studentRepo.findById(studentId)
+        Student student= studentRepo.findById(studentId)
                     .orElseThrow(() -> new UserNotFoundException("Student not found"));
-        } catch (UserNotFoundException e) {
-            throw new RuntimeException(e);
-        }
+
 
        Submission submission = submissionRepo.findByStudentAndAssessment(student,assessment)
-                .orElseThrow(() -> new ResourceNotFoundException("Submission not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Student " + student.getFullName()
+                        + " has not submitted the assignment yet"));
 
        if(!submission.getSubmissionStatus().toString().equals("SUBMITTED")){
-           try {
-               throw new BadRequestException("Student " + student.getFullName() + " has not submitted the assignment yet");
-           } catch (BadRequestException e) {
-               throw new RuntimeException(e);
-           }
+
+           throw new BadRequestException("Student " + student.getFullName()
+                   + " has not submitted the assignment yet");
+
        }
+
+
 
 
         Result result = new Result();
 
         result.setAssessment(assessment);
         result.setStudent(student);
+        result.setSubmission(submission);
 
 
         double score = (assessment.getMaxScore() == 0) ? 0.0
@@ -136,8 +153,8 @@ public class ResultServiceImpl implements ResultService {
     }
 
     @Override
-    public Result getResultWithId(UUID assessmentId) {
-        return resultRepo.findByAssessmentAssessmentId(assessmentId)
+    public Result getResultWithId(UUID submissionId) {
+        return resultRepo.findBySubmissionSubmissionId(submissionId)
                 .orElseThrow(() -> new ResourceNotFoundException("Result not found"));
     }
 
