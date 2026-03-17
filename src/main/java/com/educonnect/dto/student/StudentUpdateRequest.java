@@ -20,4 +20,5 @@ public class StudentUpdateRequest {
     private LocalDate dateOfBirth;
     private String enrollmentNumber;
     private Boolean active;
+    private String parentEmail;
 }

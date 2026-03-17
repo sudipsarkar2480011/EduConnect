@@ -4,12 +4,11 @@ import com.educonnect.dto.studentdetails.StudentDetailsDTO;
 import com.educonnect.exception.custom_exceptions.UserNotFoundException;
 import com.educonnect.model.user.Parent;
 import com.educonnect.model.user.Student;
-import com.educonnect.repo.ParentRepo;
+import com.educonnect.repo.parent.ParentRepo;
 import com.educonnect.repo.StudentRepo;
-import com.educonnect.service.contract.ParentService;
+import com.educonnect.service.contract.parent.ParentService;
 import com.educonnect.service.contract.StudentDetailsService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;

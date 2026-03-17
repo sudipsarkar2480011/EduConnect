@@ -49,16 +49,16 @@ public class CourseController {
 
     private final CourseVideoInerface courseVideoInerface;
 
-    @PostMapping("/enrollment/{courseId}/student/{studentId}")
-    public ResponseEntity<StudentResponse> enrollStudent(
-            @PathVariable("courseId") UUID courseId,
-            @PathVariable("studentId") UUID studentId
-    ) throws UserNotFoundException {
-        return new ResponseEntity<>(
-                courseService.addStudentToCourse(studentId,courseId),
-                HttpStatus.OK
-        );
-    }
+//    @PostMapping("/enrollment/{courseId}/student/{studentId}")
+//    public ResponseEntity<StudentResponse> enrollStudent(
+//            @PathVariable("courseId") UUID courseId,
+//            @PathVariable("studentId") UUID studentId
+//    ) throws UserNotFoundException {
+//        return new ResponseEntity<>(
+//                courseService.addStudentToCourse(studentId,courseId),
+//                HttpStatus.OK
+//        );
+//    }
 
     /**
      * handles adding the course
@@ -134,7 +134,7 @@ public class CourseController {
     }
 
 
-    @GetMapping("/get-video/{id}")
+    @GetMapping("/get-module/{id}")
     public ResponseEntity<String> getVideo(@PathVariable UUID id) throws IOException {
         String url=courseVideoServiceClass.getVideoUrl(id);
         return ResponseEntity.ok(url);
