@@ -11,6 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -38,6 +40,16 @@ public class ParentController {
         return ResponseEntity.ok("Parent verified successfully");
     }
 
+    @PostMapping("/send-verification")
+    public ResponseEntity<Map<String,Object>> sendVerification(@RequestParam UUID parentId){
+        String link= parentService.createParentAndSendVerification(parentId);
+        Map<String,Object> response=new HashMap<>();
+        response.put("message","Verification Link generated successfully");
+        response.put("verification link",link);
+        response.put("status","SUCCESS");
+        return ResponseEntity.ok(response);
+    }
+
     @DeleteMapping("{parentId}")
     public ResponseEntity<Void> deleteParent(@PathVariable UUID parentId)  throws UserNotFoundException{
         parentService.delete(parentId);
@@ -49,9 +61,9 @@ public class ParentController {
         return  ResponseEntity.ok(parentService.getById(parentId));
     }
 
-    @PutMapping("/{parentId}")
-    public ResponseEntity<ParentResponseDTO> updateParent(@PathVariable("parentId")UUID id, @RequestBody ParentUpdateDTO dto) throws UserNotFoundException{
-        ParentResponseDTO response=parentService.update(id, dto);
+    @PutMapping("/update")
+    public ResponseEntity<ParentResponseDTO> updateParent(@RequestParam UUID parenId, @RequestBody ParentUpdateDTO dto) throws UserNotFoundException{
+        ParentResponseDTO response=parentService.update(parenId, dto);
         return ResponseEntity.ok(response);
     }
     @PostMapping("/link")
@@ -59,4 +71,5 @@ public class ParentController {
         ParentResponseDTO response=parentService.linkStudent(parentId,studentId);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
+
 }

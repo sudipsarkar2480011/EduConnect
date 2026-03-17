@@ -32,7 +32,7 @@ public class StudentDetailsServiceImpl implements StudentDetailsService {
             student.setDateOfBirth(studentDetailsDTO.getDateOfBirth());
         }
         if(studentDetailsDTO.getParentEmail()!=null && studentDetailsDTO.getParentEmail().isBlank()){
-            parentService.createParentAndSendVerification(studentDetailsDTO.getParentId());
+           parentService.createParentAndSendVerification(studentDetailsDTO.getParentId());
         }
 
         if (studentDetailsDTO.getEnrollmentNumber() != null && !studentDetailsDTO.getEnrollmentNumber().isBlank()) {
