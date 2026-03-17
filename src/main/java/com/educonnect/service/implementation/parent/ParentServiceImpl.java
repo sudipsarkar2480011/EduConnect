@@ -1,4 +1,4 @@
-package com.educonnect.service.implementation;
+package com.educonnect.service.implementation.parent;
 
 import com.educonnect.config.JWTService;
 import com.educonnect.dto.parent.ParentResponseDTO;
@@ -8,20 +8,17 @@ import com.educonnect.exception.custom_exceptions.UserNotFoundException;
 import com.educonnect.model.token.ParentVerificationToken;
 import com.educonnect.model.user.Parent;
 import com.educonnect.model.user.Student;
-import com.educonnect.repo.ParentRepo;
-import com.educonnect.repo.ParentVerificationTokenRepo;
+import com.educonnect.repo.parent.ParentRepo;
+import com.educonnect.repo.parent.ParentVerificationTokenRepo;
 import com.educonnect.repo.StudentRepo;
 import com.educonnect.service.contract.EmailService;
-import com.educonnect.service.contract.ParentService;
+import com.educonnect.service.contract.parent.ParentService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -69,9 +66,9 @@ public class ParentServiceImpl implements ParentService {
         // Use it for not-found scenarios in this method.
         Parent parent = parentRepo.findById(parentId)
                 .orElseThrow(() -> new NoChildFoundException("Parent not found: " + parentId));
-        if(!Boolean.TRUE.equals(parent.getVerified())){
-            throw new RuntimeException("Parent is not verified yet");
-        }
+        //if(!Boolean.TRUE.equals(parent.getVerified())){
+            //throw new RuntimeException("Parent is not verified yet");
+       // }
         Student student = studentRepo.findById(studentId)
                 .orElseThrow(() -> new NoChildFoundException("Student not found: " + studentId));
 

@@ -21,5 +21,5 @@ public interface CourseVideoService {
     Resource LoadVideoAsResource(UUID id) throws IOException;
     String deleteVideoResource(CourseModule video, Course course) throws IOException;
     CourseModule updateVideoResource(MultipartFile file,String title,UUID videoId, UUID courseId , UUID userId) throws IOException, EncoderException;
-    Map<String, Object> markModuleAsCompleted(UUID moduleId, UUID courseId, Student student);String deleteVideoResourceWithids(UUID videoId, UUID courseId, UUID id) throws IOException, UserIdDoNothMatchException;
+    Map<String, String> markModuleAsCompleted(UUID moduleId, UUID courseId, Student student);String deleteVideoResourceWithids(UUID videoId, UUID courseId, UUID id) throws IOException, UserIdDoNothMatchException;
 }

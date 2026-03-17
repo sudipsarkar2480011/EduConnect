@@ -45,7 +45,7 @@ public class StudentController {
         return ResponseEntity.ok(studentService.getById(studentId));
     }
 
-    @PostMapping("{id}/update")
+    @PutMapping("{id}/update")
     public ResponseEntity<StudentResponse> update(
             @PathVariable("id") UUID studentId,
             @Valid @RequestBody StudentUpdateRequest request,
@@ -73,5 +73,6 @@ public class StudentController {
             return new ResponseEntity<>(courseService.addStudentToCourse(courseId, userPrinciples.getUser().getUserId()), HttpStatus.OK);
 
     }
+
 
 }

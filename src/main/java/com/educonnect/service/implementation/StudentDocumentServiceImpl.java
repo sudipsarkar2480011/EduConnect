@@ -6,30 +6,21 @@ import com.educonnect.model.document.DocType;
 import com.educonnect.model.document.DocTypeEnum;
 import com.educonnect.model.document.FileTypeEnum;
 import com.educonnect.model.document.StudentDocument;
-import com.educonnect.model.user.Admin;
-import com.educonnect.model.user.Role;
 import com.educonnect.model.user.Student;
-import com.educonnect.repo.AdminRepo;
 import com.educonnect.repo.DocTypeRepo;
 import com.educonnect.repo.StudentDocumentRepo;
 import com.educonnect.repo.StudentRepo;
-import com.educonnect.service.contract.ParentService;
 import com.educonnect.service.contract.StudentDocumentService;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -51,7 +42,7 @@ public class StudentDocumentServiceImpl implements StudentDocumentService {
 
 
     @Override
-    public String saveStudentDocument(UUID studentUuid, MultipartFile file, DocTypeEnum docTypeEnum) {
+    public String saveStudentDocument(UUID studentUuid, MultipartFile file, DocTypeEnum docTypeEnum) throws IOException {
 
         if(file == null || file.isEmpty()){
             throw new RuntimeException("file not found");
@@ -80,11 +71,8 @@ public class StudentDocumentServiceImpl implements StudentDocumentService {
         document.setDocType(docType);
         document.setFileType(fileType);
 
-        try {
-            document.setFileData(file.getBytes());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        document.setFileData(file.getBytes());
+
         document.setStudentDocumentId(UUID.randomUUID());
         String uri =  ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path("/v1/api/doc/view/")

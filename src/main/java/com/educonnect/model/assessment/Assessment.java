@@ -4,10 +4,7 @@ import com.educonnect.model.course.Course;
 
 import com.educonnect.model.user.Teacher;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 
 import java.util.List;
@@ -38,10 +35,12 @@ public class Assessment {
     @OneToOne(mappedBy = "assessment")
     private Assignment assignment;
 
-    private Integer noOfStudentSubmitted;
-
     @OneToOne(mappedBy = "assessment")
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
     private Quiz quiz;
+
+    private Integer noOfStudentSubmitted;
 
     @OneToMany(mappedBy = "assessment")
     private List<Submission> submissionList;
