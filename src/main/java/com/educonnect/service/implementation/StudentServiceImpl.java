@@ -81,9 +81,6 @@ public class StudentServiceImpl implements StudentService {
         UpdateUtil.setIfPresent(request.getActive(), student::setActive);
         UpdateUtil.setIfPresent(request.getEnrollmentNumber(), student::setEnrollmentNumber);
         UpdateUtil.setIfPresent(request.getParentEmail(),student::setParentEmail);
-        if(request.getParentEmail()!=null && !request.getParentEmail().isEmpty()){
-            parentService.createParentAndSendVerification(student.getParent().getUserId());
-        }
         return mapper.toResponseDTO(studentRepo.save(student));
     }
 

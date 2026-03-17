@@ -46,6 +46,7 @@ configuration issues
 public void sendParentVerificationEmail(String email,String token) {
         String verifyUrl = "http://localhost:8081/v1/api/parent/verify?token=" + token;
         SimpleMailMessage  message=new SimpleMailMessage();
+        message.setFrom("educonnect074@gmail.com");
         message.setTo(email);
         message.setSubject("Educonnect Parent Verification");
         message.setText("Click the link to verify your account:\n"+verifyUrl);
