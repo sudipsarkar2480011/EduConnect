@@ -14,6 +14,11 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity(debug = true)
@@ -27,6 +32,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http)  {
         return http
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable)
                 .exceptionHandling(exception->
                         exception.accessDeniedHandler(accessDeniedHandler))
@@ -37,9 +43,12 @@ public class SecurityConfig {
                                 "/v1/api/attachment/view/**",
                                 "/v3/api-docs/**",
                                 "/swagger-ui/index.html",
-                                "/swagger-ui/**"
+                                "/swagger-ui/**",
+                                "/error"
 
                 ).permitAll()
+                        .requestMatchers("/v1/reports/student/**").hasAnyRole("STUDENT", "ADMIN")                        .requestMatchers("/v1/reports/course/**").hasAnyRole("STUDENT", "TEACHER", "ADMIN")
+                        .requestMatchers("/v1/reports/**").hasRole("ADMIN")
                         .requestMatchers("/v1/api/result/**","/v1/api/teachers/**").hasRole("TEACHER")
                         .requestMatchers("/v1/api/parent/**").hasRole("PARENT")
                         .requestMatchers("/v1/api/assessment/create").hasRole("TEACHER")
@@ -74,5 +83,17 @@ public class SecurityConfig {
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception
     {
         return config.getAuthenticationManager();
+    }
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(List.of("http://localhost:5173"));
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(List.of("authorization", "content-type"));
+        configuration.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
 }
