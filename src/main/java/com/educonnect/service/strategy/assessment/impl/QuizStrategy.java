@@ -1,8 +1,13 @@
-package com.educonnect.service.strategy.assignment.impl;
+package com.educonnect.service.strategy.assessment.impl;
 
 import com.educonnect.dto.assessment.create.CreateAssessmentRequestDTO;
 import com.educonnect.dto.assessment.create.quiz.CreateQuizRequestDTO;
 import com.educonnect.dto.assessment.create.quiz.QuestionOptionDTO;
+import com.educonnect.dto.assessment.report.AssessmentReportDTO;
+import com.educonnect.dto.assessment.report.quiz.StudentQuestionAttemptDTO;
+import com.educonnect.dto.assessment.report.quiz.StudentQuizReportDTO;
+import com.educonnect.dto.assessment.serve.AssessmentServeDTO;
+import com.educonnect.dto.assessment.serve.quiz.QuizServeDTO;
 import com.educonnect.dto.assessment.submit.AssessmentRequestDTO;
 import com.educonnect.dto.assessment.create.quiz.QuizQuestionDTO;
 import com.educonnect.dto.assessment.submit.quiz.StudentQuestionAndAnswerDTO;
@@ -11,26 +16,28 @@ import com.educonnect.exception.custom_exceptions.ResourceNotFoundException;
 import com.educonnect.model.assessment.*;
 import com.educonnect.model.assessment.StudentQuizQuestionResponse;
 import com.educonnect.model.course.Course;
+import com.educonnect.model.user.Role;
 import com.educonnect.model.user.Student;
 import com.educonnect.model.user.Teacher;
 import com.educonnect.model.user.User;
+import com.educonnect.repo.EnrollmentRepo;
 import com.educonnect.repo.assessment.AssessmentRepo;
 import com.educonnect.repo.assessment.SubmissionRepo;
+import com.educonnect.repo.assessment.assignment.AssignmentRepo;
 import com.educonnect.repo.assessment.quiz.QuestionOptionRepo;
 import com.educonnect.repo.assessment.quiz.QuestionRepo;
 import com.educonnect.repo.assessment.quiz.QuizRepo;
 import com.educonnect.repo.assessment.quiz.StudentQuizQuestionResponseRepo;
 import com.educonnect.repo.course.CourseRepo;
 import com.educonnect.service.contract.result.ResultService;
-import com.educonnect.service.strategy.assignment.AssessmentStrategy;
+import com.educonnect.service.strategy.assessment.AssessmentStrategy;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.BadRequestException;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -51,6 +58,8 @@ public class QuizStrategy implements AssessmentStrategy {
     private final SubmissionRepo submissionRepo;
     private final StudentQuizQuestionResponseRepo studentQuizQuestionResponseRepo;
     private final ResultService resultService;
+    private final EnrollmentRepo enrollmentRepo;
+    private final AssignmentRepo assignmentRepo;
 
     @Override
     public boolean supports(AssessmentType type) {
@@ -60,7 +69,7 @@ public class QuizStrategy implements AssessmentStrategy {
 
     @Override
     @Transactional
-    public String createAssessment(Teacher teacher, CreateAssessmentRequestDTO assessmentRequestDTO) throws BadRequestException {
+    public Map<String,String> createAssessment(Teacher teacher, CreateAssessmentRequestDTO assessmentRequestDTO) throws BadRequestException {
 
         Course course = courseRepo.findById(assessmentRequestDTO.getCourseId())
                 .orElseThrow(() -> new ResourceNotFoundException("Course not found"));
@@ -121,17 +130,139 @@ public class QuizStrategy implements AssessmentStrategy {
         questionRepo.saveAll(questionList);
         questionOptionRepo.saveAll(questionOptionList);
 
-        return "Quiz with title : " + assessment.getTitle() + " saved Successfully";
+        Map<String,String> map = new HashMap<>();
+        map.put("message","Quiz created successfully");
+        map.put("assessmentId",assessment.getAssessmentId().toString());
+        map.put("quizId", quiz.getQuizId().toString());
+
+        return map;
+    }
+
+    @Override
+    public AssessmentServeDTO serveAssessment(UUID assessmentId,User user) throws BadRequestException {
+        Quiz quiz = quizRepo.findQuizWithQuestionAndOptions(assessmentId)
+                .orElseThrow(()-> new ResourceNotFoundException("Quiz not found"));
+
+        Assessment assessment = assessmentRepo.findById(assessmentId)
+                .orElseThrow(() -> new ResourceNotFoundException("Assessment not found"));
+
+
+        if(user.getRole().equals(Role.STUDENT) &&
+                !enrollmentRepo.existsByStudentUserIdAndCourseCourseId(user.getUserId(),assessment.getCourse().getCourseId())){
+            throw new BadRequestException("Student `" + user.getFullName() + "` did not enroll to the course" );
+        }
+
+        return mapToQuizServeDTO(quiz);
+    }
+
+    private QuizServeDTO mapToQuizServeDTO(Quiz quiz) {
+        if (quiz == null) {
+            return null;
+        }
+        List<com.educonnect.dto.assessment.serve.quiz.QuizQuestionDTO> questionDTOs = quiz.getQuestionList().stream()
+                .map(question -> {
+                    com.educonnect.dto.assessment.serve.quiz.QuizQuestionDTO qDto = new com.educonnect.dto.assessment.serve.quiz.QuizQuestionDTO();
+                    qDto.setQuizQuestionId(question.getQuestionId());
+                    qDto.setQuestionText(question.getQuestionText());
+
+                    if (question.getQuestionOptionList() != null) {
+
+                        List<com.educonnect.dto.assessment.serve.quiz.QuestionOptionDTO> optionDTOs = question.getQuestionOptionList()
+                                .stream()
+                                .map(option -> {
+                                    com.educonnect.dto.assessment.serve.quiz.QuestionOptionDTO oDto = new com.educonnect.dto.assessment.serve.quiz.QuestionOptionDTO();
+                                    oDto.setQuestionOptionId(option.getQuestionOptionId());
+                                    oDto.setOptionText(option.getOptionText());
+                                    return oDto;
+                                })
+                                .toList();
+                        qDto.setQuestionOptionDTOList(optionDTOs);
+                    }
+                    return qDto;
+                })
+                .toList();
+        QuizServeDTO quizServeDTO = new QuizServeDTO(quiz.getQuizId(), questionDTOs);
+
+        ((AssessmentServeDTO)quizServeDTO).setAssessmentType(AssessmentType.QUIZ);
+        ((AssessmentServeDTO)quizServeDTO).setTitle(quiz.getAssessment().getTitle());
+
+        return quizServeDTO;
+    }
+
+
+    @Override
+    public AssessmentReportDTO getReport(UUID submissionId, User user) throws BadRequestException {
+        List<StudentQuizQuestionResponse> studentResponseList
+                = studentQuizQuestionResponseRepo.findStudentQuizResponse(submissionId);
+
+        if(studentResponseList == null || studentResponseList.isEmpty()){
+            throw new ResourceNotFoundException("Student response not found");
+        }
+
+        if(user.getRole().equals(Role.STUDENT)
+                && !user.getUserId().equals(studentResponseList.getFirst().getSubmission().getStudent().getUserId())
+        ){
+            throw new BadRequestException("Student " + user.getFullName()
+                    + " is not authorized to access this report");
+        }
+
+
+        StudentQuizReportDTO studentQuizReportDTO = new StudentQuizReportDTO();
+
+        List<StudentQuestionAttemptDTO> studentQuestionAttemptDTO = new ArrayList<>();
+        for(StudentQuizQuestionResponse response : studentResponseList){
+            studentQuestionAttemptDTO.add(toStudentQuizReportDTO(response));
+        }
+
+        studentQuizReportDTO.setStudentQuestionAttemptDTOList(studentQuestionAttemptDTO);
+        studentQuizReportDTO.setSubmissionId(submissionId);
+
+        ((AssessmentReportDTO)studentQuizReportDTO).setAssessmentType(AssessmentType.QUIZ);
+        ((AssessmentReportDTO)studentQuizReportDTO).setTitle(studentResponseList.getFirst().getSubmission().getAssessment().getTitle());
+        return studentQuizReportDTO;
+    }
+
+
+    private StudentQuestionAttemptDTO toStudentQuizReportDTO(StudentQuizQuestionResponse response){
+
+        StudentQuestionAttemptDTO studentQuestionAttemptDTO
+                = new StudentQuestionAttemptDTO();
+
+        Question question = response.getQuestion();
+
+        Set<QuestionOption> questionOptionSet = question.getQuestionOptionList();
+
+        for(QuestionOption option : questionOptionSet){
+            if(option.getIsCorrectOption()){
+                studentQuestionAttemptDTO.setCorrectOptionId(option.getQuestionOptionId());
+                studentQuestionAttemptDTO.setCorrectOptionText(option.getOptionText());
+            }
+            if(option.getQuestionOptionId().equals(response.getQuestionOption().getQuestionOptionId())){
+                studentQuestionAttemptDTO.setChosenOptionId(option.getQuestionOptionId());
+                studentQuestionAttemptDTO.setChosenOptionText(option.getOptionText());
+            }
+        }
+
+        studentQuestionAttemptDTO.setIsCorrect(response.getIsCorrectOptionChosen());
+        studentQuestionAttemptDTO.setQuestionId(question.getQuestionId());
+        studentQuestionAttemptDTO.setQuestionText(question.getQuestionText());
+
+        return studentQuestionAttemptDTO;
     }
 
     @Override
     @Transactional
-    public String submitAssessment(Student student, AssessmentRequestDTO assessmentRequestDTO) {
+    public Map<String,String> submitAssessment(Student student, AssessmentRequestDTO assessmentRequestDTO) throws BadRequestException {
 
         StudentQuizQuestionResponseDTO dto = (StudentQuizQuestionResponseDTO) assessmentRequestDTO;
 
         Assessment assessment = assessmentRepo.findById(dto.getAssessmentId())
                 .orElseThrow(()-> new ResourceNotFoundException("Assessment not found"));
+
+
+        if(!enrollmentRepo.existsByStudentUserIdAndCourseCourseId(student.getUserId(),assessment.getCourse().getCourseId())){
+            throw new BadRequestException("Student `" + student.getFullName() + "` did not enroll to the course" );
+        }
 
         if(submissionRepo.existsByStudentAndAssessment(student, assessment)){
             try {
@@ -188,7 +319,14 @@ public class QuizStrategy implements AssessmentStrategy {
         log.info("Message from resultService : {}",msg );
         log.info("Result computed successfully for quiz : {}", quiz.getQuizId());
 
-        return "Quiz submitted successfully";
+        Map<String,String> map = new HashMap<>();
+
+        map.put("message", "Attempted the Quiz with id" + quiz.getQuizId());
+        map.put("assessmentId", assessment.getAssessmentId().toString());
+        map.put("quizId", quiz.getQuizId().toString());
+        map.put("submissionId",submission.getSubmissionId().toString());
+
+        return map;
 
     }
 

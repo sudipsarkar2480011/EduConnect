@@ -52,10 +52,17 @@ public class SecurityConfig {
                         .requestMatchers("/v1/api/result/**","/v1/api/teachers/**").hasRole("TEACHER")
                         .requestMatchers("/v1/api/parent/**").hasRole("PARENT")
                         .requestMatchers("/v1/api/assessment/create").hasRole("TEACHER")
-                        .requestMatchers("/v1/api/student/**", "/v1/api/attendance/**", "/v1/api/doc/**", "/v1/api/assessment/submit")
-                        .hasAnyRole("STUDENT","ADMIN")
+                        .requestMatchers(
+                                "/v1/api/student/**",
+                                "/v1/api/attendance/**",
+                                "/v1/api/doc/**",
+                                "/v1/api/assessment/report/**",
+                                "/v1/api/assessment/get-assessment/**"
+                        )
+                        .hasAnyRole("STUDENT","ADMIN", "TEACHER")
+                        .requestMatchers("/v1/api/assessment/submit").hasRole("STUDENT")
 
-                        .requestMatchers("/v1/api/audits/**").hasRole("ADMIN")
+                        .requestMatchers("/v1/api/audits/**","/v1/api/compliance/**").hasRole("ADMIN")
 
                         .anyRequest().authenticated())
                         .sessionManagement(

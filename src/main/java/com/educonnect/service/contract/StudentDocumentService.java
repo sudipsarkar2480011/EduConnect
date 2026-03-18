@@ -4,6 +4,7 @@ import com.educonnect.dto.doctype.DocStreamDTO;
 import com.educonnect.model.document.DocTypeEnum;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.UUID;
 
 /**
@@ -25,7 +26,7 @@ public interface StudentDocumentService {
      * @since 1.0
      *
      */
-    String saveStudentDocument(UUID studentUuid, MultipartFile file, DocTypeEnum docTypeEnum);
+    String saveStudentDocument(UUID studentUuid, MultipartFile file, DocTypeEnum docTypeEnum) throws IOException;
 
 
     /**

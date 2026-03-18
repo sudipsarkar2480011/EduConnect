@@ -10,4 +10,5 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 public class CreateAssignmentRequestDTO extends CreateAssessmentRequestDTO {
     private Integer noOfDocumentsToBeUploaded;
+    private String instruction;
 }

@@ -2,7 +2,9 @@ package com.educonnect.controller;
 
 import com.educonnect.config.UserPrinciples;
 import com.educonnect.exception.custom_exceptions.InvalidUserException;
+import com.educonnect.exception.custom_exceptions.UserIdDoNothMatchException;
 import com.educonnect.exception.custom_exceptions.UserNotFoundException;
+import com.educonnect.model.user.Student;
 import com.educonnect.service.contract.StudentService;
 import com.educonnect.dto.student.StudentResponse;
 import com.educonnect.dto.student.StudentUpdateRequest;

@@ -1,20 +1,24 @@
 package com.educonnect.controller;
 
 import com.educonnect.config.UserPrinciples;
+import com.educonnect.dto.common.GenericResponse;
 import com.educonnect.dto.course.CourseRequestDTO;
 import com.educonnect.dto.course.CourseResponseDTO;
 import com.educonnect.dto.course.ModuleRequestDTO;
 import com.educonnect.dto.course.ModuleResponseDTO;
 import com.educonnect.dto.student.StudentResponse;
+import com.educonnect.exception.custom_exceptions.UserIdDoNothMatchException;
 import com.educonnect.exception.custom_exceptions.UserNotFoundException;
 import com.educonnect.model.course.CourseModule;
 import com.educonnect.model.user.Student;
 import com.educonnect.model.user.Teacher;
 import com.educonnect.service.contract.course.CourseService;
 import com.educonnect.service.contract.course.CourseVideoService;
+import com.educonnect.service.contract.course.CourseVideoInerface;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +28,10 @@ import org.springframework.web.multipart.MultipartFile;
 import ws.schild.jave.EncoderException;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -40,16 +47,18 @@ public class CourseController {
     private final CourseVideoService courseVideoServiceClass;
     private final CourseService courseService;
 
-    @PostMapping("/enrollment/{courseId}/student/{studentId}")
-    public ResponseEntity<StudentResponse> enrollStudent(
-            @PathVariable("courseId") UUID courseId,
-            @PathVariable("studentId") UUID studentId
-    ) throws UserNotFoundException {
-        return new ResponseEntity<>(
-                courseService.addStudentToCourse(studentId,courseId),
-                HttpStatus.OK
-        );
-    }
+    private final CourseVideoInerface courseVideoInerface;
+
+//    @PostMapping("/enrollment/{courseId}/student/{studentId}")
+//    public ResponseEntity<StudentResponse> enrollStudent(
+//            @PathVariable("courseId") UUID courseId,
+//            @PathVariable("studentId") UUID studentId
+//    ) throws UserNotFoundException {
+//        return new ResponseEntity<>(
+//                courseService.addStudentToCourse(studentId,courseId),
+//                HttpStatus.OK
+//        );
+//    }
 
     /**
      * handles adding the course
@@ -67,13 +76,15 @@ public class CourseController {
         );
     }
 
-    @PostMapping("/add-video")
+    @PostMapping("/add-module")
     public ResponseEntity<CourseModule> addVideo(
             @RequestParam MultipartFile file,
             @RequestParam String title,
-            @RequestParam Integer sequenceOrder,
-            @RequestParam UUID courseId) throws IOException, EncoderException {
-        return ResponseEntity.ok(courseVideoServiceClass.uploadVideo(file,title,sequenceOrder,courseId));
+            @RequestParam UUID courseId,
+            @AuthenticationPrincipal UserPrinciples principles
+    ) throws IOException, EncoderException, UserIdDoNothMatchException {
+        UUID teacherId=principles.getUser().getUserId();
+      return ResponseEntity.ok(courseVideoInerface.uploadVideo(file,title,courseId ,teacherId));
     }
 
     /**
@@ -91,10 +102,11 @@ public class CourseController {
             @RequestParam MultipartFile file,
             @PathVariable UUID courseId,
             @RequestParam String title,
-            @PathVariable UUID videoId) throws IOException, EncoderException {
-
+            @PathVariable UUID videoId,
+            @AuthenticationPrincipal UserPrinciples userPrinciples) throws IOException, EncoderException {
+        UUID userId= userPrinciples.getUser().getUserId();
         return ResponseEntity.ok(
-                courseVideoServiceClass.updateVideoResource(file,title,videoId,courseId)
+                courseVideoServiceClass.updateVideoResource(file,title,videoId,courseId,userId)
         );
     }
 
@@ -111,27 +123,42 @@ public class CourseController {
     @DeleteMapping("/{courseId}/video/{videoId}/delete-video")
     public ResponseEntity<String> deleteVideo(
             @PathVariable UUID courseId,
-            @PathVariable UUID videoId) throws IOException, EncoderException {
+            @PathVariable UUID videoId,
+            @AuthenticationPrincipal UserPrinciples userprincipal
+    ) throws IOException, EncoderException, UserIdDoNothMatchException {
 
+        UUID id=userprincipal.getUser().getUserId();
         return ResponseEntity.ok(
-                courseVideoServiceClass.deleteVideoResourceWithids(videoId,courseId)
+                courseVideoServiceClass.deleteVideoResourceWithids(videoId,courseId,id)
         );
     }
 
 
-    @GetMapping("/get-video/{id}")
+    @GetMapping("/get-module/{id}")
     public ResponseEntity<String> getVideo(@PathVariable UUID id) throws IOException {
         String url=courseVideoServiceClass.getVideoUrl(id);
         return ResponseEntity.ok(url);
     }
 
 
-    @GetMapping("/stream/{filename}")
-    public ResponseEntity<Resource> streamVideo(@PathVariable UUID filename) throws IOException
-    {
-        Resource resource= courseVideoServiceClass.LoadVideoAsResource(filename);
+    @GetMapping("/stream/{moduleId}")
+    public ResponseEntity<Resource> streamContent(@PathVariable UUID moduleId) throws IOException {
+        Resource resource = courseVideoServiceClass.LoadVideoAsResource(moduleId);
+        String filename = resource.getFilename();
+        String contentType = "application/octet-stream";
+
+        if (filename != null) {
+            if (filename.endsWith(".pdf")) {
+                contentType = "application/pdf";
+            } else if (filename.endsWith(".mp3")) {
+                contentType = "audio/mpeg";
+            } else if (filename.endsWith(".mp4")) {
+                contentType = "video/mp4";
+            }
+        }
         return ResponseEntity.ok()
-                .contentType(MediaType.parseMediaType("video/mp4"))
+                .contentType(MediaType.parseMediaType(contentType))
+                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + filename + "\"")
                 .body(resource);
     }
 
@@ -143,23 +170,30 @@ public class CourseController {
 
 
 
-    @GetMapping("all-course")
+    @GetMapping("modules")
     public ResponseEntity<List<ModuleResponseDTO>> getAllModulesOfaCourse(@RequestBody ModuleRequestDTO requestDTO)
     {
         return new ResponseEntity<>(courseService.getAllModulesOfACourse(requestDTO.courseId()),HttpStatus.OK);
     }
 
     @PostMapping("/{courseId}/module/{moduleId}/mark-as-complete")
-    public ResponseEntity<Object> markModuleAsCompleted(
+    public ResponseEntity<GenericResponse<Map<String,String>>> markModuleAsCompleted(
             @PathVariable("moduleId") UUID moduleId,
             @PathVariable("courseId") UUID courseId,
             @AuthenticationPrincipal UserPrinciples userPrinciple
     ){
-        return new ResponseEntity<>(
-                courseVideoServiceClass.markModuleAsCompleted(
-                        moduleId,
-                        courseId,
-                        (Student) userPrinciple.getUser()),
+        var resp = courseVideoServiceClass.markModuleAsCompleted(
+                moduleId,
+                courseId,
+                (Student) userPrinciple.getUser());
+        return new ResponseEntity<>
+                (
+                new GenericResponse<>(
+                        resp,
+                        "Module with id " + moduleId+" marked as done",
+                        HttpStatus.OK.value(),
+                        LocalDateTime.now()
+                ),
                 HttpStatus.OK
         );
     }

@@ -2,9 +2,11 @@ package com.educonnect.controller;
 
 import com.educonnect.dto.parent.ParentAccessRequestDTO;
 import com.educonnect.dto.parent.ParentAccessResponseDTO;
-import com.educonnect.service.contract.ParentAccessService;
+import com.educonnect.service.contract.parent.ParentAccessService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -44,8 +46,9 @@ public class ParentAccessController {
      */
 
     @PostMapping
-    public ParentAccessResponseDTO grantAccess(@RequestBody ParentAccessRequestDTO request){
-        return parentAccessService.grantAccess(request);
+    public ResponseEntity<ParentAccessResponseDTO> grantAccess(@RequestBody ParentAccessRequestDTO request){
+        ParentAccessResponseDTO response=parentAccessService.grantAccess(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     /**
@@ -61,7 +64,7 @@ public class ParentAccessController {
      */
 
     @GetMapping
-    public ParentAccessResponseDTO getAccess(@RequestParam UUID parentId,@RequestParam UUID studentId){
-        return parentAccessService.getAccess(parentId, studentId);
+    public ResponseEntity<ParentAccessResponseDTO> getAccess(@RequestParam UUID parentId,@RequestParam UUID studentId){
+        return ResponseEntity.ok(parentAccessService.getAccess(parentId, studentId));
     }
 }

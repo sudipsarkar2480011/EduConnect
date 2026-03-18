@@ -1,11 +1,13 @@
 package com.educonnect.controller;
 
 import com.educonnect.config.UserPrinciples;
+import com.educonnect.exception.custom_exceptions.UserNotFoundException;
 import com.educonnect.model.assessment.Result;
 import com.educonnect.model.user.Teacher;
 import com.educonnect.service.contract.result.ResultService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -29,18 +31,18 @@ public class ResultController {
 
     /**
      * Delivers the result
-     * @param assessmentId The id of the assessment whose result is requested
+     * @param submissionId The id of the submission to fetch the required result
      * @return Map containing data
      */
-    @GetMapping("{assessmentId}")
-    public ResponseEntity<Map<String, Object>> getResult(
-            @PathVariable("assessmentId")UUID assessmentId
+    @GetMapping("{submissionId}")
+    public ResponseEntity<Map<String, String>> getResult(
+            @PathVariable("submissionId")UUID submissionId
             ){
-        Result result = resultService.getResultWithId(assessmentId);
+        Result result = resultService.getResultWithId(submissionId);
 
-        Map<String,Object> map = new HashMap<>();
+        Map<String,String> map = new HashMap<>();
 
-        map.put("score",result.getPercentageScore());
+        map.put("score",result.getPercentageScore() + "");
         map.put("studentName", result.getStudent().getFullName());
         map.put("status", result.getStatus().toString());
 
@@ -56,16 +58,17 @@ public class ResultController {
      * @return Map containing data
      */
     @PostMapping("{assessmentId}/student/{studentId}/evaluate")
-    public ResponseEntity<Map<String,Object>> setResultByTeacher(
+    public ResponseEntity<Map<String,String>> setResultByTeacher(
             @PathVariable("assessmentId") UUID assessmentId,
             @PathVariable("studentId") UUID studentId,
             @RequestParam("givenScore") int givenScore,
             @AuthenticationPrincipal UserPrinciples userPrinciple
-            ){
+            ) throws BadRequestException, UserNotFoundException {
 
         String msg = resultService.evaluateStudent(assessmentId,studentId,(Teacher) userPrinciple.getUser(),givenScore);
 
-        Map<String,Object> map = new HashMap<>();
+        Map<String,String> map = new HashMap<>();
+
         map.put("message",msg);
 
         return new ResponseEntity<>(

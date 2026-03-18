@@ -2,17 +2,13 @@ package com.educonnect.controller;
 
 import com.educonnect.exception.custom_exceptions.UserNotFoundException;
 import com.educonnect.model.user.Admin;
-import com.educonnect.model.user.Role;
 import com.educonnect.service.contract.AdminService;
-import com.educonnect.service.contract.ParentService;
-import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.UUID;
 
 /**
