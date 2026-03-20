@@ -1,15 +1,18 @@
 package com.educonnect.service.implementation;
 
+import com.educonnect.exception.custom_exceptions.InvalidUserException;
 import com.educonnect.exception.custom_exceptions.UserNotFoundException;
 import com.educonnect.model.user.Student;
 import com.educonnect.repo.StudentRepo;
 import com.educonnect.service.contract.StudentService;
 import com.educonnect.dto.student.StudentResponse;
 import com.educonnect.dto.student.StudentUpdateRequest;
+import com.educonnect.service.contract.parent.ParentService;
 import com.educonnect.utils.UpdateUtil;
 import com.educonnect.utils.mapper.StudentMapper;
 import com.educonnect.service.strategy.impl.StudentAuthStrategy;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,7 +29,7 @@ import java.util.UUID;
 @Service
 @Transactional
 public class StudentServiceImpl implements StudentService {
-
+    private final ParentService parentService;
     private final StudentRepo studentRepo;
     private final StudentMapper mapper;
     private final StudentAuthStrategy studentAuthStrategy;
@@ -59,7 +62,11 @@ public class StudentServiceImpl implements StudentService {
                 .map(mapper::toResponseDTO)
                 .toList();
     }
-
+    @Override
+    @Transactional
+    public Student getByStudentId(UUID id){
+        return studentRepo.findById(id).orElseThrow(()->new UsernameNotFoundException("Student not found"));
+    }
     /**
      * Updates an existing student's information based on the provided request data.
      * Only fields present in the request will be updated (partial update).
@@ -73,13 +80,15 @@ public class StudentServiceImpl implements StudentService {
     public StudentResponse update(UUID id, StudentUpdateRequest request) throws UserNotFoundException {
         Student student = studentRepo.findById(id)
                 .orElseThrow(() -> new UserNotFoundException("Student not found: " + id));
-
         UpdateUtil.setIfPresent(request.getFullName(), student::setFullName);
         UpdateUtil.setIfPresent(request.getEmail(), student::setEmail);
         UpdateUtil.setIfPresent(request.getDateOfBirth(), student::setDateOfBirth);
         UpdateUtil.setIfPresent(request.getActive(), student::setActive);
         UpdateUtil.setIfPresent(request.getEnrollmentNumber(), student::setEnrollmentNumber);
-
+        UpdateUtil.setIfPresent(request.getParentEmail(),student::setParentEmail);
+        if(request.getParentEmail()!=null && !request.getParentEmail().isEmpty()){
+            parentService.createParentAndSendVerification(student.getParent().getUserId());
+        }
         return mapper.toResponseDTO(studentRepo.save(student));
     }
 

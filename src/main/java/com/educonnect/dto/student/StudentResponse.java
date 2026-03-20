@@ -27,4 +27,5 @@ public class StudentResponse{
        private  boolean active;
        private LocalDate dateOfBirth;
        private String enrollmentNumber;
+       private String parentEmail;
  }

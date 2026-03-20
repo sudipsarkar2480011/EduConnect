@@ -37,6 +37,9 @@ public class Submission {
     @JoinColumn(name = "student_id")
     private Student student;
 
+    @OneToOne(mappedBy = "submission")
+    private Result result;
+
 
     @Enumerated(EnumType.STRING)
     private SubmissionStatus submissionStatus;

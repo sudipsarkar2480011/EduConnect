@@ -14,19 +14,19 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/v1/api/compliance")
+@RequestMapping("/v1/api/compliance-records")
 @RequiredArgsConstructor
 public class ComplianceRecordController {
 
     private final ComplianceRecordService complianceService;
     // POST: Create a new record
-    @PostMapping("/create")
+    @PostMapping
     public ResponseEntity<ComplianceRecordResponseDTO> createRecord(@RequestBody ComplianceRecordRequestDTO dto) throws UserNotFoundException {
         return new ResponseEntity<>(complianceService.createRecord(dto), HttpStatus.CREATED);
     }
 
     // PUT: Update an existing record
-    @PutMapping("/update/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<ComplianceRecordResponseDTO> updateRecord(
             @PathVariable UUID id,
             @RequestBody ComplianceRecordRequestDTO dto) {
@@ -34,13 +34,13 @@ public class ComplianceRecordController {
     }
 
     // GET: Retrieve a specific record
-    @GetMapping("/get/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<ComplianceRecordResponseDTO> getRecord(@PathVariable UUID id) {
         return ResponseEntity.ok(complianceService.getRecordById(id));
     }
 
     // GET: Retrieve all records
-    @GetMapping("/list")
+    @GetMapping
     public ResponseEntity<List<ComplianceRecordResponseDTO>> getAllRecords() {
         return ResponseEntity.ok(complianceService.getAllRecords());
     }

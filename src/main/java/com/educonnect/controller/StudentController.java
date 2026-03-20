@@ -2,6 +2,7 @@ package com.educonnect.controller;
 
 import com.educonnect.config.UserPrinciples;
 import com.educonnect.exception.custom_exceptions.InvalidUserException;
+import com.educonnect.exception.custom_exceptions.UserIdDoNothMatchException;
 import com.educonnect.exception.custom_exceptions.UserNotFoundException;
 import com.educonnect.service.contract.StudentService;
 import com.educonnect.dto.student.StudentResponse;
@@ -79,7 +80,7 @@ public class StudentController {
     @PostMapping("/{id}/enrollments")
     public ResponseEntity<StudentResponse> enrollToCourse(
             @PathVariable("id") UUID studentId,
-            @PathVariable("courseId") UUID courseId) throws UserNotFoundException {
+            @PathVariable("courseId") UUID courseId) throws UserNotFoundException, UserIdDoNothMatchException {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(courseService.addStudentToCourse(studentId, courseId));
     }

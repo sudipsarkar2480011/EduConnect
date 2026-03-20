@@ -1,14 +1,14 @@
-package com.educonnect.service.implementation;
+package com.educonnect.service.implementation.parent;
 
 import com.educonnect.dto.parent.ParentAccessRequestDTO;
 import com.educonnect.dto.parent.ParentAccessResponseDTO;
 import com.educonnect.model.access.ParentAccess;
 import com.educonnect.model.user.Parent;
 import com.educonnect.model.user.Student;
-import com.educonnect.repo.ParentAccessRepo;
-import com.educonnect.repo.ParentRepo;
+import com.educonnect.repo.parent.ParentAccessRepo;
+import com.educonnect.repo.parent.ParentRepo;
 import com.educonnect.repo.StudentRepo;
-import com.educonnect.service.contract.ParentAccessService;
+import com.educonnect.service.contract.parent.ParentAccessService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

@@ -26,6 +26,10 @@ public class Result {
     @JoinColumn(name = "assessment_id")
     private Assessment assessment;
 
+    @OneToOne
+    @JoinColumn(name ="submission_id" )
+    private Submission submission;
+
     private Double percentageScore ;
 
     @Enumerated(EnumType.STRING)

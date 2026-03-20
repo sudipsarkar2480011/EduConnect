@@ -1,4 +1,4 @@
-package com.educonnect.service.implementation;
+package com.educonnect.service.implementation.parent;
 
 import com.educonnect.config.JWTService;
 import com.educonnect.dto.parent.ParentResponseDTO;
@@ -8,20 +8,18 @@ import com.educonnect.exception.custom_exceptions.UserNotFoundException;
 import com.educonnect.model.token.ParentVerificationToken;
 import com.educonnect.model.user.Parent;
 import com.educonnect.model.user.Student;
-import com.educonnect.repo.ParentRepo;
-import com.educonnect.repo.ParentVerificationTokenRepo;
+import com.educonnect.repo.parent.ParentRepo;
+import com.educonnect.repo.parent.ParentVerificationTokenRepo;
 import com.educonnect.repo.StudentRepo;
 import com.educonnect.service.contract.EmailService;
-import com.educonnect.service.contract.ParentService;
+import com.educonnect.service.contract.parent.ParentService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -70,7 +68,7 @@ public class ParentServiceImpl implements ParentService {
         Parent parent = parentRepo.findById(parentId)
                 .orElseThrow(() -> new NoChildFoundException("Parent not found: " + parentId));
         if(!Boolean.TRUE.equals(parent.getVerified())){
-            throw new RuntimeException("Parent is not verified yet");
+            //throw new RuntimeException("Parent is not verified yet");
         }
         Student student = studentRepo.findById(studentId)
                 .orElseThrow(() -> new NoChildFoundException("Student not found: " + studentId));
@@ -85,18 +83,20 @@ public class ParentServiceImpl implements ParentService {
         return toResponse(refreshed);
     }
 
-
- public void createParentAndSendVerification(UUID parentId) {
+    @Override
+    @Transactional
+     public String createParentAndSendVerification(UUID parentId) {
         Parent parent=parentRepo.findById(parentId).orElseThrow(()->new RuntimeException("Parent Not found"));
-        String parentEmail= parent.getEmail();
-        String token=jwtService.generateToken(parentEmail);
+
+        String token=UUID.randomUUID().toString();
         ParentVerificationToken verificationToken=ParentVerificationToken.builder().
                 token(token).
                 parent(parent).
                 expiryDate(LocalDateTime.now().plusHours(24)).
                 build();
         tokenRepo.save(verificationToken);
-        emailService.sendParentVerificationEmail(parentEmail,token);
+        String link="http://localhost:8081/v1/api/parent/verify?token="+token;
+        return link;
     }
 
 
@@ -124,7 +124,7 @@ public class ParentServiceImpl implements ParentService {
 
 @Override
 @Transactional
-    public void verifyParent(String token) {
+    public ResponseEntity<String> verifyParent(String token) {
         ParentVerificationToken tokenObj=tokenRepo.findByToken(token).orElseThrow(()->new RuntimeException("Invalid token"));
         if(tokenObj.getExpiryDate().isBefore(LocalDateTime.now())){
             throw new RuntimeException("Token expired");
@@ -132,7 +132,8 @@ public class ParentServiceImpl implements ParentService {
         Parent parent=tokenObj.getParent();
         parent.setVerified(true);
         parentRepo.save(parent);
-        tokenRepo.delete(tokenObj);
+        return ResponseEntity.ok("Parent verified successfully");
+
     }
 
     // -----------------------------

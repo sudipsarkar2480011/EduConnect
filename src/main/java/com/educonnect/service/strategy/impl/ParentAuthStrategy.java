@@ -3,7 +3,7 @@ package com.educonnect.service.strategy.impl;
 import com.educonnect.model.user.Parent;
 import com.educonnect.model.user.Role;
 import com.educonnect.model.user.User;
-import com.educonnect.repo.ParentRepo;
+import com.educonnect.repo.parent.ParentRepo;
 import com.educonnect.service.strategy.UserAuthStrategy;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;

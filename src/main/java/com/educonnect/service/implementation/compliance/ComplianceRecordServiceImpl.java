@@ -13,6 +13,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -35,6 +37,12 @@ public class ComplianceRecordServiceImpl implements ComplianceRecordService {
         record.setUser(user);
         record.setType(dto.getType());
         record.setResult(dto.getResult());
+
+        LocalDate effectiveDate = (dto.getDate() != null)
+                ? dto.getDate()
+                : LocalDate.now(ZoneId.of("Asia/Kolkata"));
+        record.setDate(effectiveDate);
+
 
         // Save record first
         ComplianceRecord savedRecord = recordRepository.save(record);
@@ -77,6 +85,10 @@ public class ComplianceRecordServiceImpl implements ComplianceRecordService {
 
         record.setType(dto.getType());
         record.setResult(dto.getResult());
+
+        if (dto.getDate() != null) {
+            record.setDate(dto.getDate());
+        }
 
         // Handle Notes
         noteRepository.deleteAll(record.getNotes());

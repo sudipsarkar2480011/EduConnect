@@ -6,6 +6,8 @@ import com.educonnect.model.engagement.Engagement;
 import com.educonnect.model.user.Teacher;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 
 import java.util.List;
@@ -29,6 +31,8 @@ public class Course {
     // Owning side of the relationship
     @ManyToOne
     @JoinColumn(name = "teacher_id", nullable = false)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private Teacher teacher;
 
     private Double duration;
@@ -40,6 +44,8 @@ public class Course {
     private List<Enrollment> enrollments;
 
     @OneToMany(mappedBy = "course")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private List<Assessment> assessments;
 
     @OneToMany(mappedBy = "course")
