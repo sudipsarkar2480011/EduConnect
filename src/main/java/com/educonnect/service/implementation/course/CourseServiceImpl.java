@@ -4,6 +4,7 @@ import com.educonnect.dto.course.CourseRequestDTO;
 import com.educonnect.dto.course.CourseResponseDTO;
 import com.educonnect.dto.course.ModuleResponseDTO;
 import com.educonnect.dto.student.StudentResponse;
+import com.educonnect.notifications.CourseCreatedEvent;
 import com.educonnect.exception.custom_exceptions.CourseNotFoundException;
 import com.educonnect.exception.custom_exceptions.UserIdDoNothMatchException;
 import com.educonnect.exception.custom_exceptions.UserNotFoundException;
@@ -19,6 +20,7 @@ import com.educonnect.service.contract.course.CourseService;
 import com.educonnect.utils.mapper.CourseMapper;
 import com.educonnect.utils.mapper.StudentMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -46,6 +48,7 @@ public class CourseServiceImpl implements CourseService {
 
     private final CourseMapper courseMapper;
     private final StudentMapper studentMapper;
+    private final ApplicationEventPublisher publisher;
 
     /**
      * Creates a new course and assigns it to a specific teacher.
@@ -59,6 +62,23 @@ public class CourseServiceImpl implements CourseService {
         Course course = courseMapper.toEntity(request);
         course.setTeacher(teacher);
         Course savedCourse = courseRepo.save(course);
+        /**
+         * This code sits inside the CourseServiceImpl. Once a course is successfully
+         * saved to the database, we "broadcast" this event to the rest of the system.
+         * 2. .publishEvent(): We hand this envelope to Spring's ApplicationEventPublisher.
+         * 3. Separation: The CourseService finishes its job here. it doesn't wait to
+         * see who picks up the envelope or how long the notifications take.
+         * "I used the Publisher-Subscriber pattern here. By publishing an event instead
+         * of calling the NotificationService directly, I ensured that the Course module
+         * remains 'Lean.' If we want to add an Email service or an SMS service later,
+         * we just add new Listeners without ever touching this CourseService code again."
+         */
+        publisher.publishEvent(
+                CourseCreatedEvent.builder()
+                        .courseTitle(savedCourse.getTitle())
+                        .courseId(savedCourse.getCourseId())
+                        .build()
+        );
         return courseMapper.toResponseDTO(savedCourse);
     }
 
