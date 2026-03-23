@@ -100,14 +100,14 @@ public class ReportServiceImpl {
         return new FullSystemReportDTO(
                 getAllStudents(),
                 getAllTeachers(),
-                parentRepo.findAll(),
+                getAllParents(),
                 adminRepo.findAll(),
                 getAllUsers(),
                 getAllCourses(),
                 getAllRoles(),
                 getAllReports(),
-                statsRepo.getAttendanceStats(),
-                statsRepo.getExamStats()
+                getAttendanceStatistics(),
+                getExamStatistics()
         );
     }
 
