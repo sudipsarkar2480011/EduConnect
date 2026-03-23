@@ -4,6 +4,7 @@ import com.educonnect.config.UserPrinciples;
 import com.educonnect.exception.custom_exceptions.InvalidUserException;
 import com.educonnect.exception.custom_exceptions.UserIdDoNothMatchException;
 import com.educonnect.exception.custom_exceptions.UserNotFoundException;
+import com.educonnect.model.user.Student;
 import com.educonnect.service.contract.StudentService;
 import com.educonnect.dto.student.StudentResponse;
 import com.educonnect.dto.student.StudentUpdateRequest;
@@ -30,6 +31,7 @@ public class StudentController {
     private final CourseService courseService;
     private final ReportServiceImpl reportService;
 
+
     @GetMapping("/all")
     public ResponseEntity<List<StudentResponse>> getAllStudentsReport() {
         return ResponseEntity.ok(reportService.getAllStudents());
@@ -55,7 +57,8 @@ public class StudentController {
         /*
         * Ensures an user is modifying their own data not any other user's
         * */
-        if(!principles.getUser().getUserId().equals(studentId)){
+        Student student=studentService.getByStudentId(studentId);
+        if(student.getParent()==null && !principles.getUser().getUserId().equals(studentId)){
                 throw new InvalidUserException("Access Denied.");
         }
         return ResponseEntity.ok(studentService.update(studentId, request));
