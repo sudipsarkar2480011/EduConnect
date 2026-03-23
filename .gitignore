@@ -41,3 +41,5 @@ src/main/resources/application-secret.properties
 
 #ignore logs
 logs
+
+test

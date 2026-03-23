@@ -13,7 +13,7 @@ public interface AssignmentRepo extends JpaRepository<Assignment, UUID> {
             """
                    SELECT asn FROM Assignment asn
                    JOIN FETCH asn.assessment asm
-                   WHERE asn.assessment.assessmentId = :assessmentId  
+                   WHERE asn.assessment.assessmentId = :assessmentId
             """
     )
     Optional<Assignment> findAssignmentAndAssessment(UUID assessmentId);
