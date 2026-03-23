@@ -1,5 +1,8 @@
 package com.educonnect.model.notification;
 
 public enum NotificationType {
-    RED,AMBER,GREEN
+    COURSE_CREATION,
+    ASSESSMENT_DEADLINE,
+    COURSE_DELETION,
+    SUCCESSFULLY_REGISTERED
 }
