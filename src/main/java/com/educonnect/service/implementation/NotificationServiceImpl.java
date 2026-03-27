@@ -49,6 +49,21 @@ public class NotificationServiceImpl implements NotificationService {
      * reduce database round-trips.
      * - @Transactional ensures that we don't end up with "partial" notifications
      * if the server crashes mid-process.
+     * Gemini said
+     * It’s a common point of confusion! If you are using Spring Data JPA, you might feel like @Transactional is redundant because JPA repositories (like SimpleJpaRepository) already have @Transactional on their built-in methods (like saveAll).
+     *
+     * However, there are three critical reasons why you still need it at the service level for this specific method:
+     *
+     * 1. Atomicity (The "All or Nothing" Rule)
+     * While notificationRepo.saveAll() is transactional on its own, your method does more than just save. Without @Transactional on your service method:
+     *
+     * The userRepo.findAllByRole call runs in its own transaction.
+     *
+     * The mapping logic runs outside a transaction.
+     *
+     * The saveAll runs in a final, separate transaction.
+     *
+     * If you had multiple repository calls or logic that modified the database in steps, @Transactional ensures that if a crash or error occurs halfway through, everything rolls back. Without it, you could end up with "zombie" data where part of your process succeeded but the rest failed.
      */
     @Override
     @Transactional
