@@ -9,6 +9,7 @@ import com.educonnect.dto.assessment.submit.AssessmentRequestDTO;
 import com.educonnect.dto.assessment.submit.assignment.AssignmentRequestDTO;
 import com.educonnect.dto.assessment.create.CreateAssessmentRequestDTO;
 import com.educonnect.dto.common.GenericResponse;
+import com.educonnect.exception.custom_exceptions.DocumentProcessingException;
 import com.educonnect.factory.assessment.AssessmentFactory;
 import com.educonnect.model.user.Student;
 import com.educonnect.model.user.Teacher;
@@ -74,7 +75,7 @@ public class AssessmentController {
             @RequestPart("request") AssessmentRequestDTO dto ,
             @AuthenticationPrincipal UserPrinciples userPrinciple,
             @RequestPart("files") @Nullable  MultipartFile[] files
-    ) throws BadRequestException {
+    ) throws BadRequestException, DocumentProcessingException {
 
         if(files != null && files.length != 0){
             if(dto != null){

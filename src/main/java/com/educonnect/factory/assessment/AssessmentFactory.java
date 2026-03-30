@@ -4,6 +4,7 @@ import com.educonnect.dto.assessment.report.AssessmentReportDTO;
 import com.educonnect.dto.assessment.serve.AssessmentServeDTO;
 import com.educonnect.dto.assessment.submit.AssessmentRequestDTO;
 import com.educonnect.dto.assessment.create.CreateAssessmentRequestDTO;
+import com.educonnect.exception.custom_exceptions.DocumentProcessingException;
 import com.educonnect.model.assessment.AssessmentType;
 import com.educonnect.model.user.Student;
 import com.educonnect.model.user.Teacher;
@@ -60,7 +61,7 @@ public class AssessmentFactory {
      * @param assessmentRequestDTO the payload
      * @return A success message
      */
-    public Map<String,String> submitAssessment(Student user, AssessmentRequestDTO assessmentRequestDTO) throws BadRequestException {
+    public Map<String,String> submitAssessment(Student user, AssessmentRequestDTO assessmentRequestDTO) throws BadRequestException, DocumentProcessingException {
 
         List<Map<String, String>> list = new ArrayList<>();
         for (AssessmentStrategy assessmentStrategy : assessmentStrategyList) {

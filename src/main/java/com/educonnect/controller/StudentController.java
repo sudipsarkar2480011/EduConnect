@@ -70,12 +70,12 @@ public class StudentController {
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/add-student")
-    public ResponseEntity<StudentResponse> studentEnrollToCourse( @RequestParam UUID courseId , @AuthenticationPrincipal UserPrinciples userPrinciples) throws UserNotFoundException, UserIdDoNothMatchException {
-
-            return new ResponseEntity<>(courseService.addStudentToCourse(courseId, userPrinciples.getUser().getUserId()), HttpStatus.OK);
-
-    }
+//    @PostMapping("/add-student")
+//    public ResponseEntity<StudentResponse> studentEnrollToCourse( @RequestParam UUID courseId , @AuthenticationPrincipal UserPrinciples userPrinciples) throws UserNotFoundException, UserIdDoNothMatchException {
+//
+//            return new ResponseEntity<>(courseService.addStudentToCourse(courseId, userPrinciples.getUser().getUserId()), HttpStatus.OK);
+//
+//    }
 
 
 }

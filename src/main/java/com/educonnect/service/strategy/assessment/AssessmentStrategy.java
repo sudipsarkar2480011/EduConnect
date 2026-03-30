@@ -4,6 +4,7 @@ import com.educonnect.dto.assessment.report.AssessmentReportDTO;
 import com.educonnect.dto.assessment.serve.AssessmentServeDTO;
 import com.educonnect.dto.assessment.submit.AssessmentRequestDTO;
 import com.educonnect.dto.assessment.create.CreateAssessmentRequestDTO;
+import com.educonnect.exception.custom_exceptions.DocumentProcessingException;
 import com.educonnect.model.assessment.AssessmentType;
 import com.educonnect.model.course.Course;
 import com.educonnect.model.user.Student;
@@ -35,7 +36,7 @@ public interface AssessmentStrategy {
      * @param assessmentRequestDTO The payload
      * @return A success message (Might change in future)
      */
-    Map<String,String> submitAssessment(Student student , AssessmentRequestDTO assessmentRequestDTO) throws BadRequestException;
+    Map<String,String> submitAssessment(Student student , AssessmentRequestDTO assessmentRequestDTO) throws BadRequestException, DocumentProcessingException;
 
     /**
      * Handles assessment creation

@@ -2,31 +2,78 @@ package com.educonnect.controller;
 
 import com.educonnect.config.EduconnectUserDetailsService;
 import com.educonnect.config.JWTService;
+import com.educonnect.config.UserPrinciples;
 import com.educonnect.model.course.CourseModule;
+import com.educonnect.model.user.Role;
+import com.educonnect.model.user.Student;
+import com.educonnect.model.user.Teacher;
 import com.educonnect.service.contract.course.CourseService;
+import com.educonnect.service.contract.course.CourseVideoInerface;
 import com.educonnect.service.contract.course.CourseVideoService;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.method.annotation.AuthenticationPrincipalArgumentResolver;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.web.method.support.HandlerMethodArgumentResolver;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(controllers = CourseController.class)
 @AutoConfigureMockMvc(addFilters = false)
+@Import(CourseControllerTest.TestMvcConfig.class)
 public class CourseControllerTest {
+
+    /**
+     * FINAL APPROACH — set SecurityContextHolder directly per test.
+     *
+     * All previous approaches (.with(authentication(...)), .with(securityContext(...)),
+     * @TestConfiguration + @Import) correctly put the principal into the session or
+     * context, but @AuthenticationPrincipalArgumentResolver was either not registered
+     * or not reading from the right place.
+     *
+     * Root issue: AuthenticationPrincipalArgumentResolver calls
+     * SecurityContextHolder.getContext().getAuthentication() at resolution time.
+     * With addFilters=false, no filter populates SecurityContextHolder from the request
+     * session — it stays empty, so the resolver always gets null authentication and
+     * injects null into the parameter.
+     *
+     * The fix: bypass all of this by setting SecurityContextHolder directly before
+     * each test that needs a principal. The resolver reads from SecurityContextHolder
+     * at argument resolution time, so setting it here (in the same thread as the test)
+     * works reliably. Clean up in @AfterEach to prevent cross-test contamination.
+     *
+     * The @TestConfiguration + @Import still registers the resolver so Spring MVC
+     * knows to invoke it at all. Both pieces are needed.
+     */
+    @TestConfiguration
+    static class TestMvcConfig implements WebMvcConfigurer {
+        @Override
+        public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
+            resolvers.add(new AuthenticationPrincipalArgumentResolver());
+        }
+    }
 
     @Autowired
     private MockMvc mockMvc;
@@ -43,17 +90,59 @@ public class CourseControllerTest {
     @MockitoBean
     private CourseVideoService courseVideoService;
 
+    @MockitoBean
+    private CourseVideoInerface courseVideoInerface;
+
     private static final String BASE_URL = "/v1/api/course";
 
+    @AfterEach
+    void clearSecurityContext() {
+        SecurityContextHolder.clearContext();
+    }
+
+    // ─── Helpers ─────────────────────────────────────────────────────────────
+
+    /**
+     * Sets a Teacher principal directly into SecurityContextHolder.
+     * AuthenticationPrincipalArgumentResolver reads from SecurityContextHolder
+     * at invocation time (same thread), so this is always visible to it.
+     */
+    private void setTeacherPrincipal(UUID userId) {
+        Teacher teacher = Teacher.builder()
+                .userId(userId)
+                .email("teacher@test.com")
+                .password("password")
+                .role(Role.TEACHER)
+                .build();
+        UserPrinciples up = new UserPrinciples(teacher);
+        var auth = new UsernamePasswordAuthenticationToken(up, null, up.getAuthorities());
+        SecurityContextHolder.getContext().setAuthentication(auth);
+    }
+
+    private void setStudentPrincipal(UUID userId) {
+        Student student = Student.builder()
+                .userId(userId)
+                .email("student@test.com")
+                .password("password")
+                .role(Role.STUDENT)
+                .build();
+        UserPrinciples up = new UserPrinciples(student);
+        var auth = new UsernamePasswordAuthenticationToken(up, null, up.getAuthorities());
+        SecurityContextHolder.getContext().setAuthentication(auth);
+    }
+
+    // ─── Tests ────────────────────────────────────────────────────────────────
+
     @Test
-    void shouldUploadVideoSuccessfully() throws Exception {
-        UUID courseId = UUID.randomUUID();
-        UUID moduleId = UUID.randomUUID();
+    void shouldUploadModuleSuccessfully() throws Exception {
+        UUID courseId  = UUID.randomUUID();
+        UUID moduleId  = UUID.randomUUID();
+        UUID teacherId = UUID.randomUUID();
+
+        setTeacherPrincipal(teacherId);
 
         MockMultipartFile file = new MockMultipartFile(
-                "file",
-                "intro.mp4",
-                "video/mp4",
+                "file", "intro.mp4", "video/mp4",
                 "dummy-video-content".getBytes()
         );
 
@@ -65,14 +154,13 @@ public class CourseControllerTest {
                 .duration(120.0)
                 .build();
 
-        when(courseVideoService.uploadVideo(any(), eq("Intro"), eq(1), eq(courseId)))
+        when(courseVideoInerface.uploadVideo(any(), eq("Intro"), eq(courseId), eq(teacherId)))
                 .thenReturn(module);
 
         mockMvc.perform(
-                        multipart(BASE_URL + "/add-video")
+                        multipart(BASE_URL + "/add-module")
                                 .file(file)
-                                .param("title", "Intro")
-                                .param("sequenceOrder", "1")
+                                .param("title",    "Intro")
                                 .param("courseId", courseId.toString())
                 )
                 .andExpect(status().isOk())
@@ -85,13 +173,13 @@ public class CourseControllerTest {
     @Test
     void shouldUpdateVideoSuccessfully() throws Exception {
         UUID courseId = UUID.randomUUID();
-        UUID videoId = UUID.randomUUID();
-        UUID userId = UUID.randomUUID();
+        UUID videoId  = UUID.randomUUID();
+        UUID userId   = UUID.randomUUID();
+
+        setTeacherPrincipal(userId);
 
         MockMultipartFile file = new MockMultipartFile(
-                "file",
-                "updated.mp4",
-                "video/mp4",
+                "file", "updated.mp4", "video/mp4",
                 "updated-video-content".getBytes()
         );
 
@@ -103,14 +191,13 @@ public class CourseControllerTest {
                 .duration(240.0)
                 .build();
 
-        when(courseVideoService.updateVideoResource(any(), eq("Updated Title"), eq(videoId), eq(courseId),eq(userId)))
+        when(courseVideoService.updateVideoResource(any(), eq("Updated Title"), eq(videoId), eq(courseId), eq(userId)))
                 .thenReturn(updatedModule);
 
         mockMvc.perform(
                         multipart(BASE_URL + "/" + courseId + "/video/" + videoId + "/update-video")
                                 .file(file)
                                 .param("title", "Updated Title")
-                        // NOTE: controller only takes "title" as param, file is multipart
                 )
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -121,11 +208,15 @@ public class CourseControllerTest {
     @Test
     void shouldDeleteVideoSuccessfully() throws Exception {
         UUID courseId = UUID.randomUUID();
-        UUID videoId = UUID.randomUUID();
-        UUID userId = UUID.randomUUID();
-        String successMsg = "Successfully deleted the video with title Intro of course with title Java Masterclass";
+        UUID videoId  = UUID.randomUUID();
+        UUID userId   = UUID.randomUUID();
 
-        when(courseVideoService.deleteVideoResourceWithids(videoId, courseId,userId))
+        setTeacherPrincipal(userId);
+
+        String successMsg =
+                "Successfully deleted the video with title Intro of course with title Java Masterclass";
+
+        when(courseVideoService.deleteVideoResourceWithids(eq(videoId), eq(courseId), eq(userId)))
                 .thenReturn(successMsg);
 
         mockMvc.perform(
@@ -136,13 +227,13 @@ public class CourseControllerTest {
     }
 
     @Test
-    void shouldGetVideoUrl() throws Exception {
+    void shouldGetModuleUrl() throws Exception {
         UUID videoId = UUID.randomUUID();
         String mockUrl = "http://localhost/v1/api/course/stream/" + videoId;
 
         when(courseVideoService.getVideoUrl(videoId)).thenReturn(mockUrl);
 
-        mockMvc.perform(get(BASE_URL + "/get-video/" + videoId))
+        mockMvc.perform(get(BASE_URL + "/get-module/" + videoId))
                 .andExpect(status().isOk())
                 .andExpect(content().string(mockUrl));
     }
@@ -150,8 +241,12 @@ public class CourseControllerTest {
     @Test
     void shouldStreamVideo() throws Exception {
         UUID moduleId = UUID.randomUUID();
-        byte[] bytes = new byte[]{1, 2, 3, 4, 5};
-        Resource resource = new ByteArrayResource(bytes);
+        byte[] bytes  = new byte[]{1, 2, 3, 4, 5};
+
+        Resource resource = new ByteArrayResource(bytes) {
+            @Override
+            public String getFilename() { return "test.mp4"; }
+        };
 
         when(courseVideoService.LoadVideoAsResource(moduleId)).thenReturn(resource);
 
@@ -162,31 +257,31 @@ public class CourseControllerTest {
     }
 
     @Test
-    void shouldReturnUpdateUrlForIdUpdateEndpoint() throws Exception {
-        UUID moduleId = UUID.randomUUID();
-        UUID courseId = UUID.randomUUID();
+    void shouldMarkModuleAsCompleted() throws Exception {
+        UUID courseId  = UUID.randomUUID();
+        UUID moduleId  = UUID.randomUUID();
+        UUID studentId = UUID.randomUUID();
 
-        // This endpoint returns a URL using getVideoUrl(id) and ignores other params for now
-        String mockUrl = "http://localhost/v1/api/course/stream/" + moduleId;
+        setStudentPrincipal(studentId);
 
-        when(courseVideoService.getVideoUrl(moduleId)).thenReturn(mockUrl);
+        Map<String, String> result = Map.of("status", "completed");
 
-        MockMultipartFile file = new MockMultipartFile(
-                "file",
-                "any.mp4",
-                "video/mp4",
-                "bytes".getBytes()
-        );
+        when(courseVideoService.markModuleAsCompleted(eq(moduleId), eq(courseId), any(Student.class)))
+                .thenReturn(result);
 
         mockMvc.perform(
-                        multipart(BASE_URL + "/" + moduleId + "/update")
-                                .file(file)
-                                .param("title", "Any")
-                                .param("sequenceOrder", "1")
-                                .param("courseId", courseId.toString())
-                                .contentType(MediaType.MULTIPART_FORM_DATA)
+                        post(BASE_URL + "/" + courseId + "/module/" + moduleId + "/mark-as-complete")
                 )
                 .andExpect(status().isOk())
-                .andExpect(content().string(mockUrl));
+                .andExpect(jsonPath("$.data.status").value("completed"))
+                .andExpect(jsonPath("$.message").value("Module with id " + moduleId + " marked as done"))
+                .andExpect(jsonPath("$.httpStatus").value(200));
+    }
+
+    @Test
+    void shouldReturnTestString() throws Exception {
+        mockMvc.perform(get(BASE_URL + "/test"))
+                .andExpect(status().isOk())
+                .andExpect(content().string("test"));
     }
 }
