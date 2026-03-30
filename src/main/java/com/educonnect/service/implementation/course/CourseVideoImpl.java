@@ -19,8 +19,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
+import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -279,8 +281,9 @@ public class CourseVideoImpl implements CourseVideoService {
 
             Course course = courseRepo.findById(courseId)
                     .orElseThrow(() -> new ResourceNotFoundException("Course not found"));
-            if(userId!=course.getTeacher().getUserId())
+            if(!userId.equals(course.getTeacher().getUserId()))
             {
+
                 throw new UserIdDoNothMatchException("author of this course  do not match with the logged in User: ");
             }
             CourseModule module=courseModuleRepo.findById(videoId).orElseThrow(()->new ModuleNotFoundException("Module do not exists: "));
@@ -324,11 +327,11 @@ public class CourseVideoImpl implements CourseVideoService {
                 throw new IOException("File was not written correctly to disk!");
             }
 
-            var duration = VideoUtil.getVideoDuration(tempFile);
-
+            double duration=0.0;
+            if(file.getContentType().equals("video") || file.getContentType().equals("audio")){
+                duration = VideoUtil.getVideoDuration(tempFile);
+            }
             Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
-
-
 
             System.out.println();
             System.out.println();
