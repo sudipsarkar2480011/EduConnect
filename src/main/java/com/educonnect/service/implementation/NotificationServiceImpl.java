@@ -74,6 +74,7 @@ public class NotificationServiceImpl implements NotificationService {
      */
 
     @Override
+    @Transactional
     public void markAllAsSeen(UUID userId) {
         notificationRepo.markAllAsReadByUserId(userId);
     }

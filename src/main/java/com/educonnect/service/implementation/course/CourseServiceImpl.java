@@ -4,6 +4,7 @@ import com.educonnect.dto.course.CourseRequestDTO;
 import com.educonnect.dto.course.CourseResponseDTO;
 import com.educonnect.dto.course.ModuleResponseDTO;
 import com.educonnect.dto.student.StudentResponse;
+import com.educonnect.model.course.CourseModule;
 import com.educonnect.notifications.CourseCreatedEvent;
 import com.educonnect.exception.custom_exceptions.CourseNotFoundException;
 import com.educonnect.exception.custom_exceptions.UserIdDoNothMatchException;
@@ -15,12 +16,14 @@ import com.educonnect.model.user.Teacher;
 import com.educonnect.repo.EnrollmentRepo;
 import com.educonnect.repo.StudentRepo;
 import com.educonnect.repo.TeacherRepo;
+import com.educonnect.repo.course.CourseModuleRepo;
 import com.educonnect.repo.course.CourseRepo;
 import com.educonnect.service.contract.course.CourseService;
 import com.educonnect.utils.mapper.CourseMapper;
 import com.educonnect.utils.mapper.StudentMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -45,6 +48,7 @@ public class CourseServiceImpl implements CourseService {
     private final CourseRepo courseRepo;
     private final EnrollmentRepo enrollmentRepo;
     private final StudentRepo studentRepo;
+    private final CourseModuleRepo courseModuleRepo;
 
     private final CourseMapper courseMapper;
     private final StudentMapper studentMapper;
@@ -132,12 +136,12 @@ public class CourseServiceImpl implements CourseService {
      */
     @Override
     @Transactional
-    public StudentResponse addStudentToCourse(UUID userId, UUID courseId) throws UserNotFoundException, UserIdDoNothMatchException {
+    public StudentResponse addStudentToCourse( UUID courseId,UUID userId) throws UserNotFoundException, UserIdDoNothMatchException {
         if (enrollmentRepo.existsByStudentUserIdAndCourseCourseId(userId, courseId)) {
             throw new IllegalStateException("Student is already enrolled in this course");
         }
 
-        Student student  = studentRepo.findById(userId).orElseThrow(()->new UserNotFoundException("User nt found: "));
+        Student student = studentRepo.findById(userId).orElseThrow(()-> new UsernameNotFoundException("User not found"));
         Course course = courseRepo.findById(courseId).orElseThrow(()->new CourseNotFoundException("Course not found: "));
 
         Enrollment e = Enrollment.builder()
@@ -169,8 +173,9 @@ public class CourseServiceImpl implements CourseService {
      */
     @Override
     public List<ModuleResponseDTO> getAllModulesOfACourse(UUID courseId) {
-        Course c = courseRepo.findById(courseId)
-                .orElseThrow(() -> new CourseNotFoundException("COURSE NOT FOUND: " + courseId));
-        return c.getModules().stream().map(courseMapper::getModule).toList();
+        Course c=courseRepo.findById(courseId).orElseThrow(()-> new CourseNotFoundException("COURSE NOT FOUND : "+courseId));
+        List<CourseModule> courseModules=c.getModules();
+        return  courseModules.stream().map(courseModule -> courseMapper.getModule(courseModule)).toList();
+
     }
 }

@@ -18,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -39,8 +40,8 @@ public class TeacherController {
     }
 
     @GetMapping
-    public Page<TeacherResponseDTO> getAll(Pageable pageable) {
-        return teacherService.getAll(pageable);
+    public List<TeacherResponseDTO> getAll() {
+        return teacherService.getAll();
     }
 
     @PatchMapping("/{id}")

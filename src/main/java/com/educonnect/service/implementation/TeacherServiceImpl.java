@@ -11,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -32,8 +33,17 @@ public class TeacherServiceImpl implements TeacherService {
     }
 
     @Override
-    public Page<TeacherResponseDTO> getAll(Pageable pageable) {
-        return teacherRepo.findAll(pageable).map(this::toResponse);
+    public List<TeacherResponseDTO> getAll() {
+        return teacherRepo.findAll().stream().map(teacher ->
+        {
+            TeacherResponseDTO dto=new TeacherResponseDTO();
+            dto.setId(teacher.getUserId());
+            dto.setDepartment(teacher.getDepartment());
+            dto.setEmail(teacher.getEmail());
+            dto.setQualification(teacher.getQualification());
+            dto.setFullName(teacher.getFullName());
+            return dto;
+        }).toList();
     }
 
     @Override
