@@ -279,7 +279,8 @@ public class CourseVideoImpl implements CourseVideoService {
 
             Course course = courseRepo.findById(courseId)
                     .orElseThrow(() -> new ResourceNotFoundException("Course not found"));
-            if(userId!=course.getTeacher().getUserId())
+//            if(userId!=course.getTeacher().getUserId())
+            if(!course.getTeacher().getUserId().equals(userId))
             {
                 throw new UserIdDoNothMatchException("author of this course  do not match with the logged in User: ");
             }
