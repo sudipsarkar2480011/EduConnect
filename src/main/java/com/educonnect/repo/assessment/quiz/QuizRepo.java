@@ -19,7 +19,7 @@ public interface QuizRepo extends JpaRepository<Quiz, UUID> {
                     SELECT q FROM Quiz q
                     JOIN FETCH q.questionList qq
                     JOIN FETCH qq.questionOptionList
-                    WHERE q.assessment.assessmentId = :assessmentId          
+                    WHERE q.assessment.assessmentId = :assessmentId
             """
     )
     Optional<Quiz> findQuizWithQuestionAndOptions(@Param("assessmentId") UUID assessmentId);
