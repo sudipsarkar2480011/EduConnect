@@ -1,7 +1,10 @@
 package com.educonnect.service.implementation.report;
 
 import com.educonnect.dto.course.CourseResponseDTO;
+import com.educonnect.dto.report.AttendanceStatsDTO;
+import com.educonnect.dto.report.ExamStatsDTO;
 import com.educonnect.dto.report.FullSystemReportDTO;
+import com.educonnect.dto.report.GraphDataPointDTO;
 import com.educonnect.dto.student.StudentResponse;
 import com.educonnect.dto.teacher.TeacherResponseDTO;
 import com.educonnect.dto.user.UserResponseDTO;
@@ -15,8 +18,9 @@ import com.educonnect.repo.parent.ParentRepo;
 import com.educonnect.repo.StudentRepo;
 import com.educonnect.repo.TeacherRepo;
 import com.educonnect.repo.course.CourseRepo;
-import com.educonnect.repo.report.ReportRepo; // Ensure you have this repo
+import com.educonnect.repo.report.ReportRepo;
 import com.educonnect.config.UserRepo;
+import com.educonnect.repo.report.SystemStatisticsRepo;
 import com.educonnect.utils.mapper.CourseMapper;
 import com.educonnect.utils.mapper.StudentMapper;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +28,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
+
 
 @Service
 @RequiredArgsConstructor
@@ -36,6 +42,7 @@ public class ReportServiceImpl {
     private final UserRepo userRepo;
     private final CourseRepo courseRepo;
     private final ReportRepo reportRepo;
+    private final SystemStatisticsRepo statsRepo;
 
     private final StudentMapper studentMapper;
     private final CourseMapper courseMapper = new CourseMapper();
@@ -93,12 +100,14 @@ public class ReportServiceImpl {
         return new FullSystemReportDTO(
                 getAllStudents(),
                 getAllTeachers(),
-                parentRepo.findAll(),
+                getAllParents(),
                 adminRepo.findAll(),
                 getAllUsers(),
                 getAllCourses(),
                 getAllRoles(),
-                getAllReports()
+                getAllReports(),
+                getAttendanceStatistics(),
+                getExamStatistics()
         );
     }
 
@@ -121,5 +130,21 @@ public class ReportServiceImpl {
         dto.setDepartment(teacher.getDepartment());
         dto.setQualification(teacher.getQualification());
         return dto;
+    }
+
+    public List<GraphDataPointDTO> getStudentPerformanceTrend(UUID studentId) {
+        return statsRepo.getStudentPerformanceTrend(studentId);
+    }
+
+    public List<GraphDataPointDTO> getCoursePerformanceTrend(UUID courseId) {
+        return statsRepo.getCoursePerformanceTrend(courseId);
+    }
+
+    public AttendanceStatsDTO getAttendanceStatistics() {
+        return statsRepo.getAttendanceStats();
+    }
+
+    public ExamStatsDTO getExamStatistics() {
+        return statsRepo.getExamStats();
     }
 }

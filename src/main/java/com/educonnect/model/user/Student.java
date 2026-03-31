@@ -9,14 +9,11 @@ import com.educonnect.model.compliance.ComplianceRecord;
 import com.educonnect.model.course.Enrollment;
 import com.educonnect.model.document.StudentDocument;
 import com.educonnect.model.engagement.Engagement;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 @SuperBuilder
 @Entity
@@ -27,7 +24,6 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = true,exclude = "enrollments")
 @PrimaryKeyJoinColumn(name = "student_id")
 public class Student extends User {
-
 
     private LocalDate dateOfBirth;
     private String enrollmentNumber;

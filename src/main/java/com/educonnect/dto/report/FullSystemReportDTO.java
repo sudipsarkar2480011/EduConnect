@@ -17,5 +17,7 @@ public record FullSystemReportDTO(
         List<UserResponseDTO> allUsers,
         List<CourseResponseDTO> courses,
         List<String> roles,
-        List<Report> generatedReports
+        List<Report> generatedReports,
+        AttendanceStatsDTO attendanceStats,
+        ExamStatsDTO examStats
 ) {}
