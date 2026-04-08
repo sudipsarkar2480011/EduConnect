@@ -53,7 +53,7 @@ public class SecurityConfig {
                         .hasAnyRole("STUDENT","ADMIN", "TEACHER")
                         .requestMatchers("/v1/api/assessment/submit").hasRole("STUDENT")
 
-                        .requestMatchers("/v1/api/audits/**","/v1/api/compliance/**").hasRole("ADMIN")
+                        .requestMatchers("/v1/api/audits/**","/v1/api/compliance/**","/actuator/**").hasRole("ADMIN")
 
                         .anyRequest().authenticated())
                         .sessionManagement(
